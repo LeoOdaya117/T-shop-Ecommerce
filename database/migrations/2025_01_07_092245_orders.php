@@ -17,7 +17,14 @@ return new class extends Migration
             $table->text(column: 'product_id');
             $table->text(column: 'quantity');
             $table->float('total_price');
+            $table->string(column: "fname");
+            $table->string(column: "lname");
+            $table->string(column: "email")->nullable();
             $table->string("address");
+            $table->string("address2")->nullable();
+            $table->string("city");
+            $table->string("state");
+            $table->string("country");
             $table->string("pincode");
             $table->string("phone");
             $table->string("payment_id")->nullable();

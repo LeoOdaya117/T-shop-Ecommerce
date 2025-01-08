@@ -6,16 +6,22 @@
             height: 100%;
              margin: 0 auto;
         }
-        
+        .form-register{
+            
+            padding: 1rem;
+        }
+        .logo{
+            cursor: pointer;
+        }
     </style>
 @endsection
 @section("content")
-    <main class="form-signin w-100 m-auto">
-        <div class="container w-50">
+    <main class="form-register m-auto ">
+        <div class="container-fluid shadow-lg p-4">
             <form method="POST" action="{{route("register.post")}}">
                 @csrf
-                <div class="mb-3 text-center">
-                    <i class="fa-solid fa-cart-shopping fa-lg"></i>
+                <div class="mb-3 text-center logo">
+                    <i class="fa-solid fa-cart-shopping fa-lg"> T-Shop</i>
                 </div>
                 <div class="mb-3">
                     <h2 class="text-center">REGISTER</h2>
@@ -62,8 +68,8 @@
                     </div>
                 
                 @endif
-                <button type="submit" class="btn btn-primary w-100">Sign Up</button>
-                <a href="{{route("login")}}" class="text-center">
+                <button type="submit" class="btn btn-primary w-100 mb-3">Sign Up</button>
+                <a href="{{route("login")}}" class="text-center form-label">
                     Already have an account?            
                 </a>
             </form>

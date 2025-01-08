@@ -11,15 +11,18 @@
             
             padding: 1rem;
         }
+        .logo{
+            cursor: pointer;
+        }
     </style>
 @endsection
 @section("content")
-    <main class="form-signin w-100 m-auto">
-        <div class="container w-50">
+    <main class="form-signin m-auto">
+        <div class="container-fluid shadow-lg p-4">
             <form method="POST" action="{{route("login.post")}}" class="form-sign">
                 @csrf
-                <div class="mb-3 text-center" onclick="home('{{ route('home') }}')">
-                    <i class="fa-solid fa-cart-shopping fa-lg"></i>
+                <div class="mb-3 text-center logo" onclick="home('{{ route('home') }}')">
+                    <i class="fa-solid fa-cart-shopping fa-lg"> T-Shop</i>
                 </div>
                 <div class="mb-3">
                     <h2 class="text-center">LOGIN</h2>
@@ -60,8 +63,8 @@
                     </div>
                 
                 @endif
-                <button type="submit" class="btn btn-primary w-100">Submit</button>
-                <a href="{{route("register")}}" class="text-center">
+                <button type="submit" class="btn btn-primary w-100 mb-3">Submit</button>
+                <a href="{{route("register")}}" class="text-center form-label">
                     Creat new account            
                 </a>
             </form>

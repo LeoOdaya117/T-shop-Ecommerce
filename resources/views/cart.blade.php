@@ -80,7 +80,7 @@
                     <div class="col-12 col-md-8" id="cart-items">
                         @php $totalPrice = 0; @endphp  <!-- Initialize totalPrice variable -->
                         @foreach ($cartItems as $key => $items)
-                            <div class="col-12  cart-item" data-id="{{ $items->product_id }}">
+                            <div class="col-12  cart-item" data-id="{{ $items->id }}">
                                 <div class=" ">
                                     <div class="row align-items-center g-0">
                                         <!-- Product Image -->
@@ -145,6 +145,8 @@
         const quantityInputs = document.querySelectorAll('.quantity');
         quantityInputs.forEach(input => {
             input.addEventListener('input', function() {
+                const cartItem = this.closest('.cart-item');
+                const itemId = cartItem.getAttribute('data-id');
                 const quantity = parseInt(this.value);
                 const price = parseFloat(this.getAttribute('data-price'));
                 const itemTotal = quantity * price;
@@ -162,30 +164,71 @@
 
                 // Update the total price of the cart
                 totalPriceElement.textContent = totalPrice.toFixed(2);
-            });
-        });
 
-        // Optional: Remove item from cart (you can handle backend logic here)
-        const removeButtons = document.querySelectorAll('.remove-item');
-        removeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const cartItem = this.closest('.cart-item');
-                cartItem.remove();
-
-                // Recalculate total price after removing an item
-                let totalPrice = 0;
-                document.querySelectorAll('.item-total-price').forEach(item => {
-                    totalPrice += parseFloat(item.textContent.replace('₱', '').trim());
+                $.ajax({
+                    url: '{{ route("add.quantity", [":id", ":quantity"]) }}'
+                    .replace(':id',itemId)
+                    .replace(':quantity', quantity),
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            console.log(response.success);
+                        } else {
+                            console.log(response.error);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(error);
+                    }
                 });
 
-                // Update the total price of the cart
-                document.getElementById('total-price').textContent = totalPrice.toFixed(2);
             });
         });
+
+
+        
+        // Optional: Remove item from cart (you can handle backend logic here)
+        const removeButtons = document.querySelectorAll('.remove-item');
+            removeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const cartItem = this.closest('.cart-item');
+                    const itemId = cartItem.getAttribute('data-id');
+
+                    // Remove the cart item from the DOM
+                    cartItem.remove();
+
+                    // Recalculate total price after removing an item
+                    let totalPrice = 0;
+                    document.querySelectorAll('.item-total-price').forEach(item => {
+                        totalPrice += parseFloat(item.textContent.replace('₱', '').trim());
+                    });
+
+                    // Update the total price of the cart
+                    document.getElementById('total-price').textContent = '₱' + totalPrice.toFixed(2);
+
+                    // Send AJAX request to remove the item from the server
+                    $.ajax({
+                        url: '{{ route("cart.remove", ":id") }}'.replace(':id', itemId),
+                        type: 'GET',
+                        success: function(response) {
+                            if (response.success) {
+                                console.log(response.success);
+                            } else {
+                                console.log(response.error);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.log(error);
+                        }
+                    });
+                });
+            });
     });
 
     function clickProduct(routeUrl) {
             window.location.href = routeUrl;
-        }
+    }
+
+    
 </script>
 @endsection
