@@ -76,8 +76,8 @@
                 
             </div>
 
-            <div class="d-flex justify-content-center">
-                {{ $products->links() }}
+            <div class="">
+                {{ $products->links('pagination::bootstrap-5') }}
             </div>
         </section>
     </main>

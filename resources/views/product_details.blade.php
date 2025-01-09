@@ -19,19 +19,21 @@
 @section("content")
     <main class="container">
 
-        <div class="container">
-            ...
+        <div class="container mt-5">
         </div>
 
-        <section class="py-5 pt-5 shadow-lg" style="background: rgb(241, 240, 240)">
+        <section class="py-5 mt-5 shadow-lg" style="background: rgb(241, 240, 240)">
             <div class="container px-4 px-lg-5 " >
                 <div class="row gx-4 gx-lg-5 align-items-center">
                     <div class="col-md-6"><img class="card-img-top mb-2 mb-md-0" src="{{ $products->image }}" alt="Product Image" /></div>
                     <div class="col-md-6">
-                        <div class="small mb-1">{{ $products->sku }}</div>
+                        <div class="small mb-1">SKU: {{ $products->sku }}</div>
                         <h1 class="display-5 fw-bolder">{{ $products->title }}</h1>
                         <div class="fs-5 mb-2">
-                            <span class="text-decoration-line-through">₱ 45.00</span>
+                            @if ($products->discount > 0)
+                                <span class="text-muted text-decoration-line-through">₱ {{ $products->original_price }}</span>
+                                
+                            @endif
                             <span>₱ {{ $products->price }}</span>
                         </div>
                         <div class="fs-5 mb-2 text-muted " >
@@ -40,10 +42,10 @@
                         </div>
                         <p class="lead">{{ $products->descrption }}</p>
                         <div class="d-flex">
-                            <input type="number" id="quantity" name="quantity" class="form-control text-center me-3" value="1" min="1" style="max-width: 5rem">
+                            <input type="number" id="quantity" name="quantity" class="form-control text-center me-3" value="1" min="1" max="{{ $products->stock }}" style="max-width: 5rem">
                             {{-- <input class="form-control text-center me-3" name="quantity"  id="inputQuantity" type="num" value="1" style="max-width: 3rem" /> --}}
                             <button class="btn btn-outline-dark flex-shrink-0 text-dark" type="button" onclick="addToCart({{ $products->id }})">
-                                <i class="bi-cart-fill me-1 "></i>
+                                <i class="fa-solid fa-cart-shopping"></i>
                                 Add to cart
                             </button>
                         </div>

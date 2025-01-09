@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 */
 
     Route::get('/', [ProductsManager::class,'index'])->name("home");
-
+    Route::get('shop', [ProductsManager::class,'showProducts'])->name("shop");
     Route::get("login", [AuthManager::class, "login"])->name("login");
     Route::post("login", [AuthManager::class, "loginPost"])->name("login.post");
 

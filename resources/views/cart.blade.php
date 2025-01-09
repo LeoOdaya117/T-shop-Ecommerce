@@ -69,10 +69,10 @@
                     <div class="col-3 col-md-0 d-flex justify-content-center">
                         <h5>Total</h5>
                     </div>
-
+                    <hr style="border-top: 2px solid #000000; max-width: auto;">
 
                 </div>
-                <hr style="border-top: 2px solid #000000; max-width: auto;">
+                
                 
 
                 <div class="row" style="max-height: 550px; overflow-y: auto;">
@@ -90,7 +90,7 @@
                                         <!-- filepath: /c:/Users/Leo/Desktop/Laragon/Laragon/www/Ecommerce-app/resources/views/cart.blade.php -->
                                         <div class="col-5 d-flex flex-column flex-md-row align-items-center">
                                             <!-- Product Image -->
-                                            <div class="order-1 order-md-1 d-flex justify-content-center align-items-center">
+                                            <div class="order-1 order-md-1 d-flex justify-content-center align-items-center" onclick="clickProduct('{{ route('showDetails', $items->slug) }}')" STYLE="cursor: pointer;">
                                                 <img src="{{ $items->image }}" class="img-fluid" alt="Product Image" style="max-width: 100px; height: auto;">
                                             </div>
                                             <!-- Product Details -->
@@ -124,16 +124,52 @@
                     </div>
         
                     <!-- Total Price -->
-                    <!-- filepath: /c:/Users/Leo/Desktop/Laragon/Laragon/www/Ecommerce-app/resources/views/cart.blade.php -->
-                    <!-- Total Price -->
                     <div class="col-12 col-md-4 justify-content-end mb-5">
                         <div class="card p-3">
-                            <h5 class="text-end">Subtotal: ₱ <span id="subtotal-price">{{ $totalPrice }}</span></h5> <!-- Display Subtotal -->
-                            <h5 class="text-end">Discount: ₱ <span id="discount-price">{{ 0 }}</span></h5> <!-- Display Discount -->
-                            <h5 class="text-end">Tax: ₱ <span id="tax-price">0</span></h5> <!-- Display Tax -->
-                            <h5 class="text-end">Shipping: ₱ <span id="shipping-price">{{ $shippingFee }}</span></h5> <!-- Display Shipping -->
+                            <h5 class="text-center"> Summary</h5>
                             <hr>
-                            <h5 class="text-end">Total: ₱ <span id="total-price">{{ $totalPrice + $shippingFee }}</span></h5> <!-- Display Total -->
+                            <div class="row">
+                                <h6 class="col-6 text-start">
+                                    Subtotal:
+                                </h6>
+                                <h6 class="text-end col-6  ">
+                                    ₱ <span id="subtotal-price">{{ $totalPrice }}</span>
+                                </h6>
+                            </div>
+                            <div class="row">
+                                <h6 class="col-6 text-start">
+                                    Discount:
+                                </h6>
+                                <h6 class="text-end col-6  ">
+                                    ₱ <span id="discount-price">{{ 0 }}</span>
+                                </h6>
+                            </div>
+                            <div class="row">
+                                <h6 class="col-6 text-start">
+                                    Tax:
+                                </h6>
+                                <h6 class="text-end col-6  ">
+                                    ₱ <span id="tax-price">0</span>
+                                </h6>
+                            </div>
+                            <div class="row">
+                                <h6 class="col-6 text-start">
+                                    Shipping:
+                                </h6>
+                                <h6 class="text-end col-6  ">
+                                    ₱ <span id="shipping-price">{{ $shippingFee }}</span>
+                                </h6>
+                            </div>
+                            
+                            <hr>
+                            <div class="row">
+                                <h5 class="col-6 text-start">
+                                    Total:
+                                </h5>
+                                <h5 class="text-end col-6  ">
+                                    ₱ <span id="total-price">{{ $totalPrice + $shippingFee }}</span>
+                                </h5>
+                            </div>
                             <a href="{{ route('checkout.show') }}" class="btn btn-warning w-100">Checkout</a>
                             <a href="{{ route('home') }}" class="btn btn-outline-secondary w-100 mt-2 text-dark">Continue Shopping</a>
                         </div>

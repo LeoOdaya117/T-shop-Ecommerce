@@ -195,4 +195,17 @@ class OrderManager extends Controller
         }
 
     }
+
+    function showPopularProducts()
+{
+    $popularProductIds = Order::select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+        ->groupBy('product_id')
+        ->orderBy('total_quantity', 'desc')
+        ->limit(6)
+        ->pluck('product_id');
+
+    $products = Product::whereIn('id', $popularProductIds)->get();
+
+    return view('home', compact('products'));
+}
 }
