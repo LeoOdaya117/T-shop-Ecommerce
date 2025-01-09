@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\Route;
         ->name("showDetails");
 
     Route::get('/products', [ProductsManager::class,'index'])->name("recommended");
+    Route::get('/products', [ProductsManager::class,'searchProduct'])->name("search.product");
 
     Route::middleware("auth")->group(function(){
 

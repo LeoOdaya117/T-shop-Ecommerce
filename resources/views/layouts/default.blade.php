@@ -19,7 +19,8 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            background: rgb(248, 248, 248)
+            background: rgb(248, 248, 248);
+            overflow-y: scroll;
         }
         .content {
             

@@ -28,22 +28,27 @@
       <!-- Navbar Content -->
       <div class="collapse navbar-collapse" id="navbarText">
           <!-- Center Search Bar -->
-          <form class="d-flex ms-auto" action="" method="GET" style="width: 50%;">
-              <input class="form-control me-2" type="search" name="query" placeholder="Search products..." aria-label="Search">
-              <button class="btn btn-outline-dark" type="submit">Search</button>
-          </form>
+        <!-- filepath: /c:/Users/Leo/Desktop/Laragon/Laragon/www/Ecommerce-app/resources/views/includes/header.blade.php -->
+        <div class="d-flex ms-auto" style="width: 50%;">
+            <form action="{{ route('search.product') }}" method="GET" class="d-flex w-100">
+                <input class="form-control me-2" type="search" name="search" placeholder="Search products..." aria-label="Search">
+                <button class="btn btn-outline-dark" type="submit">
+                    Search
+                </button>
+            </form>
+        </div>
 
           <!-- Right-aligned Nav Links -->
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+              
               <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="{{ route('home') }}">Products</a>
-              </li>
-              <li class="nav-item">
-                  <div class="col-6 d-flex">
-                      <a class="nav-link" href="{{ route('cart.show') }}"><i class="fa-solid fa-cart-shopping"></i></a>
-                      <span name="cart_number" class="fs-6 ms-n5 mx-1">{{ Session::get('cartTotal', 0) }}</span>
-                  </div>
-              </li>
+                  
+                <a class="btn btn-outline-dark text-dark bg-transparent" type="submit" href="{{ route('cart.show') }}">
+                  <i class="fa-solid fa-cart-shopping"></i>
+                  Cart
+                  <span class="badge bg-dark text-white ms-1 rounded-pill">{{ Session::get('cartTotal', 0) }}</span>
+              </a>
+            </li>
               @auth
                 <li class="nav-item dropdown active">
                     <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -51,6 +56,9 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li>
+                            <a class="dropdown-item"  href="{{ route('home') }}">Products</a>
+                        </li>
                         <li><a class="dropdown-item" href="{{ route('order.history', ['status'=> 'completed'] ) }}">Order History</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{{ route('logout') }}">Logout</a></li>

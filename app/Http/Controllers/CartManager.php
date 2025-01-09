@@ -22,7 +22,7 @@ class CartManager extends Controller
             $cart->save();
             
 
-            return response()->json(['success' => 'Product quantity has been updated in the cart.']);
+            return response()->json(['success' => 'Item updated in the cart.']);
         } else {
             // If the product does not exist, add it to the cart
             $cart = new Cart();
@@ -31,7 +31,7 @@ class CartManager extends Controller
             $cart->quantity = $quantity;
 
             if ($cart->save()) {
-                return response()->json(['success' => 'Product has been added to the cart.']);
+                return response()->json(['success' => 'Added to the cart.']);
             }
         }
 
@@ -46,7 +46,7 @@ class CartManager extends Controller
         
         $cartItems = DB::table("cart")
         ->join("products",'cart.product_id', '=', 'products.id')
-        ->select("cart.product_id", "cart.quantity", 'products.title', 'cart.id','products.price', 'products.image', 'products.slug')
+        ->select("cart.product_id", "cart.quantity", 'products.title', 'cart.id','products.price', 'products.image', 'products.slug','products.discount')
         ->where("cart.user_id", auth()->user()->id)->get();
 
         $cartTotal = $cartItems->count(); // Count the distinct items in the cart

@@ -34,7 +34,7 @@
 <main class="container">
     <section class="pt-5">
 
-        <h2 class="text-center mb-2 mt-3">Your Cart[{{ Session::get('cartTotal', 0) }}]</h2>
+        <h2 class="text-center mb-3 mt-3">Your Cart[{{ Session::get('cartTotal', 0) }}]</h2>
 
         @if (session()->has("success"))
             <div class="alert alert-success">
@@ -62,47 +62,51 @@
                         <h5>Item</h5>
                     </div>
 
-                    <div class="col-4 col-md-1 text-center text-md-start">
+                    <div class="col-3 col-md-1 text-center text-md-start">
                         <h5>Quantity</h5>
                     </div>
 
-                    <div class="col-2 col-md-2 d-flex justify-content-center">
+                    <div class="col-3 col-md-0 d-flex justify-content-center">
                         <h5>Total</h5>
                     </div>
 
 
                 </div>
-                <hr style="border-top: 2px solid #000000; max-width: 65%;">
+                <hr style="border-top: 2px solid #000000; max-width: auto;">
                 
 
-                <div class="row">
+                <div class="row" style="max-height: 550px; overflow-y: auto;">
                     <!-- Cart Items List -->
-                    <div class="col-12 col-md-8" id="cart-items">
-                        @php $totalPrice = 0; @endphp  <!-- Initialize totalPrice variable -->
+                    <div class="col-12 col-md-8" id="cart-items" >
+                        @php 
+                            $totalPrice = 0; 
+                            $shippingFee = 75;
+                        @endphp  <!-- Initialize totalPrice variable -->
                         @foreach ($cartItems as $key => $items)
                             <div class="col-12  cart-item" data-id="{{ $items->id }}">
                                 <div class=" ">
                                     <div class="row align-items-center g-0">
                                         <!-- Product Image -->
-                                        <div class="col-3 col-md-2 d-flex justify-content-center" onclick="clickProduct('{{ route('showDetails', $items->slug) }}')">
-                                            <img src="{{ $items->image }}" class="card-img-top" alt="Product Image" style="max-width: 100%; height: auto;">
-                                        </div>
-        
-                                        <!-- Product Details -->
-                                        <div class="col-3 col-md-3 text-center text-md-start">
-                                            <div class="card-body">
+                                        <!-- filepath: /c:/Users/Leo/Desktop/Laragon/Laragon/www/Ecommerce-app/resources/views/cart.blade.php -->
+                                        <div class="col-5 d-flex flex-column flex-md-row align-items-center">
+                                            <!-- Product Image -->
+                                            <div class="order-1 order-md-1 d-flex justify-content-center align-items-center">
+                                                <img src="{{ $items->image }}" class="img-fluid" alt="Product Image" style="max-width: 100px; height: auto;">
+                                            </div>
+                                            <!-- Product Details -->
+                                            <div class="card-body order-2 order-md-2 text-center">
                                                 <strong class="card-title">{{ $items->title }}</strong>
-                                                <span class="d-block mb-2">₱ {{ $items->price }}</span>
+                                                <span class="d-block">₱ {{ $items->price }}</span>
                                             </div>
                                         </div>
         
                                         <!-- Quantity Selector -->
-                                        <div class="col-3 col-md-3 d-flex justify-content-center">
-                                            <input type="number" class="form-control quantity" value="{{ $items->quantity }}" min="1" style="width: 75px;" data-price="{{ $items->price }}" data-id="{{ $items->product_id }}">
+                                        <div class="col-4 col-md-2 d-flex justify-content-center">
+                                            <input type="number" class="form-control quantity text-center" value="{{ $items->quantity }}" min="1" style="width: 75px;" data-price="{{ $items->price }}" data-id="{{ $items->product_id }}">
                                         </div>
         
                                         <!-- Total Price per Item -->
-                                        <div class="col-2 col-md-2 d-flex justify-content-center align-items-center">
+                                        <div class="col-2 col-md-3 d-flex justify-content-center align-items-center">
                                             <strong class=" item-total-price">₱ {{ $items->price * $items->quantity }}</strong>
                                         </div>
         
@@ -120,10 +124,18 @@
                     </div>
         
                     <!-- Total Price -->
-                    <div class="col-12 col-md-4 justify-content-end mb-3">
+                    <!-- filepath: /c:/Users/Leo/Desktop/Laragon/Laragon/www/Ecommerce-app/resources/views/cart.blade.php -->
+                    <!-- Total Price -->
+                    <div class="col-12 col-md-4 justify-content-end mb-5">
                         <div class="card p-3">
-                            <h5 class="text-end">Total: ₱ <span id="total-price">{{ $totalPrice }}</span></h5> <!-- Display Total -->
+                            <h5 class="text-end">Subtotal: ₱ <span id="subtotal-price">{{ $totalPrice }}</span></h5> <!-- Display Subtotal -->
+                            <h5 class="text-end">Discount: ₱ <span id="discount-price">{{ 0 }}</span></h5> <!-- Display Discount -->
+                            <h5 class="text-end">Tax: ₱ <span id="tax-price">0</span></h5> <!-- Display Tax -->
+                            <h5 class="text-end">Shipping: ₱ <span id="shipping-price">{{ $shippingFee }}</span></h5> <!-- Display Shipping -->
+                            <hr>
+                            <h5 class="text-end">Total: ₱ <span id="total-price">{{ $totalPrice + $shippingFee }}</span></h5> <!-- Display Total -->
                             <a href="{{ route('checkout.show') }}" class="btn btn-warning w-100">Checkout</a>
+                            <a href="{{ route('home') }}" class="btn btn-outline-secondary w-100 mt-2 text-dark">Continue Shopping</a>
                         </div>
                     </div>
                 </div>
@@ -151,24 +163,33 @@
                 const price = parseFloat(this.getAttribute('data-price'));
                 const itemTotal = quantity * price;
                 const itemTotalElement = this.closest('.cart-item').querySelector('.item-total-price');
+                const subtotalPriceElement = document.getElementById('subtotal-price');
                 const totalPriceElement = document.getElementById('total-price');
+                const shippingFee = parseFloat(document.getElementById('shipping-price').textContent.replace('₱', '').trim());
 
                 // Update item total
                 itemTotalElement.textContent = `₱ ${itemTotal.toFixed(2)}`;
 
-                // Recalculate the total price of the cart
-                let totalPrice = 0;
+                // Recalculate the subtotal price of the cart
+                let subtotalPrice = 0;
                 document.querySelectorAll('.item-total-price').forEach(item => {
-                    totalPrice += parseFloat(item.textContent.replace('₱', '').trim());
+                    subtotalPrice += parseFloat(item.textContent.replace('₱', '').trim());
                 });
 
-                // Update the total price of the cart
-                totalPriceElement.textContent = totalPrice.toFixed(2);
+                // Update the subtotal price of the cart
+                subtotalPriceElement.textContent = `${subtotalPrice.toFixed(2)}`;
 
+                // Calculate the total price (subtotal + shipping)
+                const totalPrice = subtotalPrice + shippingFee;
+
+                // Update the total price of the cart
+                totalPriceElement.textContent = `${totalPrice.toFixed(2)}`;
+
+                // Send AJAX request to update the quantity on the server
                 $.ajax({
                     url: '{{ route("add.quantity", [":id", ":quantity"]) }}'
-                    .replace(':id',itemId)
-                    .replace(':quantity', quantity),
+                        .replace(':id', itemId)
+                        .replace(':quantity', quantity),
                     type: 'GET',
                     success: function(response) {
                         if (response.success) {
@@ -181,54 +202,56 @@
                         console.log(error);
                     }
                 });
-
             });
         });
 
-
-        
         // Optional: Remove item from cart (you can handle backend logic here)
         const removeButtons = document.querySelectorAll('.remove-item');
-            removeButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const cartItem = this.closest('.cart-item');
-                    const itemId = cartItem.getAttribute('data-id');
+        removeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const cartItem = this.closest('.cart-item');
+                const itemId = cartItem.getAttribute('data-id');
 
-                    // Remove the cart item from the DOM
-                    cartItem.remove();
+                // Remove the cart item from the DOM
+                cartItem.remove();
 
-                    // Recalculate total price after removing an item
-                    let totalPrice = 0;
-                    document.querySelectorAll('.item-total-price').forEach(item => {
-                        totalPrice += parseFloat(item.textContent.replace('₱', '').trim());
-                    });
+                // Recalculate subtotal and total price after removing an item
+                let subtotalPrice = 0;
+                document.querySelectorAll('.item-total-price').forEach(item => {
+                    subtotalPrice += parseFloat(item.textContent.replace('₱', '').trim());
+                });
 
-                    // Update the total price of the cart
-                    document.getElementById('total-price').textContent = '₱' + totalPrice.toFixed(2);
+                // Update the subtotal price of the cart
+                document.getElementById('subtotal-price').textContent = `${subtotalPrice.toFixed(2)}`;
 
-                    // Send AJAX request to remove the item from the server
-                    $.ajax({
-                        url: '{{ route("cart.remove", ":id") }}'.replace(':id', itemId),
-                        type: 'GET',
-                        success: function(response) {
-                            if (response.success) {
-                                console.log(response.success);
-                            } else {
-                                console.log(response.error);
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.log(error);
+                // Calculate the total price (subtotal + shipping)
+                const shippingFee = parseFloat(document.getElementById('shipping-price').textContent.replace('₱', '').trim());
+                const totalPrice = subtotalPrice + shippingFee;
+
+                // Update the total price of the cart
+                document.getElementById('total-price').textContent = `${totalPrice.toFixed(2)}`;
+
+                // Send AJAX request to remove the item from the server
+                $.ajax({
+                    url: '{{ route("cart.remove", ":id") }}'.replace(':id', itemId),
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            console.log(response.success);
+                        } else {
+                            console.log(response.error);
                         }
-                    });
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(error);
+                    }
                 });
             });
+        });
     });
 
     function clickProduct(routeUrl) {
-            window.location.href = routeUrl;
+        window.location.href = routeUrl;
     }
-
-    
 </script>
 @endsection
