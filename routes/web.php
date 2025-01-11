@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
+    
     Route::get('/', [ProductsManager::class,'index'])->name("home");
     Route::get('shop', [ProductsManager::class,'showProducts'])->name("shop");
     //LOGIN ROUTES
@@ -48,6 +48,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('/add_quantity/{id}/{quantity}', [CartManager::class, 'updateQuantity'])
         ->name('add.quantity');
         Route::get("/cart", [CartManager::class, "showCart"])->name("cart.show");
+        Route::get("/cart/number", [CartManager::class, "updateCartTotal"])->name("cart.item.number");
 
         //CHECKOUT ROUTES
         Route::get("/checkout", [OrderManager::class, "showCheckout"])

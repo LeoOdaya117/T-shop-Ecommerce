@@ -48,11 +48,12 @@ class ProductsManager extends Controller
         if (auth()->check()) {
             $cartController = new CartManager();
             $cartController->updateCartTotal();
-            
+            $cartItemCount = $cartController->updateCartTotal();
+
             $popularProducts = $this->getPopularProducts();
         }
 
-        return view('home', compact('products', 'popularProducts', 'categories'));
+        return view('home', compact('products', 'popularProducts', 'categories', 'cartItemCount'));
     }
 
     private function getPopularProducts()
@@ -103,6 +104,14 @@ class ProductsManager extends Controller
             'html' => view('partials.product-cards', compact('products'))->render(),
             'hasMore' => $hasMore
         ]);
+    }
+
+    function updateProducts($id, $quantity){
+        $product = Products::where('id', $id)->first()->update(['stocks' => $quantity]);
+        if ($product) {
+            return response()->json(['success' => 'Product updated successfully']);
+        }
+        return response()->json(['error' => 'Something went wrong']);
     }
 
 }

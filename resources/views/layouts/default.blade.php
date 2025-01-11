@@ -32,7 +32,7 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            background: rgb(248, 248, 248);
+            background: whitesmoke;
             overflow-y: scroll;
         }
         .content {
@@ -54,6 +54,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
     <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script src="{{ asset('resources/js/cart.js') }}"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             AOS.init(
@@ -63,8 +65,11 @@
 
             }
             );
+            
         });
+        
     </script>
+    @include("includes.scripts")
     @yield("script")
 
     @if(isset($error))

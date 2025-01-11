@@ -25,6 +25,7 @@
 @section("content")
     <main class="container w-100 mb-3">
         
+        
         <div class="container">
             <nav aria-label="breadcrumb" class="pt-5 mt-4">
                 <ol class="breadcrumb">
@@ -37,7 +38,19 @@
                     @endif
                 </ol>
             </nav>
+            
         </div>
+        <hr style="border: 0px solid #e4e1e1; margin: 0 auto;">
+
+        <div class="align-items-center d-flex justify-content-end text-center m-2">
+            <p class="text-center  mb-0 me-2" style="font-size: 12px">Sort by: </p>
+            <select name="sort" id="sort" class="form-select align-items-end " style="width: 150px; border-radius:10px" onchange="route('{{ route('shop') }}?sort=' + this.value)">
+                <option value="default">Best Match</option>
+                <option value="price">Price low to high</option>
+                <option value="name">Price high to low</option>
+            </select>
+        </div>
+        <hr style="border: 0px solid #e4e1e1; margin: 0 auto;">
 
         <section >
             

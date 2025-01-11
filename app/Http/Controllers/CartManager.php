@@ -63,7 +63,8 @@ class CartManager extends Controller
             ->count(); // Count distinct cart items
 
         // Store the cart total in the session
-        Session::put('cartTotal', $cartTotal);
+        // Session::put('cartTotal', $cartTotal);
+        return $cartTotal;
         
     }
 

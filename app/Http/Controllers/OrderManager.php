@@ -51,6 +51,8 @@ class OrderManager extends Controller
             'pincode' => 'required',
             'address' => 'required',
             'phone' => 'required',
+            'firstname' => 'required',
+            'lastname' => 'required',
 
         ]);
 
@@ -118,6 +120,13 @@ class OrderManager extends Controller
                         'order_id' => $order->id,
                     ],
                 ]);
+
+                // Update the stock of the products
+                foreach ($cartItems as $cartItem) {
+                    DB::table('products')
+                        ->where('id', $cartItem->product_id)
+                        ->decrement('stock', $cartItem->quantity);
+                }
 
                 DB::table('cart')
                     ->where('user_id', auth()->user()->id)

@@ -17,7 +17,8 @@
 @endsection()
 
 @section("content")
-    <main class="container">
+    <main class="container " >
+        
 
         <div class="container">
             <nav aria-label="breadcrumb" class="pt-5 mt-4">
@@ -163,16 +164,18 @@
 
 @section("script")
     <script>
+       
         function addToCart(productId) {
             // Get the quantity selected by the user
             const quantity = document.getElementById('quantity').value;
-
+            updateCartItemNumber();
             // Send AJAX request to add product to cart
             $.ajax({
                 url: '/cart/' + productId + '/' + quantity,
                 type: 'GET',
                 success: function(response) {
                     if (response.success) {
+                        
                         Swal.fire({
                             icon: 'success',
                             title: response.success,
@@ -193,6 +196,7 @@
                                 });
                             }
                         });
+                       
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -216,7 +220,7 @@
                     console.log(error);
                 }
             });
-
+            updateCartItemNumber();
 
             
         }

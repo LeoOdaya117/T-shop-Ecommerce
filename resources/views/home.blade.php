@@ -33,7 +33,7 @@
             <div class="hero-content h-100 align-content-center" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
                 <h1 class="display-4">Welcome to T-Shop</h1>
                 <p class="lead">Discover the best t-shirts for every occasion</p>
-                <a href="{{ route('shop') }}" class="btn btn-primary btn-lg">Shop Now</a>
+                <a href="{{ route('shop') }}" class="btn bg-transparent border-light btn-lg text-light">Shop Now</a>
             </div>
         </section>
 
