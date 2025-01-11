@@ -2,9 +2,6 @@
 @section("title", "T-Shop - Home")
 @section('style')
     <style>
-        .card, .btn {
-            cursor: pointer;
-        }
 
         .card:hover {
             transform: scale(1.05); 
@@ -26,9 +23,25 @@
     </style>
 @endsection()
 @section("content")
-    <main class="container w-100 mb-5">
-        <section class="pt-5">
-            <div class="pt-5 row gx-4 gx-lg-5 p-2 row-cols-2 row-cols-md-3 row-cols-xl-4 "> <!-- Flexbox for equal height -->
+    <main class="container w-100 mb-3">
+        
+        <div class="container">
+            <nav aria-label="breadcrumb" class="pt-5 mt-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item" onclick="route('{{ route('home') }}')">Home</li>
+                    @if(isset($categories) && $categories->isNotEmpty())
+                        <li class="breadcrumb-item" onclick="route('{{ route('shop') }}')">Products</li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ $categories->first()->name }}</li>
+                    @else
+                        <li class="breadcrumb-item active" aria-current="page" onclick="route('{{ route('shop') }}')">Products</li>
+                    @endif
+                </ol>
+            </nav>
+        </div>
+
+        <section >
+            
+            <div  data-aos="fade-up" class="row gx-4 gx-lg-5 p-2 row-cols-2 row-cols-md-3 row-cols-xl-4 "> <!-- Flexbox for equal height -->
                 {{-- @foreach ($products as $product)
                     <div class="col-12 col-md-6 col-lg-2 mb-2">
                         <div class="card  shadow-sm h-100" onclick="clickProduct('{{ route('showDetails', $product->slug) }}')">
@@ -63,7 +76,7 @@
                                 </div>
                             </div>
                             <!-- Product actions-->
-                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="clickProduct('{{ route('showDetails', $product->slug) }}')">
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $product->slug) }}')">
                                 <div class="text-center"><a class="btn btn-outline-dark mt-auto">View product</a></div>
                             </div>
                         </div>
@@ -85,7 +98,7 @@
 
 @section("script")
     <script>
-        function clickProduct(routeUrl) {
+        function route(routeUrl) {
             window.location.href = routeUrl;
         }
     </script>

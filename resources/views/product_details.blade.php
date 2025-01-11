@@ -19,10 +19,22 @@
 @section("content")
     <main class="container">
 
-        <div class="container mt-5">
+        <div class="container">
+            <nav aria-label="breadcrumb" class="pt-5 mt-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item" onclick="route('{{ route('home') }}')">Home</li>
+                    @if(isset($products) && $categories->isNotEmpty())
+                        <li class="breadcrumb-item" onclick="route('{{ route('shop') }}')">Products</li>
+                        <li class="breadcrumb-item"  onclick="route('{{ route('search.category.product', $products->category) }}')" >{{ $categories->first()->name }}</li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ $products->title }}</li>
+                    @else
+                        <li class="breadcrumb-item active" aria-current="page" onclick="route('{{ route('shop') }}')">Products</li>
+                    @endif
+                </ol>
+            </nav>
         </div>
 
-        <section class="py-5 mt-5 shadow-lg" style="background: rgb(241, 240, 240)">
+        <section class="py-5 shadow-lg" style="background: rgb(241, 240, 240)">
             <div class="container px-4 px-lg-5 " >
                 <div class="row gx-4 gx-lg-5 align-items-center">
                     <div class="col-md-6"><img class="card-img-top mb-2 mb-md-0" src="{{ $products->image }}" alt="Product Image" /></div>
@@ -41,13 +53,26 @@
                             <span style="font-size: 15px">{{ $products->stock }}</span>
                         </div>
                         <p class="lead">{{ $products->descrption }}</p>
-                        <div class="d-flex">
+                        <div class="d-flex mb-2  align-items-center">
                             <input type="number" id="quantity" name="quantity" class="form-control text-center me-3" value="1" min="1" max="{{ $products->stock }}" style="max-width: 5rem">
-                            {{-- <input class="form-control text-center me-3" name="quantity"  id="inputQuantity" type="num" value="1" style="max-width: 3rem" /> --}}
-                            <button class="btn btn-outline-dark flex-shrink-0 text-dark" type="button" onclick="addToCart({{ $products->id }})">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                                Add to cart
-                            </button>
+                            <p class="text-center text-muted mb-0"> 
+                                @if ($products->stock == 0)
+                                    <div class="text-danger mb-0" role="alert">
+                                        Out of stock
+                                    </div>
+                                @else
+                                    {{ $products->stock }} stocks available
+                                @endif
+                            </p>
+                        </div>
+                        
+                        <div class="d-flex">
+                            @if ($products->stock == 0)
+                                <button class="btn btn-outline-dark text-dark bg-transparent" onclick="addToWishList({{ $products->id}},'{{ $products->title }}')">
+                                    Add to Wishlist</button>
+                            @else
+                                <button class="btn btn-outline-dark text-dark bg-transparent" onclick="addToCart({{ $products->id }})">Add to Cart</button>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -122,8 +147,8 @@
                                     </div>
                                 </div>
                                 <!-- Product actions-->
-                                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="clickProduct('{{ route('showDetails', $recommendedProduct->slug) }}')">
-                                    <div class="text-center"><a class="btn btn-outline-dark mt-auto text-dark">View options</a></div>
+                                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $recommendedProduct->slug) }}')">
+                                    <div class="text-center"><a class="btn btn-outline-dark text-dark">View Product</a></div>
                                 </div>
                             </div>
                         </div>
@@ -185,20 +210,7 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    // Swal.fire({
-                    //     icon: 'error',
-                    //     title: 'Something went wrong',
-                    //     toast: true,
-                    //     position: 'top-end',
-                    //     showConfirmButton: false,
-                    //     timer: 3000,
-                    //     timerProgressBar: true,
-                    //     didOpen: (toast) => {
-                    //         toast.addEventListener('mouseenter', Swal.stopTimer);
-                    //         toast.addEventListener('mouseleave', Swal.resumeTimer);
-                    //     }
-                    // });
-
+                    
                     window.location.href = '{{ route('login') }}';
 
                     console.log(error);
@@ -209,7 +221,23 @@
             
         }
 
-        function clickProduct(routeUrl) {
+        function addToWishList(id, titile){
+            Swal.fire({
+                icon: 'success',
+                title: `${titile} added to wishlist`,
+                toast: true,
+                position: 'center-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+        }
+
+        function route(routeUrl) {
             window.location.href = routeUrl;
         }
     </script>

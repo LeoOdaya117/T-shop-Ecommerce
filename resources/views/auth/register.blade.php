@@ -24,7 +24,7 @@
                     <i class="fa-solid fa-cart-shopping fa-lg"> T-Shop</i>
                 </div>
                 <div class="mb-3">
-                    <h2 class="text-center">REGISTER</h2>
+                    <h3 class="text-start">Register</h3>
                 </div>
                 <div class="mb-3">
                     <label for="exampleInputEmail1" class="form-label">Full Name</label>

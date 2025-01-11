@@ -19,28 +19,30 @@ class ProductsManager extends Controller
         $products = Products::paginate(12);
         return view('products', compact('products'));
     }
-    function showProductsByCategory(){
-        $productsCategory = Products::where('category', 'Clothing')->paginate(12);  
+    function showProductsByCategory( $categoryId){
+        $categoryId =(int) $categoryId;
+        $products = Products::where('category', $categoryId)->paginate(12); 
+        $categories = Category::select('name')->where('id', $categoryId)->get();
 
-        return view('home', compact('products'));
+        return view('products', compact('products', 'categories'));
     }
     
     function showDetails($slug){
         $products = Products::where('slug', $slug)->first();
         $relatedProducts = Products::where('brand', $products->brand)->where('id', '!=', $products->id)->paginate(6);
-
-        return view('product_details', compact('products', 'relatedProducts'));
+        $categories = Category::select('name')->where('id', $products->category)->get();
+        return view('product_details', compact('products', 'relatedProducts', 'categories'));
     }
 
     function searchProduct(Request $request){
         $search = $request->get('search');
-        $products = Products::where('title', 'like', '%'.$search.'%')->paginate(12);
+        $products = Products::where('title', 'like', '%'.$search.'%')->paginate(20);
         return view('products', compact('products'));
     }
 
     public function index()
     {
-        $products = Products::paginate(12);
+        $products = Products::paginate(8);
         $popularProducts = collect(); // Initialize as an empty collection
         $categories = Category::all();
         if (auth()->check()) {
@@ -88,5 +90,19 @@ class ProductsManager extends Controller
         return $popularProducts;
     }
     
+    public function loadMoreProducts(Request $request)
+    {
+        $skip = (int) $request->skip;
+        $take = 8; // Number of products to load per request
+        $products = Products::skip($skip)->take($take)->get();
+        $totalProducts = Products::count();
+
+        $hasMore = ($skip + $take) < $totalProducts;
+
+        return response()->json([
+            'html' => view('partials.product-cards', compact('products'))->render(),
+            'hasMore' => $hasMore
+        ]);
+    }
 
 }

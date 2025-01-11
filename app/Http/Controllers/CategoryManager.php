@@ -17,4 +17,6 @@ class CategoryManager extends Controller
         $category = Products::ALL();
         return compact('category');
     }
+
+
 }

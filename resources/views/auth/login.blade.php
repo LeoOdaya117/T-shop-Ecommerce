@@ -5,7 +5,7 @@
     <style>
         html,body{
             height: 100%;
-            margin: 0 auto;
+            margin: auto auto;
         }
         .form-sign{
             
@@ -14,18 +14,31 @@
         .logo{
             cursor: pointer;
         }
+        .form-label{
+            font-size: 15px;
+        }
+        .create{
+            font-size: 15px;
+            
+        }
+        .forgot-password,.create{
+            color: blue;
+            cursor: pointer;
+            
+        }
     </style>
 @endsection
 @section("content")
     <main class="form-signin m-auto">
         <div class="container-fluid shadow-lg p-4">
-            <form method="POST" action="{{route("login.post")}}" class="form-sign">
+            <form method="POST" action="{{route("login.post")}}" class="form-sign w-auto">
                 @csrf
-                <div class="mb-3 text-center logo" onclick="home('{{ route('home') }}')">
+                <div class="mb-4 text-center logo" onclick="changeURL('{{ route('home') }}')">
                     <i class="fa-solid fa-cart-shopping fa-lg"> T-Shop</i>
                 </div>
-                <div class="mb-3">
-                    <h2 class="text-center">LOGIN</h2>
+                <div class="row">
+                    <h3 class="text-start">Sign in</h3>
+                    <p class="form-label">or <span onclick="changeURL('{{ route('register') }}')"  class="create">create and account</span></p>
                 </div>
                 <div class="mb-3">
                     <label for="exampleInputEmail1" class="form-label">Email address</label>
@@ -38,6 +51,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="exampleInputPassword1" class="form-label">Password</label>
+                    <p  class="float-end form-label forgot-password">Forgot password?</p>
                     <input type="password" name="password" class="form-control" id="password">
                     @error('password')
     
@@ -63,10 +77,10 @@
                     </div>
                 
                 @endif
-                <button type="submit" class="btn btn-primary w-100 mb-3">Submit</button>
-                <a href="{{route("register")}}" class="text-center form-label">
+                <button type="submit" class="btn btn-primary w-100">Sign in</button>
+                {{-- <a href="{{route("register")}}" class="text-center form-label">
                     Creat new account            
-                </a>
+                </a> --}}
             </form>
         </div>
         
@@ -75,7 +89,7 @@
 @endsection
 @section("script")
     <script>
-        function home(routeUrl){
+        function changeURL(routeUrl){
             window.location.href = routeUrl;
 
         }

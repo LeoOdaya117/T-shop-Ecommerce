@@ -38,12 +38,12 @@
         </section>
 
         <!-- Featured Products -->
-        <section class="featured-products mb-3">
+        <section class="featured-products mb-3" data-aos="fade-up">
             <h4 class="text-start mb-4 font-weight-lighter">Featured Products</h4>
             <div class="row gx-3 gx-lg-5 p-0 row-cols-2 row-cols-md-4 row-cols-xl-4 ">
                 @foreach ($popularProducts as $featuredProduct)
                 
-                    <div class="col">
+                    <div class="col" >
                         <div class="card m-1" >
                             <!-- Product image-->
                             <img class="card-img-top mt-3" src="{{ $featuredProduct->image }}" alt="{{ $featuredProduct->title }}" >
@@ -57,7 +57,7 @@
                                 </div>
                             </div>
                             <!-- Product actions-->
-                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="clickProduct('{{ route('showDetails', $featuredProduct->slug) }}')">
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $featuredProduct->slug) }}')">
                                 <div class="text-center"><a class="btn btn-outline-dark mt-auto">View product</a></div>
                             </div>
                         </div>
@@ -69,12 +69,12 @@
   
 
 
-        <section class=" card-products mb-3">
+        <section class=" card-products mb-3" >
             <h4 class="text-start mb-4 font-weight-lighter">Categories</h4>
                 <div class="row gx-4 gx-lg-5 p-2 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                     @foreach ($categories as $category)
-                        <div class="col-12 col-md-12 p-1 align-items-center" style="height: auto; width:150px;">
-                            <div class="card p-3 align-items-center">
+                        <div class="col-12 col-md-12 p-1 align-items-center" style="height: auto; width:150px;" >
+                            <div class="card p-3 align-items-center" onclick="route('{{ route('search.category.product', $category->id) }}')">
                                 <img src="{{ $category->image ?? asset('assets/image/no-image.jpg') }}" class="image-fluid m-" alt="{{ $category->name }}" style="height: 100px; width:100px; object-fit: cover;">
                                 <p class="card-title text-center">{{ $category->name }}</p>
                             </div>
@@ -93,9 +93,9 @@
         <section class=" justforyou-products mb-3">
             <h4 class="text-start mb-4 font-weight-lighter">Just For You</h4>
 
-            <div class="row gx-4 gx-lg-5  row-cols-2 row-cols-md-3 row-cols-xl-4 "> <!-- Flexbox for equal height -->
+            <div id="product-container" class="row gx-4 gx-lg-5  row-cols-2 row-cols-md-3 row-cols-xl-4 "> <!-- Flexbox for equal height -->
                 @foreach ($products as $product)
-                <div class="col">
+                <div class="col" >
                     <div class="card m-1" >
                         <!-- Product image-->
                         <img class="card-img-top mt-3" src="{{ $product->image }}" alt="Product Image" />
@@ -109,12 +109,15 @@
                             </div>
                         </div>
                         <!-- Product actions-->
-                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="clickProduct('{{ route('showDetails', $product->slug) }}')">
+                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $product->slug) }}')">
                             <div class="text-center"><a class="btn btn-outline-dark mt-auto">View product</a></div>
                         </div>
                     </div>
                 </div>
                 @endforeach
+            </div>
+            <div class="text-center mt-4 w-100">
+                <button id="load-more" class="btn btn-outline-dark w-50">Load More</button>
             </div>
         </section>
 
@@ -135,8 +138,31 @@
 @endsection
 @section("script")
     <script>
-        function clickProduct(routeUrl) {
+       
+        function route(routeUrl) {
             window.location.href = routeUrl;
         }
+        
+        let skip = {{ count($products) }};
+            document.getElementById('load-more').addEventListener('click', function() {
+                fetch(`/load-more-products?skip=${skip}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        document.getElementById('product-container').insertAdjacentHTML('beforeend', data.html);
+                        skip += 8; // Update the skip value
+
+                        if (!data.hasMore) {
+                            document.getElementById('load-more').style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
+            });
     </script>
 @endsection()

@@ -22,7 +22,7 @@
             </div>
             <div class="row">
                 @forelse ($orders as $order)
-                    <div class="col-md-4 mb-4 d-flex align-items-stretch">
+                    <div class="col-md-4 mb-4 d-flex align-items-stretch" >
                         <div class="card w-100" style="font-size: 0.875rem;"> <!-- Smaller font size -->
                             <div class="card-body d-flex flex-column p-3"> <!-- Smaller padding -->
                                 <strong class="card-title" style="font-size: 17px">Order ID # {{ $order->id }}</strong>
@@ -42,7 +42,8 @@
                                         @else
                                             bg-secondary text-white
                                         @endif
-                                    ">
+                                        p-1 rounded
+                                    " >
                                         {{ strtoupper($order->status) }}
                                     </span>
                                 </p>
@@ -58,11 +59,12 @@
                     </div>
                 @endforelse
             </div>
-            <div class="row pt-4">
-                <div class="col-12 d-flex justify-content-center">
-                    {{ $orders->links('pagination::bootstrap-5') }} <!-- Pagination links -->
-                </div>
-            </div>
+            
         </section>
+        <div class="row pt-4">
+            <div class="col-12">
+                {{ $orders->links('pagination::bootstrap-5') }} <!-- Pagination links -->
+            </div>
+        </div>
     </main>
 @endsection

@@ -57,25 +57,27 @@
                 </div>
             @else
 
-                <div class="row align-items-center mt-2">
-                    <div class="col-6 col-md-4 d-flex justify-content-center">
-                        <h5>Item</h5>
-                    </div>
+                <div class="table-header row align-items-center mt-2">
+                   <div class="row">
+                        <div class="col-6 col-md-3 d-flex justify-content-center">
+                            <h5>Item</h5>
+                        </div>
 
-                    <div class="col-3 col-md-1 text-center text-md-start">
-                        <h5>Quantity</h5>
-                    </div>
+                        <div class="col-3 col-md-2 text-center text-md-start">
+                            <h5>Quantity</h5>
+                        </div>
 
-                    <div class="col-3 col-md-0 d-flex justify-content-center">
-                        <h5>Total</h5>
+                        <div class="col-3 col-md-1  d-flex justify-content-center">
+                            <h5>Total</h5>
+                        </div>
+                        <hr style="border-top: 2px solid #000000; max-width: auto;">
                     </div>
-                    <hr style="border-top: 2px solid #000000; max-width: auto;">
 
                 </div>
                 
                 
 
-                <div class="row" style="max-height: 550px; overflow-y: auto;">
+                <div class="cart-content row" style="max-height: 550px; overflow-y: auto;">
                     <!-- Cart Items List -->
                     <div class="col-12 col-md-8" id="cart-items" >
                         @php 
@@ -111,8 +113,9 @@
                                         </div>
         
                                         <!-- Remove Button -->
-                                        <div class="col-1 col-md-1 d-flex justify-content-center align-items-center">
-                                            <i class="remove-item fa-solid fa-minus fa-lg" style="color: red;"></i>
+                                        <div class="col-1 col-md-1 d-flex justify-content-center align-items-center " style="color: red; cursor: pointer;">
+                                            {{-- <i class="remove-item fa-solid fa-minus fa-lg" style="color: red;"></i> --}}
+                                            <i class=" remove-item fa-solid fa-x"></i>
                                         </div>
                                     </div>
                                 </div>

@@ -43,7 +43,7 @@ class ProductsTableSeeder extends Seeder
                 'sku' => 'TSHIRT2',
                 'category' => 'Clothing',
                 'brand' => 'Brand B',
-                'size' => 'L',
+                'size' => 'L',  
                 'color' => 'Blue',
                 'status' => 'active',
                 'discount' => 0,
