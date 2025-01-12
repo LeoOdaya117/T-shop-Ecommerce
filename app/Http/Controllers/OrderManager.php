@@ -9,12 +9,18 @@ use Stripe\Exception\SignatureVerificationException;
 use Stripe\StripeClient;
 use Stripe\Webhook;
 use Illuminate\Http\Request;
+use Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
 
 class OrderManager extends Controller
 {
     public function showCheckout()
     {
+        $authManager = new AuthManager();
+        $authManager->sessionCheck();
+    
+        
         // Define the Philippines and its provinces
         $country = ['id' => 1, 'name' => 'Philippines'];
         $provinces = [
@@ -47,6 +53,8 @@ class OrderManager extends Controller
 
     public function checkoutPost(Request $request)
     {
+        $authManager = new AuthManager();
+        $authManager->sessionCheck();
         $request->validate([
             'pincode' => 'required',
             'address' => 'required',

@@ -15,19 +15,12 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider and all of them will
 | be assigned to the "web" middleware group. Make something great!
 |
-*/
-    
+    */
+    Route::get('home', [ProductsManager::class,'index'])->name("home");
+
     Route::get('/', [ProductsManager::class,'index'])->name("home");
     Route::get('shop', [ProductsManager::class,'showProducts'])->name("shop");
-    //LOGIN ROUTES
-    Route::get("login", [AuthManager::class, "login"])->name("login");
-    Route::post("login", [AuthManager::class, "loginPost"])->name("login.post");
-    // REGISTER ROUTES
-    Route::get("register", [AuthManager::class, "registration"])->name("register");
-    Route::post("register", [AuthManager::class, "registrationPost"])
-        ->name("register.post");
-    // LOGOUT ROUTE
-    Route::get("logout", [AuthManager::class, "logout"])->name("logout");
+        
     // PRODUCT ROUTES
     Route::get("/product/{slug}", [ProductsManager::class, "showDetails"])
         ->name("showDetails");
@@ -38,6 +31,22 @@ use Illuminate\Support\Facades\Route;
         ->name("search.product");
     Route::get('/products/category/{categoryId}', [ProductsManager::class,'showProductsByCategory'])
         ->name("search.category.product");
+    
+    Route::get("logout", [AuthManager::class, "logout"])->name("logout");
+
+    Route::middleware("guest")->group(function(){
+        
+        //LOGIN ROUTES
+        Route::get("login", [AuthManager::class, "login"])->name("login");
+        Route::post("login", [AuthManager::class, "loginPost"])->name("login.post");
+        // REGISTER ROUTES
+        Route::get("register", [AuthManager::class, "registration"])->name("register");
+        Route::post("register", [AuthManager::class, "registrationPost"])
+            ->name("register.post");
+        // LOGOUT ROUTE
+      
+        
+    });
 
     Route::middleware("auth")->group(function(){
         //CART ROUTES
@@ -68,5 +77,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('/order-details/{id}', [OrderManager::class, 'orderDetails'])
             ->name('order.details');
 
+        //ADMIN ROUTES
+        Route::get('dashboard', [AuthManager::class,'admin_Index'])->name("admin.dashboard");
 
 });

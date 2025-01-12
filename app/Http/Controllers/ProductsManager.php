@@ -42,15 +42,28 @@ class ProductsManager extends Controller
 
     public function index()
     {
+        // Check if the session variable 'logged_in_redirect' exists
+        if (Session::get('logged_in_redirect')) {
+            // Handle the specific logic
+            session()->flash('message', 'You were redirected because you are already logged in.');
+            
+            // Optionally remove the session variable
+            Session::forget('logged_in_redirect');
+            
+            // Redirect to a specific page if necessary
+            return redirect()->route('home');
+        }
         $products = Products::paginate(8);
         $popularProducts = collect(); // Initialize as an empty collection
         $categories = Category::all();
+        $cartItemCount = 0;
+        $popularProducts = $this->getPopularProducts();
         if (auth()->check()) {
             $cartController = new CartManager();
             $cartController->updateCartTotal();
             $cartItemCount = $cartController->updateCartTotal();
 
-            $popularProducts = $this->getPopularProducts();
+            
         }
 
         return view('home', compact('products', 'popularProducts', 'categories', 'cartItemCount'));

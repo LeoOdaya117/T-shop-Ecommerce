@@ -46,7 +46,7 @@
                 <a class="btn btn-outline-dark text-dark bg-transparent" type="submit" href="{{ route('cart.show') }}">
                   <i class="fa-solid fa-cart-shopping"></i>
                   Cart
-                  <span class="badge bg-dark text-white ms-1 rounded-pill" id="cart-item-number">{{ Session::get('cartTotal', 0) }}</span>
+                  <span class="badge bg-dark text-white ms-1 rounded-pill" id="cart-item-number">{{ Session::get('cartItemCount', 0) }}</span>
               </a>
             </li>
               @auth

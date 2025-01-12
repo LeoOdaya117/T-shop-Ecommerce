@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Auth;
 use App\Models\Cart;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class CartManager extends Controller
 {
+    
     public function addToCart($id, $quantity)
     {
         // Check if the product already exists in the user's cart
@@ -37,12 +39,18 @@ class CartManager extends Controller
 
         if (auth()->check()) {
             $this->updateCartTotal();
+            $cartItemCount = CartManager::updateCartTotal(); // Logic to compute the new count
+    
+            session(['cartItemCount' => $cartItemCount]); // Update session
         }
 
         return response()->json(['error' => 'Something went wrong']);
     }
 
     function showCart(){
+        $authManager = new AuthManager();
+        $authManager->sessionCheck();
+    
         
         $cartItems = DB::table("cart")
         ->join("products",'cart.product_id', '=', 'products.id')

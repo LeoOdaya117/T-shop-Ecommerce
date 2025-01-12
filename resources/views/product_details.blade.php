@@ -54,12 +54,25 @@
                             <span style="font-size: 15px">{{ $products->stock }}</span>
                         </div>
                         <p class="lead">{{ $products->descrption }}</p>
-                        <div class="d-flex mb-2  align-items-center">
-                            <input type="number" id="quantity" name="quantity" class="form-control text-center me-3" value="1" min="1" max="{{ $products->stock }}" style="max-width: 5rem">
-                            <p class="text-center text-muted mb-0"> 
+                        <div class="d-flex mb-2  align-items-center m-0">
+                            <div class="input-group d-flex" style="max-width: 8rem;">
+                                <button type="button" class="btn btn-outline-secondary" onclick="decrementQuantity()">-</button>
+                                <input 
+                                    type="number" 
+                                    id="quantity" 
+                                    name="quantity" 
+                                    class="form-control text-center text-dark" 
+                                    value="1" 
+                                    min="1" 
+                                    max="{{ $products->stock }}" readonly style="max-width: 5rem">
+                                <button type="button" class="btn btn-outline-secondary " onclick="incrementQuantity()">+</button>
+                            </div>
+                            
+                            {{-- <input type="number" id="quantity" name="quantity" class="form-control text-center me-3" value="1" min="1" max="{{ $products->stock }}" style="max-width: 5rem"> --}}
+                            <p class="text-center text-muted mb-0 ms-3"> 
                                 @if ($products->stock == 0)
                                     <div class="text-danger mb-0" role="alert">
-                                        Out of stock
+                                         Out of stock
                                     </div>
                                 @else
                                     {{ $products->stock }} stocks available
@@ -167,8 +180,9 @@
        
         function addToCart(productId) {
             // Get the quantity selected by the user
-            const quantity = document.getElementById('quantity').value;
             updateCartItemNumber();
+            const quantity = document.getElementById('quantity').value;
+            
             // Send AJAX request to add product to cart
             $.ajax({
                 url: '/cart/' + productId + '/' + quantity,
@@ -241,8 +255,30 @@
             });
         }
 
+        function incrementQuantity() {
+            let input = document.getElementById('quantity');
+            let currentValue = parseInt(input.value);
+            let maxValue = parseInt(input.max);
+
+            if (currentValue < maxValue) {
+                input.value = currentValue + 1;
+            }
+        }
+
+        function decrementQuantity() {
+            let input = document.getElementById('quantity');
+            let currentValue = parseInt(input.value);
+            let minValue = parseInt(input.min);
+
+            if (currentValue > minValue) {
+                input.value = currentValue - 1;
+            }
+        }
+
+
         function route(routeUrl) {
             window.location.href = routeUrl;
         }
+
     </script>
 @endsection()

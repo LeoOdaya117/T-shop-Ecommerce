@@ -1,3 +1,5 @@
+
+
 @extends("layouts.auth")
 @section("title", "")
 @section("style")
@@ -29,6 +31,10 @@
     </style>
 @endsection
 @section("content")
+    @if (session()->has("success"))
+        {{route("home")}}
+        
+    @endif
     <main class="form-signin m-auto">
         <div class="container-fluid shadow-lg p-4">
             <form method="POST" action="{{route("login.post")}}" class="form-sign w-auto">

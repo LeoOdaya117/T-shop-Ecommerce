@@ -253,7 +253,7 @@
 
                 // Remove the cart item from the DOM
                 cartItem.remove();
-
+                updateCartItemNumber();
                 // Recalculate subtotal and total price after removing an item
                 let subtotalPrice = 0;
                 document.querySelectorAll('.item-total-price').forEach(item => {
@@ -285,6 +285,7 @@
                         console.log(error);
                     }
                 });
+                 updateCartItemNumber();
             });
         });
     });

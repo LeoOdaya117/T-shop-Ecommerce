@@ -10,8 +10,33 @@ use Session;
 
 class AuthManager extends Controller
 {
+    public function sessionCheck(){
+        // Check if the user is authenticated
+        if (Auth::check()) {
+            // If the user is logged in and is an admin, redirect to the admin dashboard
+            if (Auth::user()->is_admin) {
+                return redirect()->intended(route("admin.dashboard"));
+            }
+            else{
+                return redirect()->intended(route("home"));
+            }
+            
+        
+        } else {
+            // If no user is logged in, you can handle the redirection here (e.g., redirect to login)
+            return redirect()->route('login');
+        }
+    
+        
+    }
+    
     function login(){
+        // Check if the session variable 'logged_in_redirect' exists
+        $this->sessionCheck();
         return view("auth.login");
+    }
+    function admin_Index(){
+        return view("admin.dashboard");
     }
     function loginPost(Request $request){
         $request->validate([
@@ -22,6 +47,10 @@ class AuthManager extends Controller
         $credentials = $request->only('email','password');
 
         if (Auth::attempt($credentials)) {
+
+            if(Auth::user()->is_admin){
+                return redirect()->intended(route("admin.dashboard"));
+            }
             
             return redirect()->intended(route("home"));
         }
