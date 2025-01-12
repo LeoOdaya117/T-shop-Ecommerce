@@ -33,7 +33,7 @@
             display: flex;
             flex-direction: column;
             background: whitesmoke;
-            overflow-y: scroll;
+         
         }
         .content {
             flex: 1;

@@ -1,7 +1,6 @@
 
-
 @extends("layouts.auth")
-@section("title", "")
+@section("title", "T-Shop - Login")
 @section("style")
 
     <style>
@@ -31,73 +30,61 @@
     </style>
 @endsection
 @section("content")
-    @if (session()->has("success"))
-        {{route("home")}}
-        
-    @endif
+ 
     <main class="form-signin m-auto">
-        <div class="container-fluid shadow-lg p-4">
-            <form method="POST" action="{{route("login.post")}}" class="form-sign w-auto">
-                @csrf
-                <div class="mb-4 text-center logo" onclick="changeURL('{{ route('home') }}')">
-                    <i class="fa-solid fa-cart-shopping fa-lg"> T-Shop</i>
-                </div>
-                <div class="row">
-                    <h3 class="text-start">Sign in</h3>
-                    <p class="form-label">or <span onclick="changeURL('{{ route('register') }}')"  class="create">create and account</span></p>
-                </div>
-                <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Email address</label>
-                    <input type="email" name="email" class="form-control" id="email" placeholder="name@example.com">
-                    @error('email')
-    
-                        <span class="text-danger">{{$message}}</span>
-                        
-                    @enderror
-                </div>
-                <div class="mb-3">
-                    <label for="exampleInputPassword1" class="form-label">Password</label>
-                    <p  class="float-end form-label forgot-password">Forgot password?</p>
-                    <input type="password" name="password" class="form-control" id="password">
-                    @error('password')
-    
-                        <span class="text-danger">{{$message}}</span>
-                        
-                    @enderror
-    
-                </div>
-                <div class="mb-3 form-check">
-                    <input type="checkbox" name="Rememberme" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Remember me</label>
-                </div>
-    
-                @if (session()->has("success"))
-                    <div class="alert alert-success">
-                        {{session()->get("success")}}
-                    </div>
-                
-                @endif
-                @if (session("error"))
-                    <div class="alert alert-danger">
-                        {{session("error")}}
-                    </div>
-                
-                @endif
-                <button type="submit" class="btn btn-primary w-100">Sign in</button>
-                {{-- <a href="{{route("register")}}" class="text-center form-label">
-                    Creat new account            
-                </a> --}}
-            </form>
-        </div>
         
+        <div class="splash-container">
+            <div class="card ">
+                <div class="card-header text-center">
+                    <a href="{{ route("home") }}">
+                        <div class="logo-img">
+                            <i class="fa-solid fa-cart-shopping fa-lg "> T-Shop</i>
+                        </div>
+                    </a>
+                    <span class="splash-description">
+                        Please enter your user information.
+                    </span>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ route('login.post') }}">
+                        @csrf
+                        @if (session()->has("success"))
+                            <div class="alert alert-success">
+                                {{session()->get("success")}}
+                            </div>
+                        
+                        @endif
+                        @if (session("error"))
+                            <div class="alert alert-danger">
+                                {{session("error")}}
+                            </div>
+                        
+                        @endif
+                        <div class="form-group">
+                            <input name="email" class="form-control form-control-lg" id="username" type="email" placeholder="Email" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control form-control-lg" name="password" id="password" type="password" placeholder="Password">
+                        </div>
+                        <div class="form-group">
+                            <label class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox"><span class="custom-control-label">Remember Me</span>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg btn-block">Sign in</button>
+                    </form>
+                </div>
+                <div class="card-footer bg-white p-0  ">
+                    <div class="card-footer-item card-footer-item-bordered">
+                        <a href="{{ route("register") }}" class="footer-link">Create An Account</a></div>
+                    <div class="card-footer-item card-footer-item-bordered">
+                        <a href="{{ route("forgot.password") }}" class="footer-link">Forgot Password</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
-@endsection
-@section("script")
-    <script>
-        function changeURL(routeUrl){
-            window.location.href = routeUrl;
 
-        }
-    </script>
-@endsection()
+@endsection

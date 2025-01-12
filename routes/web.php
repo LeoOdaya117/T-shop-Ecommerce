@@ -38,13 +38,22 @@ use Illuminate\Support\Facades\Route;
         
         //LOGIN ROUTES
         Route::get("login", [AuthManager::class, "login"])->name("login");
+
         Route::post("login", [AuthManager::class, "loginPost"])->name("login.post");
         // REGISTER ROUTES
         Route::get("register", [AuthManager::class, "registration"])->name("register");
         Route::post("register", [AuthManager::class, "registrationPost"])
             ->name("register.post");
         // LOGOUT ROUTE
+        Route::get("forgot-password", [AuthManager::class, "forgotPassword"])->name("forgot.password");
       
+        
+        Route::get('/terms-and-conditions', function () {
+            return view('pages.terms-and-conditions');
+        })->name('terms-and-conditions');
+        Route::get('/privacy-policy', function () {
+            return view('pages.privacy-policy');
+        })->name('privacy-policy');
         
     });
 

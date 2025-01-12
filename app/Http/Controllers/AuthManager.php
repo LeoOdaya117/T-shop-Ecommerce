@@ -35,6 +35,11 @@ class AuthManager extends Controller
         $this->sessionCheck();
         return view("auth.login");
     }
+    function forgotPassword(){
+        // Check if the session variable 'logged_in_redirect' exists
+        $this->sessionCheck();
+        return view("auth.forgot-password");
+    }
     function admin_Index(){
         return view("admin.dashboard");
     }

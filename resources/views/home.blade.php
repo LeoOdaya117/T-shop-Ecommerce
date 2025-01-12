@@ -28,6 +28,7 @@
 @endsection()
 @section('content')
     <main class="container w-100 mb-5">
+        
         <!-- Hero Section -->
         <section class="hero-section pt-5 mb-3 text-center align-content-center w-100" style="background-image: url('https://i.pinimg.com/736x/6a/2e/a0/6a2ea0edd5e1a2256652b2e48f22615c.jpg'); background-size: cover; background-position: center; height: 400px; color: white;">
             <div class="hero-content h-100 align-content-center" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
@@ -66,9 +67,7 @@
             </div>
         </section>
         
-  
-
-
+        <!-- Categories -->
         <section class=" card-products mb-3" >
             <h4 class="text-start mb-4 font-weight-lighter">Categories</h4>
                 <div class="row gx-4 gx-lg-5 p-2 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
@@ -87,9 +86,7 @@
         </section>
 
 
-
-
-
+        <!-- Just For You -->
         <section class=" justforyou-products mb-3">
             <h4 class="text-start mb-4 font-weight-lighter">Just For You</h4>
 
@@ -120,10 +117,7 @@
                 <button id="load-more" class="btn btn-outline-dark w-50">Load More</button>
             </div>
         </section>
-
-       
-
-       
+    
         <!-- Newsletter Signup -->
         <section class="newsletter-signup pt-5 text-center">
             <h2 class="mb-4">Stay Updated</h2>

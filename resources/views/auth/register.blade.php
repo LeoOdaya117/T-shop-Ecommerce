@@ -16,46 +16,18 @@
     </style>
 @endsection
 @section("content")
-    <main class="form-register m-auto ">
-        <div class="container-fluid shadow-lg p-4">
-            <form method="POST" action="{{route("register.post")}}">
-                @csrf
-                <div class="mb-3 text-center logo">
-                    <i class="fa-solid fa-cart-shopping fa-lg"> T-Shop</i>
-                </div>
-                <div class="mb-3">
-                    <h3 class="text-start">Register</h3>
-                </div>
-                <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Full Name</label>
-                    <input type="text" name="name" class="form-control" id="name" placeholder="Juan Dela Cruz">
-                    @error('name')
-    
-                        <span class="text-danger">{{$message}}</span>
-                        
-                    @enderror
-                </div>
-                <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Email address</label>
-                    <input type="email" name="email" class="form-control" id="email" placeholder="name@example.com">
-                    @error('email')
-    
-                        <span class="text-danger">{{$message}}</span>
-                        
-                    @enderror
-                </div>
-                <div class="mb-3">
-                    <label for="exampleInputPassword1" class="form-label">Password</label>
-                    <input type="password" name="password" class="form-control" id="password">
-                    @error('password')
-    
-                        <span class="text-danger">{{$message}}</span>
-                        
-                    @enderror
-    
-                </div>
-               
-    
+<!-- ============================================================== -->
+    <!-- signup form  -->
+    <!-- ============================================================== -->
+    <form class="splash-container" method="POST" action="{{ route("register.post") }}">
+        @csrf
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-1">Registrations Form</h3>
+                <p>Please enter your user information.</p>
+            </div>
+            <div class="card-body">
                 @if (session()->has("success"))
                     <div class="alert alert-success">
                         {{session()->get("success")}}
@@ -68,14 +40,40 @@
                     </div>
                 
                 @endif
-                <button type="submit" class="btn btn-primary w-100 mb-3">Sign Up</button>
-                <a href="{{route("login")}}" class="text-center form-label">
-                    Already have an account?            
-                </a>
-            </form>
+                <div class="form-group">
+                    <input class="form-control form-control-lg" type="text" name="name" required placeholder="Name" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <input class="form-control form-control-lg" type="email" name="email" required placeholder="E-mail" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <input class="form-control form-control-lg" id="password" type="password" name="password" required placeholder="Password">
+                </div>
+                {{-- <div class="form-group">
+                    <input class="form-control form-control-lg" required placeholder="Confirm">
+                </div> --}}
+                <div class="form-group pt-2">
+                    <button class="btn btn-block btn-primary" type="submit">Register My Account</button>
+                </div>
+                <div class="form-group">
+                    <label class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" required><span class="custom-control-label">By creating an account, you agree the <a href="{{ route("terms-and-conditions") }}">terms and conditions</a></span>
+                    </label>
+                </div>
+                {{-- <div class="form-group row pt-0">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-2">
+                        <button class="btn btn-block btn-social btn-facebook " type="button">Facebook</button>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <button class="btn  btn-block btn-social btn-twitter" type="button">Twitter</button>
+                    </div>
+                </div> --}}
+            </div>
+            <div class="card-footer bg-white">
+                <p>Already member? <a href="{{ route("login") }}" class="text-secondary">Login Here.</a></p>
+            </div>
         </div>
-       
-    </main>
+    </form>
     
 
 @endsection
