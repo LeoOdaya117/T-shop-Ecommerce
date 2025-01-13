@@ -88,5 +88,24 @@ use Illuminate\Support\Facades\Route;
 
         //ADMIN ROUTES
         Route::get('dashboard', [AuthManager::class,'admin_Index'])->name("admin.dashboard");
-
+        //ADMIN PRODUCTS
+        Route::get('products', 
+        function () {
+                    return view("admin.products.manage-products");
+                })->name('admin.products');
+                //ADMIN PRODUCTS
+        Route::get('categories', 
+        function () {
+                    return view("admin.products.categories");
+                })->name('admin.categories');
+                //ADMIN PRODUCTS
+        Route::get('inventory', 
+        function () {
+                    return view("admin.products.inventory");
+                })->name('admin.inventory');
+                //ADMIN PRODUCTS
+        Route::get('bulk-upload', 
+        function () {
+                    return view("admin.products.bulk-upload");
+                })->name('admin.bulk-upload');
 });

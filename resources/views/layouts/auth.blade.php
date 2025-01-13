@@ -36,9 +36,9 @@
     <script src="{{asset("assets/js/bootstrap.min.js")}}"></script>
     @yield("script")
 
-    @if(isset($error))
+    {{-- @if(isset($error))
         console.error("Login failed: {{ $error }}");
-    @endif
+    @endif --}}
     
 </body>
 </html>

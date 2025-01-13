@@ -70,6 +70,9 @@ class AuthManager extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
+        ],[
+            'email.unique' => 'The email address is already taken.',
+            'password.min:6' =>'The password must be at least 6 characters.',
         ]);
 
         $user = new User();
@@ -79,10 +82,10 @@ class AuthManager extends Controller
 
         if ($user->save()) {
             try {
-                return redirect()->intended(route('login'))
+                return redirect()->intended(route('register'))
                 ->with("success", "You have been registered successfully.");
             } catch (\Throwable $th) {
-                return redirect()->intended(route('login'))
+                return redirect()->intended(route('register'))
                 ->with("error", $th->getMessage());
             }
         }

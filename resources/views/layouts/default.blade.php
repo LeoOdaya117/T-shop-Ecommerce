@@ -71,8 +71,8 @@
     @include("includes.scripts")
     @yield("script")
 
-    @if(isset($error))
+    {{-- @if(isset($error))
         console.error("Login failed: {{ $error }}");
-    @endif
+    @endif --}}
 </body>
 </html>

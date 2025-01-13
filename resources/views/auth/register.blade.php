@@ -28,21 +28,32 @@
                 <p>Please enter your user information.</p>
             </div>
             <div class="card-body">
-                @if (session()->has("success"))
-                    <div class="alert alert-success">
-                        {{session()->get("success")}}
-                    </div>
-                
-                @endif
-                @if (session("error"))
+                @if ($errors->any())
                     <div class="alert alert-danger">
-                        {{session("error")}}
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                
                 @endif
+
+                @if (session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
                 <div class="form-group">
                     <input class="form-control form-control-lg" type="text" name="name" required placeholder="Name" autocomplete="off">
                 </div>
+                
                 <div class="form-group">
                     <input class="form-control form-control-lg" type="email" name="email" required placeholder="E-mail" autocomplete="off">
                 </div>
