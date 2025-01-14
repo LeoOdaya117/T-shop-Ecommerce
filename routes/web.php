@@ -4,6 +4,8 @@ use App\Http\Controllers\AuthManager;
 use App\Http\Controllers\CartManager;
 use App\Http\Controllers\OrderManager;
 use App\Http\Controllers\ProductsManager;
+use App\Http\Controllers\UserManager;
+use App\Models\Products;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,7 +29,7 @@ use Illuminate\Support\Facades\Route;
     Route::get('/load-more-products', [ProductsManager::class, 'loadMoreProducts'])
         ->name('loadMoreProducts');
     Route::get('/products', [ProductsManager::class,'index'])->name("recommended");
-    Route::get('/products', [ProductsManager::class,'searchProduct'])
+    Route::get('/products/search/', [ProductsManager::class,'searchProduct'])
         ->name("search.product");
     Route::get('/products/category/{categoryId}', [ProductsManager::class,'showProductsByCategory'])
         ->name("search.category.product");
@@ -91,21 +93,33 @@ use Illuminate\Support\Facades\Route;
         //ADMIN PRODUCTS
         Route::get('products', 
         function () {
+                   
                     return view("admin.products.manage-products");
                 })->name('admin.products');
-                //ADMIN PRODUCTS
+
+        Route::get('admin/products/ajax', [ProductsManager::class, 'getProducts'])
+                ->name('admin.products.ajax');
+ 
+            
+
+        Route::get('/product/edit/{id}',[ ProductsManager::class, 'showEditPage'])
+            ->name('admin.edit.product');
+              
+        
         Route::get('categories', 
         function () {
                     return view("admin.products.categories");
                 })->name('admin.categories');
-                //ADMIN PRODUCTS
+           
         Route::get('inventory', 
         function () {
                     return view("admin.products.inventory");
                 })->name('admin.inventory');
-                //ADMIN PRODUCTS
+              
         Route::get('bulk-upload', 
         function () {
                     return view("admin.products.bulk-upload");
                 })->name('admin.bulk-upload');
+
+        Route::get('users', [UserManager::class, 'index'])->name('admin.customers');
 });

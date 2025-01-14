@@ -43,7 +43,7 @@
                             
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table id="product-table" class="table table-striped table-bordered first">
+                                    <table class="table table-striped table-bordered first">
                                         <thead>
                                             <tr>
                                                 <th>ID</th>
@@ -53,9 +53,44 @@
                                                 <th>Category</th>
                                                 <th>Brand</th>
                                                 <th>Action</th>
-                                                
                                             </tr>
                                         </thead>
+                                        <tbody>
+
+                                           @foreach ($products as $product)
+                                            <tr>
+                                                <td>{{ $product->id }}</td>
+                                                <td>{{ $product->title }}</td>
+                                                <td>₱ {{ $product->price }}</td>
+                                                <td>{{ $product->color }}</td>
+                                                <td>{{ $product->brand }}</td>
+                                                <td>{{ $product->category }}</td>
+                                                <td>
+                                                    <div class="gap-5">
+                                                        <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-warning rounded">
+                                                            <i class="fas fa-edit text-dark"></i>
+                                                        </a>     
+                                                        <button class="btn btn-danger rounded">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                               
+                                           @endforeach
+                                            
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Price</th>
+                                                <th>Color</th>
+                                                <th>Category</th>
+                                                <th>Brand</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </tfoot>
                                     </table>
                                 </div>
                             </div>
@@ -71,6 +106,4 @@
         <!-- end wrapper  -->
         <!-- ============================================================== -->
     </main>
-    
 @endsection
-

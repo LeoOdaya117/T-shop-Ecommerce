@@ -8,6 +8,21 @@ jQuery(document).ready(function($) {
         });
     }
 
+    
+    if ($("#product-table").length) {
+
+        $(document).ready(function() {
+            $('#product-table').DataTable();
+        });
+    }
+    if ($("#customer-table").length) {
+
+        $(document).ready(function() {
+            $('#customer-table').DataTable();
+        });
+    }
+
+
     /* Calender jQuery **/
 
     if ($("table.second").length) {

@@ -97,7 +97,7 @@
                                     <div id="users-menu" class="collapse submenu" style="">
                                         <ul class="nav flex-column">
                                             <li class="nav-item">
-                                                <a class="nav-link" href="{{ route('admin.dashboard') }}">Customer</a>
+                                                <a class="nav-link" href="{{ route('admin.customers') }}">Customer</a>
                                             </li>
                                             <li class="nav-item">
                                                 <a class="nav-link" href="{{ route('admin.dashboard') }}">Admins</a>

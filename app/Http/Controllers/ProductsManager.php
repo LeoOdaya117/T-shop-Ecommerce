@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Session;
 use Illuminate\Http\Request;
 
-
+use DataTable;
 
 class ProductsManager extends Controller
 {
@@ -42,17 +42,7 @@ class ProductsManager extends Controller
 
     public function index()
     {
-        // Check if the session variable 'logged_in_redirect' exists
-        if (Session::get('logged_in_redirect')) {
-            // Handle the specific logic
-            session()->flash('message', 'You were redirected because you are already logged in.');
-            
-            // Optionally remove the session variable
-            Session::forget('logged_in_redirect');
-            
-            // Redirect to a specific page if necessary
-            return redirect()->route('home');
-        }
+        
         $products = Products::paginate(8);
         $popularProducts = collect(); // Initialize as an empty collection
         $categories = Category::all();
@@ -126,5 +116,67 @@ class ProductsManager extends Controller
         }
         return response()->json(['error' => 'Something went wrong']);
     }
+
+    function showEditPage($id) {
+        $productInfo = Products::where('id',$id)
+        ->first();
+        return view("admin.products.edit-product", compact('productInfo'));
+    }
+
+    function deleteProduct($id){
+        $product = $productInfo = Products::where('id',$id)
+        ->first();
+        if($product){
+            $product->status = 'inactive';
+            $product->save();
+            // return 
+        }
+    }
+    public function getProducts(Request $request)
+    {
+        // Get the search value
+        $search = $request->get('search')['value'];
+
+        // Query to get paginated products, applying search if necessary
+        $query = Products::query();
+
+        if ($search) {
+            // Apply search filter on multiple fields
+            $query->where('title', 'like', '%' . $search . '%')
+                ->orWhere('price', 'like', '%' . $search . '%')
+                ->orWhere('color', 'like', '%' . $search . '%')
+                ->orWhere('category', 'like', '%' . $search . '%')
+                ->orWhere('brand', 'like', '%' . $search . '%');
+        }
+
+        // Get the total records count
+        $totalRecords = Products::count();
+
+        // Paginate the results
+        $products = $query->skip($request->get('start'))
+                        ->take($request->get('length'))
+                        ->get();
+
+        // Get the filtered records count
+        $filteredRecords = $query->count();
+
+        // Return the data in the format DataTables expects
+        return response()->json([
+            'draw' => intval($request->get('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
+            'data' => $products,
+        ]);
+    }
+
+
+
+    
+    
+    
+
+    
+    
+
 
 }
