@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthManager;
 use App\Http\Controllers\CartManager;
+use App\Http\Controllers\CategoryManager;
 use App\Http\Controllers\OrderManager;
 use App\Http\Controllers\ProductsManager;
 use App\Http\Controllers\UserManager;
@@ -91,26 +92,25 @@ use Illuminate\Support\Facades\Route;
         //ADMIN ROUTES
         Route::get('dashboard', [AuthManager::class,'admin_Index'])->name("admin.dashboard");
         //ADMIN PRODUCTS
-        Route::get('products', 
-        function () {
-                   
-                    return view("admin.products.manage-products");
-                })->name('admin.products');
-
-        Route::get('admin/products/ajax', [ProductsManager::class, 'getProducts'])
-                ->name('admin.products.ajax');
- 
-            
+        Route::get('/products', [ProductsManager::class, 'getProducts'])->name('admin.products');
+        Route::get('products/create',[ ProductsManager::class, 'showCreatePage'])
+        ->name('admin.create.product');
 
         Route::get('/product/edit/{id}',[ ProductsManager::class, 'showEditPage'])
-            ->name('admin.edit.product');
-              
+        ->name('admin.edit.product');
+        Route::put('admin/product/update/{id}', [ProductsManager::class, 'updateProductData'])
+        ->name('admin.update.product');
+        Route::put('/admin/product/inactivate/{id}', [ProductsManager::class, 'setInactiveProduct']);
+
+
+        // CATEGORIES ROUTE
+        Route::get('category', [CategoryManager::class, 'index'])->name('admin.categories');
+        Route::get('category/create',[ ProductsManager::class, 'showCreatePage'])
+        ->name('admin.create.category');
+        Route::get('/category/edit/{id}',[ ProductsManager::class, 'showEditPage'])
+        ->name('admin.edit.category');
+        Route::put('/admin/categories/inactivate/{id}', [CategoryManager::class, 'setInactiveCategories']);
         
-        Route::get('categories', 
-        function () {
-                    return view("admin.products.categories");
-                })->name('admin.categories');
-           
         Route::get('inventory', 
         function () {
                     return view("admin.products.inventory");

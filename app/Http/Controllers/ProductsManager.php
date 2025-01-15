@@ -117,59 +117,109 @@ class ProductsManager extends Controller
         return response()->json(['error' => 'Something went wrong']);
     }
 
+    public function getProducts(Request $request)
+    {
+        $categories = Category::all();
+    
+        // Retrieve filter inputs
+        $search = $request->input('search');
+        $category = $request->input('category');
+        $minPrice = $request->input('min_price');
+        $maxPrice = $request->input('max_price');
+        $status = $request->input('status') ?? 'active';
+    
+        // Build the query
+        $products = Products::query();
+    
+        // Apply search filter
+        if ($search) {
+            $products->where(function ($query) use ($search) {
+                $query->where('title', 'like', '%' . $search . '%')
+                      ->orWhere('category', 'like', '%' . $search . '%');
+            });
+        }
+    
+        // Apply category filter
+        if ($category) {
+            $products->where('category', $category);
+        }
+    
+        // Apply price range filter
+        if ($minPrice || $maxPrice) {
+            $products->whereBetween('price', [
+                $minPrice ?? 0, // Default to 0 if no min price is provided
+                $maxPrice ?? PHP_INT_MAX // Default to maximum value if no max price is provided
+            ]);
+        }
+    
+        // Apply status filter
+        if ($status) {
+            $products->where('status', $status);
+        }
+    
+        // Fetch paginated results
+        $products = $products->paginate(10);
+    
+        return view('admin.products.manage-products', compact('products', 'categories'));
+    }
+    
+
+    
+
+    
+    
+
+
     function showEditPage($id) {
         $productInfo = Products::where('id',$id)
         ->first();
-        return view("admin.products.edit-product", compact('productInfo'));
+        $categories = Category::all();
+        return view("admin.products.edit-product", compact('productInfo','categories'));
+    }
+    function updateProductData(Request $request, $id){
+
+        $request->validate([
+            'price' => 'required|numeric|min:0',
+            
+        ]);
+        
+        $product = Products::findOrFail($id);
+
+        $product->title = $request->input('title');
+        $product->slug = $request->input('slug');
+        $product->sku = $request->input('sku');
+        $product->category = $request->input('category');
+        $product->brand = $request->input('brand');
+        $product->color = $request->input('color');
+        $product->size = $request->input('size');
+        $product->price = $request->input('price');
+        $product->descrption = $request->input('description');
+        $product->image = $request->input('image');
+        $product->status = $request->input('status');
+
+        if($product->save()){
+            return redirect()->route('admin.edit.product', $id)->with('success', 'Product Updated Successfully.');
+        }
+
+        return redirect()->route('admin.products')->with('error', 'Something went wrong.');
+
     }
 
-    function deleteProduct($id){
-        $product = $productInfo = Products::where('id',$id)
+    function setInactiveProduct($id){
+        $product  = Products::where('id',$id)
         ->first();
         if($product){
             $product->status = 'inactive';
             $product->save();
-            // return 
+            return response()->json(['success' => true, 'tr'=>'tr_'.$id], 200);
         }
-    }
-    public function getProducts(Request $request)
-    {
-        // Get the search value
-        $search = $request->get('search')['value'];
-
-        // Query to get paginated products, applying search if necessary
-        $query = Products::query();
-
-        if ($search) {
-            // Apply search filter on multiple fields
-            $query->where('title', 'like', '%' . $search . '%')
-                ->orWhere('price', 'like', '%' . $search . '%')
-                ->orWhere('color', 'like', '%' . $search . '%')
-                ->orWhere('category', 'like', '%' . $search . '%')
-                ->orWhere('brand', 'like', '%' . $search . '%');
-        }
-
-        // Get the total records count
-        $totalRecords = Products::count();
-
-        // Paginate the results
-        $products = $query->skip($request->get('start'))
-                        ->take($request->get('length'))
-                        ->get();
-
-        // Get the filtered records count
-        $filteredRecords = $query->count();
-
-        // Return the data in the format DataTables expects
-        return response()->json([
-            'draw' => intval($request->get('draw')),
-            'recordsTotal' => $totalRecords,
-            'recordsFiltered' => $filteredRecords,
-            'data' => $products,
-        ]);
+        return response()->json(['success' => false], 404);
     }
 
-
+    function showCreatePage(){
+        $categories = Category::all();
+        return view('admin.products.create-product',compact('categories'));
+    }
 
     
     

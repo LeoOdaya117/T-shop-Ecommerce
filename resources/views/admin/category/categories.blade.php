@@ -1,27 +1,8 @@
 @extends('admin.layouts.default')
-@section('title', 'Products')
+@section('title', 'Categories')
 @section('content')
 <main>
-    <style>
-        /* Dropdown Container */
-#filterDropdown {
-    position: absolute; /* Position it below the search input */
-    top: 100%; /* Align it right below the input */
-    left: 0;
-    width: 100%; /* Make sure it spans the width of the input */
-    z-index: 1050; /* Set a higher z-index so it stays above other content */
-    max-height: auto; /* Set a max height to avoid overflow */
-    overflow-y: auto; /* Enable scrolling if content exceeds max height */
-    border: 1px solid #ddd; /* Optional: border for the dropdown */
-    border-radius: 5px; /* Optional: rounded corners */
-}
 
-/* Dropdown Items */
-#filterDropdown select {
-    width: 100%; /* Ensure select boxes take the full width */
-}
-
-    </style>
     <!-- ============================================================== -->
     <!-- wrapper  -->
     <!-- ============================================================== -->
@@ -34,12 +15,12 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h2 class="pageheader-title">Manage Products </h2>
+                            <h2 class="pageheader-title">Categories </h2>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Products</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">Manage Products</li>
+                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Category</a></li>
+                                        <li class="breadcrumb-item active" aria-current="page">Manage Cateogries</li>
                                     </ol>
                                 </nav>
                             </div>
@@ -55,67 +36,23 @@
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                     <div class="card">
                         <h5 class="card-header d-flex justify-content-between align-items-center">
-                            Products Table
+                            Category Table
                         </h5>
                         
                         <div class="card-body">
                             <!-- Form with Search and Filter -->
                             <div class="d-flex  align-items-center justify-content-between mb-2 ">
-                                <form method="GET" action="{{ route('admin.products') }}" class="d-flex align-items-center position-relative">
+                                <form method="GET" action="{{ route('admin.categories') }}" class="d-flex align-items-center position-relative">
                                     <!-- Search Input -->
                                     <input type="text" name="search" value="{{ request('search') }}" class="form-control rounded-pill" placeholder="Search products..." style="max-width: 100%;">
 
                                     <!-- Filter Button -->
-                                    <button type="button" id="filterBtn" class="btn btn-primary ms-2"> <i class="fas fa-filter"></i> Filter</button>
-                                    
-                                    
-                                    <!-- Filter Dropdown -->
-                                    <div id="filterDropdown" class="d-none position-absolute bg-white border shadow rounded p-3 mt-2" style="max-width: 350px; left: 0;">
-                                        <!-- Close Button Inside the Dropdown -->
-                                        
-                                        <form method="GET" action="{{ route('admin.products') }}" class="d-flex flex-column">
-                                            <!-- Category Filter -->
-                                            <select name="category" class="form-control rounded-pill mb-2">
-                                                <option value="">Select Category</option>
-                                                @foreach ($categories as $category)
-                                                    <option value="{{ $category->id }}" 
-                                                        {{ request('category') == $category->id ? 'selected' : '' }}>
-                                                        {{ $category->name }}
-                                                    </option>
-                                                @endforeach
-                                               
-                                            </select>
-                                            
-                                            {{-- <!-- Price Filter -->
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <!-- Min Price Input -->
-                                                <input type="number" name="min_price" value="{{ request('min_price') }}" class="form-control me-2" placeholder="Min Price" style="max-width: 150px;">
-                                                
-                                                <!-- 'To' Text -->
-                                                <span class="mx-2">to</span>
-                                                
-                                                <!-- Max Price Input -->
-                                                <input type="number" name="max_price" value="{{ request('max_price') }}" class="form-control me-2" placeholder="Max Price" style="max-width: 150px;">
-                                            </div> --}}
-                                                                               
-                                            <!-- Status Filter -->
-                                            <select name="status" class="form-control rounded-pill mb-2">
-                                                <option value="">Select Status</option>
-                                                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                            </select>
-
-                                            <!-- Submit Button -->
-                                            <div class="d-flex">
-                                                <button type="submit" class="btn btn-primary rounded-pill mr-1">Apply Filters</button>
-                                                <button type="button" id="closeFilterDropdown" class="btn btn-secondary rounded-pill w-100">Close</button>
-                                            </div>
-                                        </form>
-                                    </div>
+                                    <button type="button" id="filterBtn" class="btn btn-primary ms-2"> Search</button>
+           
                                 </form>
 
                                 <!-- Add New Product Button -->
-                                <a href="{{ route('admin.create.product') }}" class="btn btn-success rounded">
+                                <a href="{{ route('admin.create.category') }}" class="btn btn-success rounded">
                                     <i class="fas fa-plus"> Create</i>
                                 </a>
                             </div>
@@ -125,31 +62,23 @@
                                     <thead>
                                         <tr class="text-center">
                                             <th>ID</th>
-                                            <th>Title</th>
-                                            <th>Price</th>
-                                            <th>Color</th>
-                                            <th>Category</th>
-                                            <th>Brand</th>
-                                            <th>status</th>
+                                            <th>Category Name</th>
+                                            <th>Slug</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if ($products->count() > 0)
-                                            @foreach($products as $product)
-                                                <tr class="text-center" id="tr_{{ $product->id }}">
-                                                    <td>{{ $product->id }}</td>
-                                                    <td>{{ $product->title }}</td>
-                                                    <td>₱ {{ $product->price }}</td>
-                                                    <td>{{ $product->color }}</td>
-                                                    <td>{{ $product->category }}</td>
-                                                    <td>{{ $product->brand }}</td>
-                                                    <td>{{ $product->status }}</td>
+                                        @if ($categories->count() > 0)
+                                            @foreach($categories as $category)
+                                                <tr class="text-center" id="tr_{{ $category->id }}">
+                                                    <td>{{ $category->id }}</td>
+                                                    <td>{{ $category->name }}</td>
+                                                    <td>{{ $category->slug }}</td>
                                                     <td>
-                                                        <a href="{{ route('admin.edit.product', $product->id) }}" class="btn btn-warning rounded">
+                                                        <a href="{{ route('admin.edit.category', $category->id) }}" class="btn btn-warning rounded">
                                                             <i class="fas fa-edit text-dark"></i>
                                                         </a>
-                                                        <a  href="#" class="btn btn-danger rounded delete-btn" data-id="{{ $product->id }}">
+                                                        <a  href="#" class="btn btn-danger rounded delete-btn" data-id="{{ $category->id }}">
                                                             <i class="fas fa-trash"></i>
                                                         </a>
                                                     </td>
@@ -158,7 +87,7 @@
                                         @else
                                                 
                                             <tr >
-                                                <td colspan="8" class="text-center">
+                                                <td colspan="4" class="text-center">
                                                     <p>No data found</p>
                                                 </td>
                                             </tr>
@@ -169,7 +98,7 @@
                 
                                 <!-- Pagination Links -->
                                 <div class="mt-2">
-                                    {{ $products->links('pagination::bootstrap-5') }}
+                                    {{ $categories->links('pagination::bootstrap-5') }}
                                 </div>
                             </div>
                         </div>
@@ -222,7 +151,7 @@
             if (itemIdToInactivate) {
                 console.log("Deleted");
                 $.ajax({
-                    url: '/admin/product/inactivate/' + itemIdToInactivate,
+                    url: '/admin/categories/inactivate/' + itemIdToInactivate,
                     type: 'PUT',  // Using PATCH method
                     data: {
                         '_token': $('meta[name="csrf-token"]').attr('content'),  // CSRF token

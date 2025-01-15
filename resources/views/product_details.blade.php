@@ -38,7 +38,7 @@
         <section class="py-5 shadow-lg" style="background: rgb(241, 240, 240)">
             <div class="container px-4 px-lg-5 " >
                 <div class="row gx-4 gx-lg-5 align-items-center">
-                    <div class="col-md-6"><img class="card-img-top mb-2 mb-md-0" src="{{ $products->image }}" alt="Product Image" /></div>
+                    <div class="col-md-6"><img class="card-img-top mb-2 mb-md-0 mt-md-0" src="{{ $products->image }}" alt="Product Image" /></div>
                     <div class="col-md-6">
                         <div class="small mb-1">SKU: {{ $products->sku }}</div>
                         <h1 class="display-5 fw-bolder">{{ $products->title }}</h1>
@@ -49,10 +49,10 @@
                             @endif
                             <span>₱ {{ $products->price }}</span>
                         </div>
-                        <div class="fs-5 mb-2 text-muted " >
+                        {{-- <div class="fs-5 mb-2 text-muted " >
                             <span class="" style="font-size: 15px">Stocks</span>
                             <span style="font-size: 15px">{{ $products->stock }}</span>
-                        </div>
+                        </div> --}}
                         <p class="lead">{{ $products->descrption }}</p>
                         <div class="d-flex mb-2  align-items-center m-0">
                             <div class="input-group d-flex" style="max-width: 8rem;">
@@ -150,7 +150,7 @@
                         <div class="col-12 col-md-6 col-lg-2 mb-2">
                             <div class="card" >
                                 <!-- Product image-->
-                                <img class="card-img-top" src="{{ $recommendedProduct->image }}" alt="Product Image" />
+                                <img  class="card-img-top p-2" src="{{ $recommendedProduct->image }}" alt="Product Image"  />
                                 <!-- Product details-->
                                 <div class="card-body p-4">
                                     <div class="text-center">

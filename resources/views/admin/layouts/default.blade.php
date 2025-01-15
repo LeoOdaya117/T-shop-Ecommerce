@@ -11,6 +11,8 @@
     
     <!-- Required meta tags -->
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ asset('admin/assets/vendor/bootstrap/css/bootstrap.min.css') }}">
@@ -91,55 +93,8 @@
     <script src="{{ asset('admin/assets/vendor/datatables/js/dataTables.bootstrap4.min.js') }}"></script>
     {{-- THIS IS THE data-table.js --}}
     {{-- <script src="{{ asset('admin/assets/vendor/datatables/js/data-table.js') }}"></script> --}}
+    {{-- <script src="asset('assets/js/products.js')"></script> --}}
 
-    <script>
-        jQuery(document).ready(function($) {
-                'use strict';
-    
-                
-                $.fn.dataTable.ext.errMode = 'throw';
-$('#product-table').DataTable({
-    processing: true,
-    serverSide: true,
-    ajax: '{{ route("admin.products.ajax") }}',
-    columns: [
-        { data: 'id' },
-        { data: 'title' },
-        { data: 'price' },
-        { data: 'color' },
-        { data: 'category' },
-        { data: 'brand' },
-        {
-            data: null,
-            name: 'action',
-            orderable: false,
-            searchable: false,
-            render: function(data, type, row) {
-                // Use the row id to create dynamic URLs for the actions
-                var editUrl = "{{ route('admin.edit.product', ':id') }}".replace(':id', row.id);
-                var deleteUrl = "/admin/product/delete/" + row.id;
-                
-                return `
-                    <a href="${editUrl}" class="btn btn-warning rounded">
-                        <i class="fas fa-edit text-dark"></i>
-                    </a>
-                    <a href="${deleteUrl}" class="btn btn-danger rounded">
-                        <i class="fas fa-trash"></i>
-                    </a>
-                `;
-            }
-        }
-    ]
-});
-
-
-                $('#customer-table').DataTable();
-                
-    
-    
-            });
-    
-    </script>
     {{-- <script src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
     <script src="admin/assets/vendor/datatables/js/buttons.bootstrap4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
