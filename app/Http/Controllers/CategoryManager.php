@@ -67,6 +67,24 @@ class CategoryManager extends Controller
 
     function create(Request $request)
     {
+        $request->validate([
+            'name'=>'required|string',
+            'slug'=>'required|string',
+            'image'=>'required|string',
+            'status'=>'required|string',
+        ]);
+
+        $category =new Category();
+        $category->name = $request->input('name');
+        $category->slug = $request->input('slug');
+        $category->image = $request->input('image');
+        $category->status = $request->input('status');
+
+        if($category->save()){
+            return response()->json(['success', "Category Successfully Saved."]);
+        }
+
+        return response()->json(['error', "Something went wrong"]);
 
     }
     function update(Request $request, $id){
