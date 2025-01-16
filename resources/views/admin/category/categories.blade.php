@@ -63,7 +63,7 @@
                             <div class="d-flex  align-items-center justify-content-between mb-2 ">
                                 <form method="GET" action="{{ route('admin.categories') }}" class="d-flex align-items-center position-relative">
                                     <!-- Search Input -->
-                                    <input type="text" name="search" value="{{ request('search') }}" class="form-control rounded-pill" placeholder="Search products..." style="max-width: 100%;">
+                                    <input type="text" name="search" value="{{ request('search') }}" class="form-control rounded-pill" placeholder="Search categories..." style="max-width: 100%;">
 
                                     <!-- Filter Button -->
                                     <button type="button" id="filterBtn" class="btn btn-primary ms-2"> <i class="fas fa-filter"></i> Filter</button>
@@ -92,7 +92,7 @@
                                 </form>
 
                                 <!-- Add New Product Button -->
-                                <a href="{{ route('admin.create.category') }}" class="btn btn-success rounded">
+                                <a href="{{ route('admin.category.createpage') }}" class="btn btn-success rounded">
                                     <i class="fas fa-plus"> Create</i>
                                 </a>
                             </div>
