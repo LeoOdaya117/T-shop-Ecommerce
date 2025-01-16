@@ -91,6 +91,8 @@ use Illuminate\Support\Facades\Route;
 
         //ADMIN ROUTES
         Route::get('dashboard', [AuthManager::class,'admin_Index'])->name("admin.dashboard");
+        Route::get('admin/sales-revenue', [OrderManager::class, 'getSalesAndRevenue'])
+        ->name('admin.getSalesAndRevenue');
         //ADMIN PRODUCTS
         Route::get('/products', [ProductsManager::class, 'getProducts'])->name('admin.products');
         Route::get('products/create',[ ProductsManager::class, 'showCreatePage'])
@@ -107,6 +109,8 @@ use Illuminate\Support\Facades\Route;
         // CATEGORIES ROUTE
         Route::get('/category', [CategoryManager::class, 'index'])->name('admin.categories');
         Route::get('category/create',[ CategoryManager::class, 'showCreatePage'])
+        ->name('admin.category.createpage');
+        Route::post('category/create',[CategoryManager::class, 'create'])
         ->name('admin.create.category');
         Route::get('/category/edit/{id}',[ CategoryManager::class, 'showEditPage'])
         ->name('admin.edit.category');

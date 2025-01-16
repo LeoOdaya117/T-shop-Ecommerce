@@ -30,8 +30,8 @@
     </style>
 @endsection
 @section("content")
-    @if (auth()->checked(true))
-        
+    @if (Auth::check())
+        <script>window.location.href = "{{ url('/') }}";</script>
     @endif
  
     <main class="form-signin m-auto">
