@@ -124,6 +124,7 @@
                                 <table id="product-table" class="table table-bordered">
                                     <thead>
                                         <tr class="text-center">
+                                            <th>#</th>
                                             <th>ID</th>
                                             <th>Title</th>
                                             <th>Price</th>
@@ -138,6 +139,7 @@
                                         @if ($products->count() > 0)
                                             @foreach($products as $product)
                                                 <tr class="text-center" id="tr_{{ $product->id }}">
+                                                    <td>{{ $loop->iteration }}</td>
                                                     <td>{{ $product->id }}</td>
                                                     <td>{{ $product->title }}</td>
                                                     <td>₱ {{ $product->price }}</td>

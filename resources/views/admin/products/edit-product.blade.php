@@ -198,7 +198,25 @@
             },
             error: function (xhr) {
                 $('#updateConfirmation').modal('hide');
-                $('#alert-container').html(`<div class="alert alert-danger">Failed to update product. Please try again.</div>`);
+                if (xhr.status === 422) {
+                        const errors = xhr.responseJSON.errors;
+                        let errorHtml = '<ul>';
+                        for (let field in errors) {
+                            errorHtml += `<li>${errors[field][0]}</li>`;
+                        }
+                        errorHtml += '</ul>';
+                        $('#alert-container').html(`
+                            <div class="alert alert-danger">
+                                ${errorHtml}
+                            </div>
+                        `);
+                    } else {
+                        $('#alert-container').html(`
+                            <div class="alert alert-danger">
+                                Something went wrong. Please try again.
+                            </div>
+                        `);
+                    }
             }
         });
     });

@@ -16,12 +16,15 @@ class ProductsManager extends Controller
 {
     
     function showProducts(){
-        $products = Products::paginate(12);
+        $products = Products::where('status', 'active')
+        ->paginate(12);
         return view('products', compact('products'));
     }
     function showProductsByCategory( $categoryId){
         $categoryId =(int) $categoryId;
-        $products = Products::where('category', $categoryId)->paginate(12); 
+        $products = Products::where('category', $categoryId)
+        ->where('status', 'active')
+        ->paginate(12); 
         $categories = Category::select('name')->where('id', $categoryId)->get();
 
         return view('products', compact('products', 'categories'));
@@ -36,16 +39,19 @@ class ProductsManager extends Controller
 
     function searchProduct(Request $request){
         $search = $request->get('search');
-        $products = Products::where('title', 'like', '%'.$search.'%')->paginate(20);
+        $products = Products::where('title', 'like', '%'.$search.'%')
+        ->where('status', 'active')
+        ->paginate(20);
         return view('products', compact('products'));
     }
 
     public function index()
     {
         
-        $products = Products::paginate(8);
+        $products = Products::where('status', 'active')
+        ->paginate(8);
         $popularProducts = collect(); // Initialize as an empty collection
-        $categories = Category::all();
+        $categories = Category::where('status', 'active')->get();
         $cartItemCount = 0;
         $popularProducts = $this->getPopularProducts();
         if (auth()->check()) {
@@ -89,7 +95,8 @@ class ProductsManager extends Controller
         $topProductIds = array_slice(array_keys($productQuantities), 0, 12);
 
         // Fetch the products based on the top product IDs
-        $popularProducts = Products::whereIn('id', $topProductIds)->get();
+        $popularProducts = Products::where('status', 'active')
+        ->whereIn('id', $topProductIds)->get();
 
         return $popularProducts;
     }
@@ -98,7 +105,7 @@ class ProductsManager extends Controller
     {
         $skip = (int) $request->skip;
         $take = 8; // Number of products to load per request
-        $products = Products::skip($skip)->take($take)->get();
+        $products = Products::where('status', 'active')->skip($skip)->take($take)->get();
         $totalProducts = Products::count();
 
         $hasMore = ($skip + $take) < $totalProducts;
@@ -119,7 +126,7 @@ class ProductsManager extends Controller
 
     public function getProducts(Request $request)
     {
-        $categories = Category::all();
+        $categories = Category::where('status', 'active')->get();
     
         // Retrieve filter inputs
         $search = $request->input('search');
@@ -158,15 +165,11 @@ class ProductsManager extends Controller
         }
     
         // Fetch paginated results
-        $products = $products->paginate(10);
+        $products = $products->orderBy('title', 'ASC')
+        ->paginate(10);
     
         return view('admin.products.manage-products', compact('products', 'categories'));
     }
-    
-
-    
-
-    
     
 
 
@@ -176,10 +179,20 @@ class ProductsManager extends Controller
         $categories = Category::all();
         return view("admin.products.edit-product", compact('productInfo','categories'));
     }
-    function updateProductData(Request $request, $id){
+    function update(Request $request, $id){
 
         $request->validate([
-            'price' => 'required|numeric|min:0',
+            'title' => 'required|string',
+            'slug' => 'required|string',
+            'description' => 'required|string',
+            'image' => 'required|string',
+            'price' => 'required|numeric',
+            'sku' => 'required|string',
+            'category' => 'required|integer',
+            'brand' => 'required|string',
+            'size' => 'required|string',
+            'color' => 'required|string',
+            'status' => 'required|string',
             
         ]);
         
@@ -220,6 +233,48 @@ class ProductsManager extends Controller
         $categories = Category::all();
         return view('admin.products.create-product',compact('categories'));
     }
+
+    function create(Request $request){
+        $request->validate([
+            'title' => 'required|string',
+            'slug' => 'required|string',
+            'description' => 'required|string',
+            'image' => 'required|string',
+            'price' => 'required|numeric',
+            'sku' => 'required|string',
+            'category' => 'required|integer',
+            'brand' => 'required|string',
+            'size' => 'required|string',
+            'color' => 'required|string',
+            'status' => 'required|string',
+
+        ]);
+
+        $product = new Products();
+        $product->title = $request->input('title');
+        $product->descrption = $request->input('description');
+        $product->slug = $request->input('slug');
+        $product->image = $request->input('image'); 
+        $product->price = $request->input('price');
+        $product->sku = $request->input('sku');
+        $product->category = $request->input('category');
+        $product->brand = $request->input('brand');
+        $product->size = $request->input('size');
+        $product->color = $request->input('color');
+        $product->stock = 0;  
+        $product->discount = 0.00;
+        $product->status = $request->input('status');
+
+        if($product->save()){
+            return response()->json(['success' => 'Product created successfully.']);
+        }
+
+        return response()->json(['error' => 'Scomething went wrong.']);
+         
+    }
+
+
+    
 
     
     

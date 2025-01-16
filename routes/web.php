@@ -95,20 +95,23 @@ use Illuminate\Support\Facades\Route;
         Route::get('/products', [ProductsManager::class, 'getProducts'])->name('admin.products');
         Route::get('products/create',[ ProductsManager::class, 'showCreatePage'])
         ->name('admin.create.product');
-
+        Route::post('products/create',[ProductsManager::class, 'create'])
+        ->name('admin.product.create');
         Route::get('/product/edit/{id}',[ ProductsManager::class, 'showEditPage'])
         ->name('admin.edit.product');
-        Route::put('admin/product/update/{id}', [ProductsManager::class, 'updateProductData'])
+        Route::put('admin/product/update/{id}', [ProductsManager::class, 'update'])
         ->name('admin.update.product');
         Route::put('/admin/product/inactivate/{id}', [ProductsManager::class, 'setInactiveProduct']);
 
 
         // CATEGORIES ROUTE
-        Route::get('category', [CategoryManager::class, 'index'])->name('admin.categories');
-        Route::get('category/create',[ ProductsManager::class, 'showCreatePage'])
+        Route::get('/category', [CategoryManager::class, 'index'])->name('admin.categories');
+        Route::get('category/create',[ CategoryManager::class, 'showCreatePage'])
         ->name('admin.create.category');
-        Route::get('/category/edit/{id}',[ ProductsManager::class, 'showEditPage'])
+        Route::get('/category/edit/{id}',[ CategoryManager::class, 'showEditPage'])
         ->name('admin.edit.category');
+        Route::put('admin/category/update/{id}', [CategoryManager::class, 'update'])
+        ->name('admin.update.category');
         Route::put('/admin/categories/inactivate/{id}', [CategoryManager::class, 'setInactiveCategories']);
         
         Route::get('inventory', 

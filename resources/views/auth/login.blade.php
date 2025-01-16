@@ -30,6 +30,9 @@
     </style>
 @endsection
 @section("content")
+    @if (auth()->checked(true))
+        
+    @endif
  
     <main class="form-signin m-auto">
         

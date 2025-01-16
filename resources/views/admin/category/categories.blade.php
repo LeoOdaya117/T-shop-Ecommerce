@@ -1,7 +1,26 @@
 @extends('admin.layouts.default')
 @section('title', 'Categories')
+
 @section('content')
 <main>
+    <style>
+        #filterDropdown {
+            position: absolute; /* Position it below the search input */
+            top: 100%; /* Align it right below the input */
+            left: 0;
+            width: 100%; /* Make sure it spans the width of the input */
+            z-index: 1050; /* Set a higher z-index so it stays above other content */
+            max-height: auto; /* Set a max height to avoid overflow */
+            overflow-y: auto; /* Enable scrolling if content exceeds max height */
+            border: 1px solid #ddd; /* Optional: border for the dropdown */
+            border-radius: 5px; /* Optional: rounded corners */
+        }
+
+        /* Dropdown Items */
+        #filterDropdown select {
+            width: 100%; /* Ensure select boxes take the full width */
+        }
+    </style>
 
     <!-- ============================================================== -->
     <!-- wrapper  -->
@@ -47,8 +66,29 @@
                                     <input type="text" name="search" value="{{ request('search') }}" class="form-control rounded-pill" placeholder="Search products..." style="max-width: 100%;">
 
                                     <!-- Filter Button -->
-                                    <button type="button" id="filterBtn" class="btn btn-primary ms-2"> Search</button>
-           
+                                    <button type="button" id="filterBtn" class="btn btn-primary ms-2"> <i class="fas fa-filter"></i> Filter</button>
+                                    
+                                    
+                                    <!-- Filter Dropdown -->
+                                    <div id="filterDropdown" class="d-none position-absolute bg-white border shadow rounded p-3 mt-2" style="max-width: 350px; left: 0;">
+                                        <!-- Close Button Inside the Dropdown -->
+                                        
+                                        <form method="GET" action="{{ route('admin.categories') }}" class="d-flex flex-column">
+                                                       
+                                            <!-- Status Filter -->
+                                            <select name="status" class="form-control rounded-pill mb-2">
+                                                <option value="">Select Status</option>
+                                                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                            </select>
+
+                                            <!-- Submit Button -->
+                                            <div class="d-flex">
+                                                <button type="submit" class="btn btn-primary rounded-pill mr-1">Apply Filters</button>
+                                                <button type="button" id="closeFilterDropdown" class="btn btn-secondary rounded-pill w-100">Close</button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </form>
 
                                 <!-- Add New Product Button -->
@@ -64,6 +104,7 @@
                                             <th>ID</th>
                                             <th>Category Name</th>
                                             <th>Slug</th>
+                                            <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -74,6 +115,7 @@
                                                     <td>{{ $category->id }}</td>
                                                     <td>{{ $category->name }}</td>
                                                     <td>{{ $category->slug }}</td>
+                                                    <td>{{ $category->status }}</td>
                                                     <td>
                                                         <a href="{{ route('admin.edit.category', $category->id) }}" class="btn btn-warning rounded">
                                                             <i class="fas fa-edit text-dark"></i>
