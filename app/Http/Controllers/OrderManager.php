@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Orders;
 use App\Models\Products;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Stripe\Exception\SignatureVerificationException;
 use Stripe\StripeClient;
@@ -213,5 +214,64 @@ class OrderManager extends Controller
         }
 
     }
+
+
+    function getSalesAndRevenue()
+    {
+        //Total number of Customer
+        $totalNumberOfCustomer = User::where('is_admin', false)->count();
+        // Total orders
+        $totalOrders = Orders::count();
+    
+        // Total revenue
+        $totalRevenue = Orders::sum('total_price');
+    
+        // Revenue by category
+        $revenueByCategory = DB::table('products')
+        ->select('category.name as category_name', DB::raw('SUM(products.price * oq.quantity) as revenue'))
+        ->join('category', 'products.category', '=', 'category.id') // Join category table
+        ->join(DB::raw('(
+            SELECT 
+                o.id as order_id,
+                JSON_UNQUOTE(JSON_EXTRACT(o.product_id, CONCAT("$[", idx, "]"))) as product_id,
+                JSON_UNQUOTE(JSON_EXTRACT(o.quantity, CONCAT("$[", idx, "]"))) as quantity
+            FROM orders o
+            CROSS JOIN (SELECT 0 idx UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5) indices
+            WHERE JSON_LENGTH(o.product_id) > idx
+        ) as oq'), 'products.id', '=', 'oq.product_id')
+        ->groupBy('category.name') // Group by category name
+        ->get();
+
+    
+        $revenueByYear = DB::table('orders')
+        ->select(DB::raw('YEAR(created_at) as year'), DB::raw('SUM(total_price) as total_revenue'))
+        ->groupBy(DB::raw('YEAR(created_at)'))
+        ->orderBy('year', 'desc') // Orders the results by year in descending order
+        ->get();
+
+             // Prepare data for chart.js
+        $year = $revenueByCategory->pluck('year');
+        $year_revenue = $revenueByCategory->pluck('total_revenue');
+        
+        $categories = $revenueByCategory->pluck('category_name');
+        $revenues = $revenueByCategory->pluck('revenue');
+    
+        // Total sales (total items sold across all orders)
+        $totalSales = Orders::selectRaw('SUM(JSON_LENGTH(product_id)) as total_sales')->value('total_sales');
+
+    
+            return response()->json([
+                'total_customer' => $totalNumberOfCustomer,
+                'total_orders' => $totalOrders,
+                'total_revenue' => $totalRevenue,
+                'revenue_by_category' => $revenueByCategory,
+                'total_sales' => $totalSales,
+                'categories' => $categories,
+                'revenues' => $revenues,
+                'revenue_by_year' =>  $revenueByYear, 
+     
+            ]);
+    }
+    
 
 }
