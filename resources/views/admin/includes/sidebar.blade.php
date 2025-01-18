@@ -49,6 +49,9 @@
                                                 <a class="nav-link" href="{{ route('admin.categories') }}">Categories</a>
                                             </li>
                                             <li class="nav-item">
+                                                <a class="nav-link" href="{{ route('admin.brands') }}">Brands</a>
+                                            </li>
+                                            <li class="nav-item">
                                                 <a class="nav-link" href="{{ route('admin.inventory') }}">Inventory</a>
                                             </li>
                                             <li class="nav-item">
@@ -59,7 +62,7 @@
                                     </div>
                                 </li>
                                 {{-- PAYMENT MENU --}}
-                                <li class="nav-item">
+                                {{-- <li class="nav-item">
                                     <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#payment-menu" aria-controls="submenu-6"><i class="fas fa-fw fa-file"></i> Payment </a>
                                     <div id="payment-menu" class="collapse submenu" style="">
                                         <ul class="nav flex-column">
@@ -72,21 +75,16 @@
                                             
                                         </ul>
                                     </div>
-                                </li>
+                                </li> --}}
                                 {{-- ORDERS MENU --}}
                                 <li class="nav-item">
                                     <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#order-menu" aria-controls="submenu-6"><i class="fas fa-fw fa-file"></i> Orders </a>
                                     <div id="order-menu" class="collapse submenu" style="">
                                         <ul class="nav flex-column">
                                             <li class="nav-item">
-                                                <a class="nav-link" href="{{ route('admin.dashboard') }}">Order List</a>
+                                                <a class="nav-link" href="{{ route('admin.orders') }}">Orders</a>
                                             </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="{{ route('admin.dashboard') }}">Order Deatails</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="{{ route('admin.dashboard') }}">Track Orders</a>
-                                            </li>
+                                          
                                             
                                         </ul>
                                     </div>

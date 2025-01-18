@@ -17,13 +17,13 @@
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="page-header">
-                                <h2 class="pageheader-title">Manage Products </h2>
+                                <h2 class="pageheader-title">Products </h2>
                                 <div class="page-breadcrumb">
                                     <nav aria-label="breadcrumb">
                                         <ol class="breadcrumb">
                                             <li class="breadcrumb-item"><a href="{{ route('admin.products') }}" class="breadcrumb-link">Products</a></li>
-                                            <li class="breadcrumb-item"><a href="{{ route('admin.products') }}" class="breadcrumb-link">Manage Products</a></li>
-                                            <li class="breadcrumb-item active" aria-current="page">Add Product</li>
+                                            <li class="breadcrumb-item"><a href="{{ route('admin.products') }}" class="breadcrumb-link">Product List</a></li>
+                                            <li class="breadcrumb-item active" aria-current="page">Add New Product</li>
                                         </ol>
                                     </nav>
                                 </div>
@@ -61,7 +61,7 @@
                                     <form action="{{ route('admin.product.create') }}" method="POST" id="createProductForm" style="color: black;">
                                         @csrf
                                         @method('POST')
-                                        <div class="row  g-0">
+                                        <div class="row ">
                                             
                                             <div class="col">
                                                 <div class="row d-block">
@@ -94,13 +94,14 @@
                                             </div>
                                             <div class="col">
                                                 <div class="form-group">
-                                                    <label for="inputText3" class="col-form-label" style="color: black;">SKU</label>
-                                                    <input name="sku"  type="text" class="form-control">
+                                                    <label for="inputText3" class="col-form-label">Price</label>
+                                                    <input name="price" type="text" class="form-control" placeholder="0.00">
                                                 </div>
                                                 
                                                 <div class="form-group">
                                                     <label for="inputText3" class="col-form-label">Category</label>
                                                     <select name="category" class="form-control" id="input-select">
+                                                        <option selected disabled>Choose Category</option>
                                                         @foreach ($categories as $category)
                                                             <option value="{{ $category->id }}" >
                                                                 {{ $category->name }}
@@ -110,7 +111,14 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="inputText3" class="col-form-label">Brand</label>
-                                                    <input name="brand"  type="text" class="form-control">
+                                                    <select name="brand" class="form-control" id="input-select">
+                                                        <option selected disabled>Choose Brand</option>
+                                                        @foreach ($brands as $brand)
+                                                            <option value="{{ $brand->id }}" >
+                                                                {{ $brand->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="inputText3" class="col-form-label">Color</label>
@@ -119,6 +127,7 @@
                                                 <div class="form-group">
                                                     <label for="inputText3" class="col-form-label">Size</label>
                                                     <select name="size" class="form-control">
+                                                        <option selected disabled>Choose Size</option>
                                                         <option value="S" >Small</option>
                                                         <option value="M" >Medium</option>
                                                         <option value="L" >Large</option>
@@ -128,20 +137,23 @@
                                                 </div>
                                             </div>
                                             <div class="col">
-                                                <div class="form-group">
-                                                    <label for="inputText3" class="col-form-label">Price</label>
-                                                    <input name="price" type="text" class="form-control" >
-                                                </div>
+                                                
                                                 <div class="form-group">
                                                     <label for="inputText3" class="col-form-label">Status</label>
                                                     <select name="status" class="form-control">
+                                                        <option selected disabled>Choose Status</option>
                                                         <option value="active" >Active</option>
                                                         <option value="inactive" >Inactive</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
+                                                    <label for="inputText3" class="col-form-label">Discount</label>
+                                                    <input name="discount" type="text" class="form-control" placeholder="0.00" value="0">
+                                                </div>
+
+                                                <div class="form-group">
                                                     <label for="inputText3" class="col-form-label">Description</label>
-                                                    <textarea class="form-control" name="description" rows="11"></textarea>
+                                                    <textarea class="form-control" name="description" rows="9"></textarea>
                                                 </div>
                                             </div>
                                             

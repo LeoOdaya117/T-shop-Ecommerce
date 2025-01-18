@@ -41,7 +41,9 @@ class AuthManager extends Controller
         return view("auth.forgot-password");
     }
     function admin_Index(){
-        return view("admin.dashboard");
+        $OrderManager = new OrderManager();
+        $recentOrders = $OrderManager->getRecentOrders();
+        return view("admin.dashboard", compact('recentOrders'));
     }
     function loginPost(Request $request){
         $request->validate([

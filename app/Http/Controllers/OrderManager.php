@@ -105,7 +105,8 @@ class OrderManager extends Controller
         $order->product_id = json_encode($productIds);
         $order->quantity = json_encode($quantities);
         $order->total_price = $totalPrice;
-        $order->status = "pending";
+        $order->order_status = "Order Placed";
+        $order->payment_status = "Order Placed";
         $order->address2 = $request->address2;
         $order->state = $request->province;
         $order->city = "none";
@@ -189,7 +190,7 @@ class OrderManager extends Controller
             
             if ($order) {
                 $order->payment_id = $paymentID;
-                $order->status = 'completed';
+                $order->payment_status = 'completed';
                 $order->save();
             }
         }
@@ -207,7 +208,7 @@ class OrderManager extends Controller
         }
         else{
             $orders = Orders::where('user_id', auth()->user()->id, 'and')
-            ->where('status', $status)
+            ->where('order_status', $status)
             ->orderBy('created_at', 'desc')
             ->paginate(6);
             return view('order_history', compact('orders'));
@@ -224,7 +225,7 @@ class OrderManager extends Controller
         $totalOrders = Orders::count();
     
         // Total revenue
-        $totalRevenue = Orders::sum('total_price');
+        $totalRevenue = Orders::where('payment_status', 'completed')->sum('total_price');
     
         // Revenue by category
         $revenueByCategory = DB::table('products')
@@ -258,7 +259,7 @@ class OrderManager extends Controller
     
         // Total sales (total items sold across all orders)
         $totalSales = Orders::selectRaw('SUM(JSON_LENGTH(product_id)) as total_sales')->value('total_sales');
-
+        $recentOrder = Orders::orderBy('created_at', 'desc')->take(10)->get();
     
             return response()->json([
                 'total_customer' => $totalNumberOfCustomer,
@@ -269,9 +270,86 @@ class OrderManager extends Controller
                 'categories' => $categories,
                 'revenues' => $revenues,
                 'revenue_by_year' =>  $revenueByYear, 
-     
+                
+                'recentOrder' =>  $recentOrder, 
             ]);
+    }
+
+    function getRecentOrders(){
+        $recentOrders = Orders::where('order_status', 'Order Placed')
+        ->orderBy('created_at', 'desc')->take(5)->get();
+    
+
+        return $recentOrders;
     }
     
 
+    function index(Request $request){
+         // Retrieve filter inputs
+         $search = $request->input('search');
+         $order_status = $request->input('order_status');
+     
+         // Build the query
+         $orders = Orders::query();
+     
+         // Apply search filter
+         if ($search) {
+             $orders->where(function ($query) use ($search) {
+                 $query->where('id', 'like', '%' . $search . '%')
+                       ->orWhere('fname', 'like', '%' . $search . '%');
+             });
+         }
+  
+     
+         // Apply status filter
+         if ($order_status) {
+             $orders->where('order_status', $order_status);
+         }
+        $orders = $orders->orderBy('created_at', 'Desc')->paginate(10);
+
+        return view('admin.orders.orders', compact('orders'));
+    }
+    function update(Request $request, $id){
+        $order = Orders::findOrFail($id);
+        $order->order_status = $request->input('order_status');
+        
+        if($order->save()){
+           
+            return redirect()->intended(route('admin.orders.details', $id))
+                ->with("success", "Order Status Successfully Updated.");
+        }
+        return redirect()->intended(route('admin.orders.details' , $id))
+                ->with("error", "Something went wrong");
+    }
+    function create(Request $request){
+        
+    }
+
+    function delete($id){
+        $order = Orders::find($id);
+        
+        if($order){
+            $order->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Order Successfully deleted.',
+            ]);
+        }
+
+        return response()->json([
+            'error' => true,
+            'message' => 'Something went wrong.',
+        ]);
+
+
+
+    }
+
+    function showOrderDetails($id){
+
+        $orderInfo = Orders::find($id);
+
+
+        return view('admin.orders.order-details', compact('orderInfo'));
+    }
 }

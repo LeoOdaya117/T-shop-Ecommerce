@@ -62,7 +62,7 @@
                         <li>
                             <a class="dropdown-item"  href="{{ route('home') }}">Wishlist</a>
                         </li>
-                        <li><a class="dropdown-item w-100" href="{{ route('order.history', ['status'=> 'completed'] ) }}">Order History</a></li>
+                        <li><a class="dropdown-item w-100" href="{{ route('order.history', ['status'=> 'all'] ) }}">Order History</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{{ route('logout') }}">Logout</a></li>
                     </ul>

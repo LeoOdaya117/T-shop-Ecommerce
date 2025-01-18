@@ -14,8 +14,11 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="statusDropdown">
                             <li><a class="dropdown-item" href="{{ route('order.history', ['status' => 'all']) }}">All</a></li>
-                            <li><a class="dropdown-item" href="{{ route('order.history', ['status' => 'completed']) }}">Completed</a></li>
-                            <li><a class="dropdown-item" href="{{ route('order.history', ['status' => 'pending']) }}">Pending</a></li>
+                            <li><a class="dropdown-item" href="{{ route('order.history', ['status' => 'Delivered']) }}">Delivered</a></li>
+                            <li><a class="dropdown-item" href="{{ route('order.history', ['status' => 'Shipped']) }}">Shipped</a></li>
+                            <li><a class="dropdown-item" href="{{ route('order.history', ['status' => 'Processing']) }}">Processing</a></li>
+                            <li><a class="dropdown-item" href="{{ route('order.history', ['status' => 'Cancelled']) }}">Cancelled</a></li>
+
                         </ul>
                     </div>
                 </div>
@@ -33,18 +36,21 @@
                                 <p class="card-text">
                                     <strong>Status:</strong> 
                                     <span class="
-                                        @if($order->status == 'completed')
+                                        @if($order->order_status == 'Delivered')
                                             bg-success text-white
-                                        @elseif($order->status == 'pending')
+                                        @elseif($order->order_status == 'Shipped')
+                                            bg-info text-dark
+                                        @elseif($order->order_status == 'Processing')
                                             bg-warning text-dark
-                                        @elseif($order->status == 'cancelled')
+
+                                        @elseif($order->order_status == 'Cancelled')
                                             bg-danger text-white
                                         @else
                                             bg-secondary text-white
                                         @endif
                                         p-1 rounded
                                     " >
-                                        {{ strtoupper($order->status) }}
+                                        {{ $order->order_status }}
                                     </span>
                                 </p>
                                 {{-- <a href="{{ route('order.details', $order->id) }}" class="btn btn-primary btn-sm mt-auto">View</a> --}}

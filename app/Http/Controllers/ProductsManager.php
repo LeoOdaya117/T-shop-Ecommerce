@@ -18,7 +18,12 @@ class ProductsManager extends Controller
     function showProducts(){
         $products = Products::where('status', 'active')
         ->paginate(12);
-        return view('products', compact('products'));
+        $categoryManager = new CategoryManager();
+        $categories = $categoryManager->getCategory();
+        $brandManager = new BrandController();
+        $brands = $brandManager->getBrands();
+
+        return view('products', compact('products','categories','brands'));
     }
     function showProductsByCategory( $categoryId){
         $categoryId =(int) $categoryId;
@@ -26,8 +31,9 @@ class ProductsManager extends Controller
         ->where('status', 'active')
         ->paginate(12); 
         $categories = Category::select('name')->where('id', $categoryId)->get();
-
-        return view('products', compact('products', 'categories'));
+        $brandManager = new BrandController();
+        $brands = $brandManager->getBrands();
+        return view('products', compact('products', 'categories','brands'));
     }
     
     function showDetails($slug){
@@ -51,7 +57,13 @@ class ProductsManager extends Controller
         $products = Products::where('status', 'active')
         ->paginate(8);
         $popularProducts = collect(); // Initialize as an empty collection
-        $categories = Category::where('status', 'active')->get();
+
+        $categoryManager = new CategoryManager();
+        $categories = $categoryManager->getCategory();
+
+        $brandManager = new BrandController();
+        $brands = $brandManager->getBrands();
+
         $cartItemCount = 0;
         $popularProducts = $this->getPopularProducts();
         if (auth()->check()) {
@@ -62,7 +74,7 @@ class ProductsManager extends Controller
             
         }
 
-        return view('home', compact('products', 'popularProducts', 'categories', 'cartItemCount'));
+        return view('home', compact('products', 'popularProducts', 'categories', 'cartItemCount', 'brands'));
     }
 
     private function getPopularProducts()
@@ -126,7 +138,8 @@ class ProductsManager extends Controller
 
     public function getProducts(Request $request)
     {
-        $categories = Category::where('status', 'active')->get();
+        $categoryManager = new CategoryManager();
+        $categories = $categoryManager->getCategory();
     
         // Retrieve filter inputs
         $search = $request->input('search');
@@ -176,8 +189,11 @@ class ProductsManager extends Controller
     function showEditPage($id) {
         $productInfo = Products::where('id',$id)
         ->first();
-        $categories = Category::all();
-        return view("admin.products.edit-product", compact('productInfo','categories'));
+        $categoryManager = new CategoryManager();
+        $categories = $categoryManager->getCategory();
+        $brandManager = new BrandController();
+        $brands = $brandManager->getBrands();
+        return view("admin.products.edit-product", compact('productInfo','categories','brands'));
     }
     function update(Request $request, $id){
 
@@ -187,7 +203,7 @@ class ProductsManager extends Controller
             'description' => 'required|string',
             'image' => 'required|string',
             'price' => 'required|numeric',
-            'sku' => 'required|string',
+            'discount' => 'required|numeric',
             'category' => 'required|integer',
             'brand' => 'required|string',
             'size' => 'required|string',
@@ -200,12 +216,12 @@ class ProductsManager extends Controller
 
         $product->title = $request->input('title');
         $product->slug = $request->input('slug');
-        $product->sku = $request->input('sku');
         $product->category = $request->input('category');
         $product->brand = $request->input('brand');
         $product->color = $request->input('color');
         $product->size = $request->input('size');
         $product->price = $request->input('price');
+        $product->discount = $request->input('discount');
         $product->descrption = $request->input('description');
         $product->image = $request->input('image');
         $product->status = $request->input('status');
@@ -230,8 +246,11 @@ class ProductsManager extends Controller
     }
 
     function showCreatePage(){
-        $categories = Category::all();
-        return view('admin.products.create-product',compact('categories'));
+        $categoryManager = new CategoryManager();
+        $categories = $categoryManager->getCategory();
+        $brandManager = new BrandController();
+        $brands = $brandManager->getBrands();
+        return view('admin.products.create-product',compact('categories','brands'));
     }
 
     function create(Request $request){
@@ -241,7 +260,7 @@ class ProductsManager extends Controller
             'description' => 'required|string',
             'image' => 'required|string',
             'price' => 'required|numeric',
-            'sku' => 'required|string',
+            'discount' => 'required|numeric',
             'category' => 'required|integer',
             'brand' => 'required|string',
             'size' => 'required|string',
@@ -256,13 +275,12 @@ class ProductsManager extends Controller
         $product->slug = $request->input('slug');
         $product->image = $request->input('image'); 
         $product->price = $request->input('price');
-        $product->sku = $request->input('sku');
         $product->category = $request->input('category');
         $product->brand = $request->input('brand');
         $product->size = $request->input('size');
         $product->color = $request->input('color');
         $product->stock = 0;  
-        $product->discount = 0.00;
+        $product->discount = $request->input('discount');
         $product->status = $request->input('status');
 
         if($product->save()){

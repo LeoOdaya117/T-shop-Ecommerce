@@ -17,13 +17,13 @@
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="page-header">
-                                <h2 class="pageheader-title">Category </h2>
+                                <h2 class="pageheader-title">Brands </h2>
                                 <div class="page-breadcrumb">
                                     <nav aria-label="breadcrumb">
                                         <ol class="breadcrumb">
-                                            <li class="breadcrumb-item"><a href="" class="breadcrumb-link">Category</a></li>
-                                            <li class="breadcrumb-item"><a href="{{ route('admin.categories') }}" class="breadcrumb-link">Category List</a></li>
-                                            <li class="breadcrumb-item active" aria-current="page">Add New Category</li>
+                                            <li class="breadcrumb-item"><a href="" class="breadcrumb-link">Products</a></li>
+                                            <li class="breadcrumb-item"><a href="{{ route('admin.brands') }}" class="breadcrumb-link">Brands List</a></li>
+                                            <li class="breadcrumb-item active" aria-current="page">Add nNw Brands</li>
                                         </ol>
                                     </nav>
                                 </div>
@@ -39,7 +39,7 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="card">
                             <h5 class="card-header ">
-                               Category Form
+                               Brands Form
                                 
                             </h5>
                             
@@ -49,7 +49,7 @@
 
                                     <div id="alert-container"></div>
 
-                                    <form action="{{ route('admin.create.category') }}" method="POST" id="createCategoryForm" style="color: black;">
+                                    <form action="{{ route('admin.create.brand') }}" method="POST" id="createBrandForm" style="color: black;">
                                         @csrf
                                         @method('POST')
                                         <div class="row  g-0">
@@ -57,11 +57,11 @@
                                             <div class="col-3">
                                                 <div class="row d-block">
                                                     <div class="col">
-                                                        <h5 for="inputText3" class="col-form-label">Category Image</h5>
+                                                        <h5 for="inputText3" class="col-form-label">Brand Image</h5>
                                                     </div>
                                                     <div class="col">
                                                         <div class="form-group">
-                                                            <img class="border border-dark" id="image-container" src="{{  asset('assets/image/no-product-image.png')}}" alt="" height="200" width="auto">
+                                                            <img class="border border-dark" id="image-container" src="{{  asset('assets/image/no-product-image.png')}}" alt="" height="200" width="200">
                                                         </div>
                                                     </div>
 
@@ -70,7 +70,7 @@
                                                    
                                             <div class="col-9">
                                                 <div class="form-group">
-                                                    <label for="inputText3" class="col-form-label" style="color: black;">Category Name</label>
+                                                    <label for="inputText3" class="col-form-label" style="color: black;">Brand Name</label>
                                                     <input name="name" id="name"  type="text" class="form-control" ">
                                                 </div>
                                                 <div class="form-group">
@@ -114,9 +114,9 @@
 
     @include('partials.modal', [
         'id' => 'createConfirmation',
-        'title' => 'Create Category Confirmation',
+        'title' => 'Create Brand Confirmation',
         'body' => '
-            <p>Are you sure you want to save this category? This action cannot be undone.</p>
+            <p>Are you sure you want to save this brand? This action cannot be undone.</p>
         ',
         'footer' => '
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -132,7 +132,7 @@
     <script>
 
         $('#openModal').on('click', function () {
-            console.log('Modal open button clicked');
+           
             $('#createConfirmation').modal('show');
         });
        
@@ -156,7 +156,7 @@
         }
 
         $('#confirmSave').on('click', function () {
-            const form = $('#createCategoryForm');
+            const form = $('#createBrandForm');
             const formData = new FormData(form[0]);
 
             $.ajax({
@@ -167,7 +167,7 @@
                 contentType: false,
                 beforeSend: function () {
                     $('#alert-container').html(`
-                        <div class="spinner-border text-primary"></div> Saving...
+                        <div class="spinner-border text-primary">Saving...</div> 
                     `);
                 },
                 success: function (response) {

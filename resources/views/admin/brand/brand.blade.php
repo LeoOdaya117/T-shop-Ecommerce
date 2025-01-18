@@ -34,12 +34,12 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-header">
-                            <h2 class="pageheader-title">Categories </h2>
+                            <h2 class="pageheader-title">Brands </h2>
                             <div class="page-breadcrumb">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Category</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">Manage Cateogries</li>
+                                        <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Brands</a></li>
+                                        <li class="breadcrumb-item active" aria-current="page">Brand List</li>
                                     </ol>
                                 </nav>
                             </div>
@@ -55,15 +55,17 @@
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                     <div class="card">
                         <h5 class="card-header d-flex justify-content-between align-items-center">
-                            Category List
+                            Brands List
                         </h5>
                         
                         <div class="card-body">
+                            <div id="alert-container"></div>
+
                             <!-- Form with Search and Filter -->
                             <div class="d-flex  align-items-center justify-content-between mb-2 ">
-                                <form method="GET" action="{{ route('admin.categories') }}" class="d-flex align-items-center position-relative">
+                                <form method="GET" action="{{ route('admin.brands') }}" class="d-flex align-items-center position-relative">
                                     <!-- Search Input -->
-                                    <input type="text" name="search" value="{{ request('search') }}" class="form-control rounded-pill" placeholder="Search categories..." style="max-width: 100%;">
+                                    <input type="text" name="search" value="{{ request('search') }}" class="form-control rounded-pill" placeholder="Search brands..." style="max-width: 100%;">
 
                                     <!-- Filter Button -->
                                     <button type="button" id="filterBtn" class="btn btn-primary ms-2"> <i class="fas fa-filter"></i> Filter</button>
@@ -92,7 +94,7 @@
                                 </form>
 
                                 <!-- Add New Product Button -->
-                                <a href="{{ route('admin.category.createpage') }}" class="btn btn-success rounded">
+                                <a href="{{ route('admin.brand.createpage') }}" class="btn btn-success rounded">
                                     <i class="fas fa-plus"> Create</i>
                                 </a>
                             </div>
@@ -102,25 +104,25 @@
                                     <thead>
                                         <tr class="text-center">
                                             <th>ID</th>
-                                            <th>Category Name</th>
+                                            <th>Brand Name</th>
                                             <th>Slug</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if ($categories->count() > 0)
-                                            @foreach($categories as $category)
-                                                <tr class="text-center" id="tr_{{ $category->id }}">
-                                                    <td>{{ $category->id }}</td>
-                                                    <td>{{ $category->name }}</td>
-                                                    <td>{{ $category->slug }}</td>
-                                                    <td>{{ $category->status }}</td>
+                                        @if ($brands->count() > 0)
+                                            @foreach($brands as $brand)
+                                                <tr class="text-center" id="tr_{{ $brand->id }}">
+                                                    <td>{{ $brand->id }}</td>
+                                                    <td>{{ $brand->name }}</td>
+                                                    <td>{{ $brand->slug }}</td>
+                                                    <td>{{ $brand->status }}</td>
                                                     <td>
-                                                        <a href="{{ route('admin.edit.category', $category->id) }}" class="btn btn-warning rounded">
+                                                        <a href="{{ route('admin.edit.brand', $brand->id) }}" class="btn btn-warning rounded">
                                                             <i class="fas fa-edit text-dark"></i>
                                                         </a>
-                                                        <a  href="#" class="btn btn-danger rounded delete-btn" data-id="{{ $category->id }}">
+                                                        <a  href="#" class="btn btn-danger rounded delete-btn" data-id="{{ $brand->id }}">
                                                             <i class="fas fa-trash"></i>
                                                         </a>
                                                     </td>
@@ -129,7 +131,7 @@
                                         @else
                                                 
                                             <tr >
-                                                <td colspan="4" class="text-center">
+                                                <td colspan="5" class="text-center">
                                                     <p>No data found</p>
                                                 </td>
                                             </tr>
@@ -140,7 +142,7 @@
                 
                                 <!-- Pagination Links -->
                                 <div class="mt-2">
-                                    {{ $categories->links('pagination::bootstrap-5') }}
+                                    {{ $brands->links('pagination::bootstrap-5') }}
                                 </div>
                             </div>
                         </div>
@@ -193,7 +195,7 @@
             if (itemIdToInactivate) {
                 console.log("Deleted");
                 $.ajax({
-                    url: '/admin/categories/inactivate/' + itemIdToInactivate,
+                    url: '/admin/brand/inactivate/' + itemIdToInactivate,
                     type: 'PUT',  // Using PATCH method
                     data: {
                         '_token': $('meta[name="csrf-token"]').attr('content'),  // CSRF token
@@ -202,8 +204,27 @@
                         $("#"+result['tr']).slideUp("slow");
                         inactivateModal.hide();
                     },
-                    error: function () {
-                        alert('An error occurred while updating the product status.');
+                    error: function (xhr) {
+                        const errors = xhr.responseJSON.errors;
+                        if (xhr.status === 422) {
+                           
+                            let errorHtml = '<ul>';
+                            for (let field in errors) {
+                                errorHtml += `<li>${errors[field][0]}</li>`;
+                            }
+                            errorHtml += '</ul>';
+                            $('#alert-container').html(`
+                                <div class="alert alert-danger">
+                                    ${errorHtml}
+                                </div>
+                            `);
+                        } else {
+                            $('#alert-container').html(`
+                                <div class="alert alert-danger">
+                                    ${errors}
+                                </div>
+                            `);
+                        }
                     }
                 });
             }

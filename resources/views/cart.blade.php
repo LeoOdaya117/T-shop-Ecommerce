@@ -31,8 +31,19 @@
     </style>
 @endsection()
 @section("content")
+    <div class="bg-dark text-light">
+        <div class=" container ">
+            <nav aria-label="breadcrumb" class="pt-5 mt-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item" onclick="route('{{ route('home') }}')">Home</li>
+                    <li class="breadcrumb-item active" aria-current="page">Cart</li>
+                </ol>
+            </nav>
+            
+        </div>
+    </div>
 <main class="container">
-    <section class="pt-5">
+    <section class="">
 
         <h2 class="text-center mb-3 mt-3">Your Cart[{{ Session::get('cartTotal', 0) }}]</h2>
 
@@ -98,18 +109,18 @@
                                             <!-- Product Details -->
                                             <div class="card-body order-2 order-md-2 text-center">
                                                 <strong class="card-title">{{ $items->title }}</strong>
-                                                <span class="d-block">₱ {{ $items->price }}</span>
+                                                <span class="d-block">₱ {{ $items->price - $items->discount }}</span>
                                             </div>
                                         </div>
         
                                         <!-- Quantity Selector -->
                                         <div class="col-4 col-md-2 d-flex justify-content-center">
-                                            <input type="number" class="form-control quantity text-center" value="{{ $items->quantity }}" min="1" style="width: 75px;" data-price="{{ $items->price }}" data-id="{{ $items->product_id }}">
+                                            <input type="number" class="form-control quantity text-center" value="{{ $items->quantity }}" min="1" style="width: 75px;" data-price="{{ $items->price }}" data-discount="{{ $items->discount }}" data-id="{{ $items->product_id }}">
                                         </div>
         
                                         <!-- Total Price per Item -->
                                         <div class="col-2 col-md-3 d-flex justify-content-center align-items-center">
-                                            <strong class=" item-total-price">₱ {{ $items->price * $items->quantity }}</strong>
+                                            <strong class=" item-total-price">₱ {{ ($items->price - $items->discount ) * $items->quantity }}</strong>
                                         </div>
         
                                         <!-- Remove Button -->
@@ -120,7 +131,7 @@
                                     </div>
                                 </div>
                                 <hr style="border-top: 2px solid #313131;">
-                                @php $totalPrice += $items->price * $items->quantity; @endphp  <!-- Add to totalPrice -->
+                                @php $totalPrice += ($items->price - $items->discount ) * $items->quantity; @endphp  <!-- Add to totalPrice -->
                             </div>
                             
                         @endforeach
@@ -200,7 +211,9 @@
                 const itemId = cartItem.getAttribute('data-id');
                 const quantity = parseInt(this.value);
                 const price = parseFloat(this.getAttribute('data-price'));
-                const itemTotal = quantity * price;
+                const discount = parseFloat(this.getAttribute('data-discount'));
+      
+                const itemTotal = quantity * (price - discount);
                 const itemTotalElement = this.closest('.cart-item').querySelector('.item-total-price');
                 const subtotalPriceElement = document.getElementById('subtotal-price');
                 const totalPriceElement = document.getElementById('total-price');
@@ -293,5 +306,9 @@
     function clickProduct(routeUrl) {
         window.location.href = routeUrl;
     }
+    function route(routeUrl) {
+            window.location.href = routeUrl;
+    }
+
 </script>
 @endsection

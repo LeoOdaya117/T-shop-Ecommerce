@@ -17,13 +17,13 @@
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="page-header">
-                                <h2 class="pageheader-title">Category </h2>
+                                <h2 class="pageheader-title">Brands </h2>
                                 <div class="page-breadcrumb">
                                     <nav aria-label="breadcrumb">
                                         <ol class="breadcrumb">
-                                            <li class="breadcrumb-item"><a href="" class="breadcrumb-link">Category</a></li>
-                                            <li class="breadcrumb-item"><a href="{{ route('admin.categories') }}" class="breadcrumb-link">Category List</a></li>
-                                            <li class="breadcrumb-item active" aria-current="page">Add New Category</li>
+                                            <li class="breadcrumb-item"><a href="" class="breadcrumb-link">Products</a></li>
+                                            <li class="breadcrumb-item"><a href="{{ route('admin.brands') }}" class="breadcrumb-link">Brands List</a></li>
+                                            <li class="breadcrumb-item active" aria-current="page">Edit Brand</li>
                                         </ol>
                                     </nav>
                                 </div>
@@ -39,7 +39,7 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="card">
                             <h5 class="card-header ">
-                               Category Form
+                                Edit {{ $brandInfo->name }}
                                 
                             </h5>
                             
@@ -49,19 +49,19 @@
 
                                     <div id="alert-container"></div>
 
-                                    <form action="{{ route('admin.create.category') }}" method="POST" id="createCategoryForm" style="color: black;">
+                                    <form action="{{ route('admin.update.brand', $brandInfo->id) }}" method="POST" id="UpdateBrandForm" style="color: black;">
                                         @csrf
-                                        @method('POST')
+                                        @method('PUT')
                                         <div class="row  g-0">
                                             
                                             <div class="col-3">
                                                 <div class="row d-block">
                                                     <div class="col">
-                                                        <h5 for="inputText3" class="col-form-label">Category Image</h5>
+                                                        <h5 for="inputText3" class="col-form-label">Brand Image</h5>
                                                     </div>
                                                     <div class="col">
                                                         <div class="form-group">
-                                                            <img class="border border-dark" id="image-container" src="{{  asset('assets/image/no-product-image.png')}}" alt="" height="200" width="auto">
+                                                            <img class="border border-dark" id="image-container" src="{{ $brandInfo->image ?? asset('assets/image/no-product-image.png')}}" alt="" height="200" width="200">
                                                         </div>
                                                     </div>
 
@@ -70,23 +70,23 @@
                                                    
                                             <div class="col-9">
                                                 <div class="form-group">
-                                                    <label for="inputText3" class="col-form-label" style="color: black;">Category Name</label>
-                                                    <input name="name" id="name"  type="text" class="form-control" ">
+                                                    <label for="inputText3" class="col-form-label" style="color: black;">Brand Name</label>
+                                                    <input name="name" id="name"  type="text" class="form-control" value="{{ $brandInfo->name }}">
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="inputText3" class="col-form-label" style="color: black;">Slug</label>
-                                                    <input readonly name="slug" id="slug" type="text" class="form-control">
+                                                    <input readonly name="slug" id="slug" type="text" class="form-control" value="{{ $brandInfo->slug }}">
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="inputText3" class="col-form-label">Status</label>
                                                     <select name="status" class="form-control">
-                                                        <option value="active" selected >Active</option>
-                                                        <option value="inactive">Inactive</option>
+                                                        <option value="active" {{ $brandInfo->status == 'active' ? 'selected' : '' }}>Active</option>
+                                                        <option value="inactive" {{ $brandInfo->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="inputText3" class="col-form-label" style="color: black;">Image URL</label>
-                                                    <input name="image" id="image-url"  type="text" class="form-control"  placeholder="Image URL">
+                                                    <input name="image" id="image-url"  type="text" class="form-control"  placeholder="Image URL" value="{{ $brandInfo->image }}">
 
                                                 </div>
                                                
@@ -114,9 +114,9 @@
 
     @include('partials.modal', [
         'id' => 'createConfirmation',
-        'title' => 'Create Category Confirmation',
+        'title' => 'Update Brand Confirmation',
         'body' => '
-            <p>Are you sure you want to save this category? This action cannot be undone.</p>
+            <p>Are you sure you want to save this brand? This action cannot be undone.</p>
         ',
         'footer' => '
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -132,7 +132,7 @@
     <script>
 
         $('#openModal').on('click', function () {
-            console.log('Modal open button clicked');
+           
             $('#createConfirmation').modal('show');
         });
        
@@ -156,7 +156,7 @@
         }
 
         $('#confirmSave').on('click', function () {
-            const form = $('#createCategoryForm');
+            const form = $('#UpdateBrandForm');
             const formData = new FormData(form[0]);
 
             $.ajax({
@@ -167,7 +167,8 @@
                 contentType: false,
                 beforeSend: function () {
                     $('#alert-container').html(`
-                        <div class="spinner-border text-primary"></div> Saving...
+                        <div class="spinner-border text-primary">
+                            Saving...</div> 
                     `);
                 },
                 success: function (response) {

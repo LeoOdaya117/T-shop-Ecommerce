@@ -140,7 +140,7 @@
             contentType: false,
             success: function (response) {
                 $('#updateConfirmation').modal('hide');
-                $('#alert-container').html(`<div class="alert alert-success">Product updated successfully!</div>`);
+                $('#alert-container').html(`<div class="alert alert-success">${response.success}</div>`);
             },
             error: function (xhr) {
                 $('#updateConfirmation').modal('hide');
@@ -179,7 +179,7 @@
         }
     });
 
-    document.getElementById('title').addEventListener('change', function() {
+    document.getElementById('name').addEventListener('change', function() {
         const newTitle = this.value;
         const slugElement = document.getElementById('slug');
         
@@ -191,10 +191,14 @@
         }
     });
 
-    function createSlug(title){
-
-        return title.replace(/ /g,"-").toLowerCase();
-    }
+    function createSlug(title) {
+            return title
+                .trim()
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+                .replace(/\s+/g, '-') // Replace spaces with dashes
+                .replace(/-+/g, '-'); // Collapse multiple dashes
+        }
    </script>
 @endsection
 

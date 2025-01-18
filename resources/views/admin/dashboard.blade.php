@@ -87,7 +87,7 @@
 
                                           <!-- recent orders  -->
                             <!-- ============================================================== -->
-                            <div class="col-xl-9 col-lg-12 col-md-6 col-sm-12 col-12">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                 <div class="card">
                                     <h5 class="card-header">Recent Orders</h5>
                                     <div class="card-body p-0">
@@ -96,33 +96,44 @@
                                                 <thead class="bg-light">
                                                     <tr class="border-0">
                                                         <th class="border-0">#</th>
-                                                        <th class="border-0">Image</th>
-                                                        <th class="border-0">Product Name</th>
-                                                        <th class="border-0">Product Id</th>
-                                                        <th class="border-0">Quantity</th>
-                                                        <th class="border-0">Price</th>
-                                                        <th class="border-0">Order Time</th>
+                                                        <th class="border-0">Order ID</th>
+                                                        <th class="border-0">Total Price</th>
                                                         <th class="border-0">Customer</th>
+                                                        <th class="border-0">Order Time</th>
                                                         <th class="border-0">Status</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>
-                                                            <div class="m-r-10"><img src="assets/images/product-pic.jpg" alt="user" class="rounded" width="45"></div>
-                                                        </td>
-                                                        <td>Product #1 </td>
-                                                        <td>id000001 </td>
-                                                        <td>20</td>
-                                                        <td>$80.00</td>
-                                                        <td>27-08-2018 01:22:12</td>
-                                                        <td>Patricia J. King </td>
-                                                        <td><span class="badge-dot badge-brand mr-1"></span>InTransit </td>
-                                                    </tr>
+                                                    @foreach ($recentOrders as $recentOrder)
+                                                        <tr>
+                                                            <td>{{ $loop->iteration }}</td>
+                                                            
+                   
+                                                            <td>{{ $recentOrder->id }}</td>
+                                                            <td>₱ {{ $recentOrder->total_price }}</td>
+                                                            <td>{{ $recentOrder->fname }} {{ $recentOrder->lname }}</td>
+                                                            <td>{{ $recentOrder->created_at }}</td>
+
+                                                            <td class="
+                                                                @if ($recentOrder->order_status == "Delivered")
+                                                                    text-success
+                                                                @elseif($recentOrder->order_status == "Order Placed")
+                                                                   text-info
+                                                                @elseif($recentOrder->order_status == "Pending")
+                                                                   text-warning
+                                                                 @elseif($recentOrder->order_status == "Shipped")
+                                                                   text-primary
+                                                                @else
+                                                                    text-danger
+                                                                @endif
+                                                            ">{{ $recentOrder->order_status }}</td>
+
+                                                        </tr>
+                                                    @endforeach
+                                                    
 
                                                     <tr>
-                                                        <td colspan="9"><a href="#" class="btn btn-outline-light float-right">View Details</a></td>
+                                                        <td colspan="9"><a href="{{ route('admin.orders') }}" class="btn btn-outline-light float-right">View Details</a></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -138,7 +149,7 @@
                             <!-- ============================================================== -->
                             <!-- customer acquistion  -->
                             <!-- ============================================================== -->
-                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
+                            {{-- <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12">
                                 <div class="card">
                                     <h5 class="card-header">Customer Acquisition</h5>
                                     <div class="card-body">
@@ -156,7 +167,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                             <!-- ============================================================== -->
                             <!-- end customer acquistion  -->
                             <!-- ============================================================== -->
@@ -194,28 +205,7 @@
                         </div>
                         <div class="row">
                             
-                            <!-- product sales  -->
-                            <!-- ============================================================== -->
-                            <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <!-- <div class="float-right">
-                                                <select class="custom-select">
-                                                    <option selected>Today</option>
-                                                    <option value="1">Weekly</option>
-                                                    <option value="2">Monthly</option>
-                                                    <option value="3">Yearly</option>
-                                                </select>
-                                            </div> -->
-                                        <h5 class="mb-0"> Product Sales</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="ct-chart-product ct-golden-section"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- ============================================================== -->
-                            <!-- end product sales  -->
+                           
                             <!-- ============================================================== -->
                             
                         </div>
@@ -242,13 +232,20 @@
         }
         $(document).ready(function() {
             // Make the AJAX request
+            fetchData();
+
+            // Fetch data every 5 seconds (5000 milliseconds)
+            setInterval(fetchData, 5000);
+        });
+
+        function fetchData(){
             $.ajax({
                 url: "{{ route('admin.getSalesAndRevenue') }}", // Your route to the getSalesAndRevenue function
                 method: 'GET',
                 success: function(response) {
                     // Update the DOM with the data received
                     $('#customer-count').text(response.total_orders);
-                    $('#total-revenue').text('₱ ' + response.total_revenue);
+                    $('#total-revenue').text('₱ ' + response.total_revenue.toFixed(2));
                     $('#total-sales').text(response.total_sales);
                     $('#total-customers').text(response.total_customer);
                     
@@ -264,8 +261,7 @@
                     console.error("An error occurred while fetching data: ", error);
                 }
             });
-        });
-
+        }
         function renderRevenueByCategory(categories,revenues){
             // Assign random colors for backgroundColor and borderColor
             var backgroundColors = categories.map(() => randomColor());
@@ -325,32 +321,33 @@
             });
 
             // Get the current year data
-    const currentYear = new Date().getFullYear();
-    const currentYearData = data.find(item => item.year === currentYear);
-    const previousYearData = data.find(item => item.year === currentYear - 1);
+            const currentYear = new Date().getFullYear();
+            const currentYearData = data.find(item => item.year === currentYear);
+            const previousYearData = data.find(item => item.year === currentYear - 1);
 
-    // Display the current year's revenue
-    if (currentYearData) {
-        $('#thisYearRevenue').text("₱ " + currentYearData.total_revenue.toFixed(2));
-    } else {
-        $('#thisYearRevenue').text("Data not available");
-    }
+            // Display the current year's revenue
+            if (currentYearData) {
+                $('#thisYearRevenue').text("₱ " + currentYearData.total_revenue.toFixed(2));
+            } else {
+                $('#thisYearRevenue').text("Data not available");
+            }
 
-    // Calculate and display growth
-    if (currentYearData && previousYearData) {
-        const currentRevenue = currentYearData.total_revenue;
-        const previousRevenue = previousYearData.total_revenue;
+            // Calculate and display growth
+            if (currentYearData && previousYearData) {
+                const currentRevenue = currentYearData.total_revenue;
+                const previousRevenue = previousYearData.total_revenue;
 
-        // Calculate the growth percentage
-        const growth = ((currentRevenue - previousRevenue) / previousRevenue) * 100;
-        
-        // Display the growth as percentage
-        $('#revenueGrowth').text(growth >= 0 ? `+${growth.toFixed(2)}%` : `${growth.toFixed(2)}%`);
-    } else {
-        $('#revenueGrowth').text('Data not available');
-    }
+                // Calculate the growth percentage
+                const growth = ((currentRevenue - previousRevenue) / previousRevenue) * 100;
+                
+                // Display the growth as percentage
+                $('#revenueGrowth').text(growth >= 0 ? `+${growth.toFixed(2)}%` : `${growth.toFixed(2)}%`);
+            } else {
+                $('#revenueGrowth').text('Data not available');
+            }
 
         }
+        
     </script>
 @endsection()
                                 

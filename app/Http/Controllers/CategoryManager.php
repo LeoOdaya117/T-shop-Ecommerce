@@ -39,16 +39,17 @@ class CategoryManager extends Controller
     }
 
     function getCategory(){
-        $category = Category::where('status', 'active')->get();
-        return compact('category');
+        $category = Category::where('status', 'active')
+        ->orderBy('name', 'Asc')->get();
+        return $category;
     }
 
     function setInactiveCategories($id){
-        $product  = Category::where('id',$id)
+        $category  = Category::where('id',$id)
         ->first();
-        if($product){
-            $product->status = 'inactive';
-            $product->save();
+        if($category){
+            $category->status = 'inactive';
+            $category->save();
             return response()->json(['success' => true, 'tr'=>'tr_'.$id], 200);
         }
         return response()->json(['success' => false], 404);
@@ -81,10 +82,10 @@ class CategoryManager extends Controller
         $category->status = $request->input('status');
 
         if($category->save()){
-            return response()->json(['success', "Category Successfully Saved."]);
+            return response()->json(['success'=> "Category Successfully Saved."]);
         }
 
-        return response()->json(['error', "Something went wrong"]);
+        return response()->json(['error'=> "Something went wrong"]);
 
     }
     function update(Request $request, $id){
@@ -102,11 +103,11 @@ class CategoryManager extends Controller
         $category->status = $request->input('status');
 
         if($category->save()){
-            return redirect()->route('admin.edit.category', $id)->with('success', 'Category Updated Successfully.');
+            return response()->json(['success' => "Category Successfully Updated."]);
+
         }
 
-        return redirect()->route('admin.edit.category', $id)->with('error', 'Something Went Wrong.');
-
+        return response()->json(['error' => "Something went wrong"]);
     }
     
 }

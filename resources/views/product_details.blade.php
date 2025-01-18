@@ -3,25 +3,23 @@
 
 @section("style")
     <style>
-        .btn:hover{
-            transform: scale(1.05); /* Slightly enlarge the card */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for a 3D effect */
-            background-color: #f8f9fa; /* Optional: Change background color */
-            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
-        }
+        
         img{
             object-fit: contain; /* Ensures the image fits within the specified height and width */
             max-height: 75%;
         }
+        .btn:hover .fa-heart {
+        background-color: rgba(255, 0, 0, 0.1); /* Light red background */
+        transform: scale(1.1); /* Slightly larger on hover */
+        transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    }
     </style>
 @endsection()
 
 @section("content")
-    <main class="container " >
-        
-
+    <div class="bg-dark text-light">
         <div class="container">
-            <nav aria-label="breadcrumb" class="pt-5 mt-4">
+            <nav aria-label="breadcrumb" class="pt-5 mt-4 text-white">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item" onclick="route('{{ route('home') }}')">Home</li>
                     @if(isset($products) && $categories->isNotEmpty())
@@ -34,20 +32,35 @@
                 </ol>
             </nav>
         </div>
+    </div>
+    <main class="container " >
+        
+
+        
 
         <section class="py-5 shadow-lg" style="background: rgb(241, 240, 240)">
             <div class="container px-4 px-lg-5 " >
                 <div class="row gx-4 gx-lg-5 align-items-center">
+                    
                     <div class="col-md-6"><img class="card-img-top mb-2 mb-md-0 mt-md-0" src="{{ $products->image }}" alt="Product Image" /></div>
                     <div class="col-md-6">
+                        <!-- Heart icon overlay -->
+                        
+                        <div class="container d-flex justify-content-end">
+                            <button class="btn p-0 border-0 bg-transparent rounded-circle">
+                                <i class="fas fa-heart text-danger p-1" style="font-size: 1.5rem;"></i>
+                            </button>
+                        </div>
                         <div class="small mb-1">SKU: {{ $products->sku }}</div>
+
+                        
                         <h1 class="display-5 fw-bolder">{{ $products->title }}</h1>
                         <div class="fs-5 mb-2">
                             @if ($products->discount > 0)
-                                <span class="text-muted text-decoration-line-through">₱ {{ $products->original_price }}</span>
+                                <span class="text-muted text-decoration-line-through">₱ {{ $products->price }}</span>
                                 
                             @endif
-                            <span>₱ {{ $products->price }}</span>
+                            <span>₱ {{ $products->price - $products->discount }}</span>
                         </div>
                         {{-- <div class="fs-5 mb-2 text-muted " >
                             <span class="" style="font-size: 15px">Stocks</span>
@@ -56,7 +69,7 @@
                         <p class="lead">{{ $products->descrption }}</p>
                         <div class="d-flex mb-2  align-items-center m-0">
                             <div class="input-group d-flex" style="max-width: 8rem;">
-                                <button type="button" class="btn btn-outline-secondary" onclick="decrementQuantity()">-</button>
+                                <button type="button" class="btn btn-dark" onclick="decrementQuantity()">-</button>
                                 <input 
                                     type="number" 
                                     id="quantity" 
@@ -65,7 +78,7 @@
                                     value="1" 
                                     min="1" 
                                     max="{{ $products->stock }}" readonly style="max-width: 5rem">
-                                <button type="button" class="btn btn-outline-secondary " onclick="incrementQuantity()">+</button>
+                                <button type="button" class="btn btn-dark " onclick="incrementQuantity()">+</button>
                             </div>
                             
                             {{-- <input type="number" id="quantity" name="quantity" class="form-control text-center me-3" value="1" min="1" max="{{ $products->stock }}" style="max-width: 5rem"> --}}
@@ -146,27 +159,46 @@
                     </div>
                     
                 @else
+                    
                     @foreach ($relatedProducts as $recommendedProduct)
-                        <div class="col-12 col-md-6 col-lg-2 mb-2">
-                            <div class="card" >
-                                <!-- Product image-->
-                                <img  class="card-img-top p-2" src="{{ $recommendedProduct->image }}" alt="Product Image"  />
-                                <!-- Product details-->
-                                <div class="card-body p-4">
-                                    <div class="text-center">
-                                        <!-- Product name-->
-                                        <h5 class="fw-bolder">{{ $recommendedProduct->title }}</h5>
-                                        <!-- Product price-->
+                        <div class="col-12 col-md-6 col-lg-2 mb-4">
+                            <div class="card position-relative">
+                                <!-- Label Indicator -->
+                                {{-- @if($product->is_new)
+                                <div class="position-absolute top-0 start-0 bg-success text-white p-1 px-2 rounded-end" style="font-size: 0.75rem; z-index: 20;">
+                                    New
+                                </div>
+                                @elseif($product->on_sale)
+                                <div class="position-absolute top-0 start-0 bg-danger text-white p-1 px-2 rounded-end" style="font-size: 0.75rem; z-index: 2;">
+                                    Sale
+                                </div>
+                                @endif --}}
+                                <div class="position-absolute top-0 start-0 bg-success text-white p-1 px-2 rounded-end" style="font-size: 0.75rem; z-index: 20;">
+                                    New
+                                </div>
+                                <!-- Product Image -->
+                                <img class="card-img-center p-2 mt-3" src="{{ $recommendedProduct->image }}" alt="Product Image" />
+                                <!-- Product Details -->
+                                <div class="card-body p-3">
+                                    <div class="text-start">
+                                        <!-- Product Name -->
+                                        <h6 class="fw-bolder text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            {{ $recommendedProduct->title }}
+                                        </h6>
+                                        <!-- Product Price -->
                                         ₱ {{ $recommendedProduct->price }}
                                     </div>
                                 </div>
-                                <!-- Product actions-->
+                                <!-- Product Actions -->
                                 <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $recommendedProduct->slug) }}')">
-                                    <div class="text-center"><a class="btn btn-outline-dark text-dark">View Product</a></div>
+                                    <div class="text-center">
+                                        <a class="btn btn-outline-dark mt-auto w-100">Details</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     @endforeach
+                        
                     
                 @endif
                 

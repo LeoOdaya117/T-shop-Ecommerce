@@ -18,7 +18,14 @@ return new class extends Migration
             $table->text('descrption');
             $table->text('image');
             $table->float('price');
-            $table->integer('quantity');
+
+            $table->string('category')->nullable()->after('sku');
+            $table->string('brand')->nullable()->after('category');
+            $table->string('size')->nullable()->after('brand');
+            $table->string('color')->nullable()->after('size');
+            $table->enum('status', ['active', 'inactive'])->default('active')->after('color');
+            $table->float('discount')->default(0)->after('status');
+            $table->integer('stock')->default(0)->after('discount');
             $table->timestamps();
         });
     }

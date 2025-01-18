@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthManager;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CartManager;
 use App\Http\Controllers\CategoryManager;
 use App\Http\Controllers\OrderManager;
@@ -117,7 +118,28 @@ use Illuminate\Support\Facades\Route;
         Route::put('admin/category/update/{id}', [CategoryManager::class, 'update'])
         ->name('admin.update.category');
         Route::put('/admin/categories/inactivate/{id}', [CategoryManager::class, 'setInactiveCategories']);
+
+        // BRANDS ROUTE
+        Route::get('/brands', [BrandController::class, 'index'])
+        ->name('admin.brands');
+        Route::get('brands/create',[BrandController::class,'showCreatePage'])
+        ->name('admin.brand.createpage');
+        Route::post('/api/brands/create',[BrandController::class,'create'])
+        ->name('admin.create.brand');
+        Route::get('/brand/edit/{id}', [BrandController::class, 'showEditPage'])
+        ->name('admin.edit.brand');
+        Route::put('/api/brands/update/{id}', [BrandController::class, 'update'])
+        ->name('admin.update.brand');
+        Route::put('/admin/brand/inactivate/{id}', [BrandController::class, 'setInactiveBrand']);
         
+        // ORDERS ROUTE
+        Route::get('/orders',[OrderManager::class, 'index'])->name('admin.orders');
+        Route::get('/orders/{id}',[OrderManager::class, 'showOrderDetails'])
+        ->name('admin.orders.details');
+        Route::put('/orders/update/{id}',[OrderManager::class, 'update'])
+        ->name('admin.orders.update');
+
+
         Route::get('inventory', 
         function () {
                     return view("admin.products.inventory");

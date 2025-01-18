@@ -42,28 +42,51 @@
         <section class="featured-products mb-3" data-aos="fade-up">
             <h4 class="text-start mb-4 font-weight-lighter">Featured Products</h4>
             <div class="row gx-3 gx-lg-5 p-0 row-cols-2 row-cols-md-4 row-cols-xl-4 ">
-                @foreach ($popularProducts as $featuredProduct)
                 
-                    <div class="col" >
-                        <div class="card m-1" >
-                            <!-- Product image-->
-                            <img class="card-img-top mt-3" src="{{ $featuredProduct->image }}" alt="{{ $featuredProduct->title }}" >
-                            <!-- Product details-->
-                            <div class="card-body p-4">
-                                <div class="text-center">
-                                    <!-- Product name-->
-                                    <h5 class="fw-bolder">{{ $featuredProduct->title }}</h5>
-                                    <!-- Product price-->
-                                    ₱ {{ $featuredProduct->price }}
+                @foreach ($popularProducts as $featuredProduct)
+                    <div class="col-12 col-md-6 col-lg-2 mb-4">
+                        <div class="card position-relative">
+                            @if($featuredProduct->discount == 0.00)
+                                <div class="position-absolute top-0 start-0 bg-success text-white p-1 px-2 rounded-end" 
+                                    style="font-size: 0.75rem; z-index: 20;">
+                                    New
+                                </div>  
+                            @else
+                                <div class="position-absolute top-0 start-0 bg-danger text-white p-1 px-2 rounded-end" 
+                                    style="font-size: 0.75rem; z-index: 20;">
+                                    Sale
+                                </div>
+                            @endif
+                            <!-- Product Image -->
+                            <img class="card-img-center p-2 mt-3" src="{{ $featuredProduct->image }}" alt="Product Image" />
+                            <!-- Product Details -->
+                            <div class="card-body p-3">
+                                <div class="text-start">
+                                    <!-- Product Name -->
+                                    <h6 class="fw-bolder text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        {{ $featuredProduct->title }}
+                                    </h6>
+                                    <!-- Product Price -->
+                                   <div class="d-flex gap-1">
+                                        ₱ {{ $featuredProduct->price - $featuredProduct->discount}}
+                                        @if($featuredProduct->discount > 0.00)
+                                            <div class="text-muted text-decoration-line-through align-content-center" style="font-size: 12px">₱ {{ $featuredProduct->price }}</div>
+
+                                        @endif
+                                   </div>
+                                    
                                 </div>
                             </div>
-                            <!-- Product actions-->
+                            <!-- Product Actions -->
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $featuredProduct->slug) }}')">
-                                <div class="text-center"><a class="btn btn-outline-dark mt-auto">View product</a></div>
+                                <div class="text-center">
+                                    <a class="btn btn-outline-dark mt-auto w-100">Details</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 @endforeach
+                        
             </div>
         </section>
         
@@ -75,7 +98,8 @@
                         <div class="col-12 col-md-12 p-1 align-items-center" style="height: auto; width:150px;" >
                             <div class="card p-3 align-items-center" onclick="route('{{ route('search.category.product', $category->id) }}')">
                                 <img src="{{ $category->image ?? asset('assets/image/no-image.jpg') }}" class="image-fluid m-" alt="{{ $category->name }}" style="height: 100px; width:100px; object-fit: cover;">
-                                <p class="card-title text-center">{{ $category->name }}</p>
+                                <p class="card-title text-center" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width:100px;">{{ $category->name }}</p>
+                                
                             </div>
                         </div>
 
@@ -91,26 +115,49 @@
             <h4 class="text-start mb-4 font-weight-lighter">Just For You</h4>
 
             <div id="product-container" class="row gx-4 gx-lg-5  row-cols-2 row-cols-md-3 row-cols-xl-4 "> <!-- Flexbox for equal height -->
+                
                 @foreach ($products as $product)
-                <div class="col" >
-                    <div class="card m-1" >
-                        <!-- Product image-->
-                        <img class="card-img-top mt-3" src="{{ $product->image }}" alt="Product Image" />
-                        <!-- Product details-->
-                        <div class="card-body p-4">
-                            <div class="text-center">
-                                <!-- Product name-->
-                                <h5 class="fw-bolder">{{ $product->title }}</h5>
-                                <!-- Product price-->
-                                ₱ {{ $product->price }}
+                    <div class="col-12 col-md-6 col-lg-2 mb-4">
+                        <div class="card position-relative">
+                            @if($product->discount == 0.00)
+                                <div class="position-absolute top-0 start-0 bg-success text-white p-1 px-2 rounded-end" 
+                                    style="font-size: 0.75rem; z-index: 20;">
+                                    New
+                                </div>  
+                            @else
+                                <div class="position-absolute top-0 start-0 bg-danger text-white p-1 px-2 rounded-end" 
+                                    style="font-size: 0.75rem; z-index: 20;">
+                                    Sale
+                                </div>
+                            @endif
+                            <!-- Product Image -->
+                            <img class="card-img-center p-2 mt-3" src="{{ $product->image }}" alt="Product Image" />
+                            <!-- Product Details -->
+                            <div class="card-body p-3">
+                                <div class="text-start">
+                                    <!-- Product Name -->
+                                    <h6 class="fw-bolder text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        {{ $product->title }}
+                                    </h6>
+                                    <!-- Product Price -->
+                                    <div class="d-flex gap-1">
+                                        ₱ {{ $product->price - $product->discount}}
+                                        @if($product->discount > 0.00)
+                                            <div class="text-muted text-decoration-line-through align-content-center" style="font-size: 12px">₱ {{ $product->price }}</div>
+    
+                                        @endif
+                                    </div>
+                                   
+                                </div>
+                            </div>
+                            <!-- Product Actions -->
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $product->slug) }}')">
+                                <div class="text-center">
+                                    <a class="btn btn-outline-dark mt-auto w-100">Details</a>
+                                </div>
                             </div>
                         </div>
-                        <!-- Product actions-->
-                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $product->slug) }}')">
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto">View product</a></div>
-                        </div>
                     </div>
-                </div>
                 @endforeach
             </div>
             <div class="text-center mt-4 w-100">
