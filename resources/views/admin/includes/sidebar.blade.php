@@ -52,7 +52,7 @@
                                                 <a class="nav-link" href="{{ route('admin.brands') }}">Brands</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" href="{{ route('admin.inventory') }}">Inventory</a>
+                                                <a class="nav-link" href="{{ route('admin.inventory.inventory_logs') }}">Inventory</a>
                                             </li>
                                             <li class="nav-item">
                                                 <a class="nav-link" href="{{ route('admin.bulk-upload') }}">Bulk Upload</a>

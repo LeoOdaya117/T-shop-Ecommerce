@@ -109,7 +109,7 @@
                                             <!-- Product Details -->
                                             <div class="card-body order-2 order-md-2 text-center">
                                                 <strong class="card-title">{{ $items->title }}</strong>
-                                                <span class="d-block">₱ {{ $items->price - $items->discount }}</span>
+                                                <span class="d-block">₱ {{ number_format($items->price - $items->discount,2) }}</span>
                                             </div>
                                         </div>
         
@@ -120,7 +120,7 @@
         
                                         <!-- Total Price per Item -->
                                         <div class="col-2 col-md-3 d-flex justify-content-center align-items-center">
-                                            <strong class=" item-total-price">₱ {{ ($items->price - $items->discount ) * $items->quantity }}</strong>
+                                            <strong class=" item-total-price">₱ {{ number_format(($items->price - $items->discount ) * $items->quantity,2) }}</strong>
                                         </div>
         
                                         <!-- Remove Button -->
@@ -147,7 +147,7 @@
                                     Subtotal:
                                 </h6>
                                 <h6 class="text-end col-6  ">
-                                    ₱ <span id="subtotal-price">{{ $totalPrice }}</span>
+                                    ₱ <span id="subtotal-price">{{ number_format($totalPrice,2) }}</span>
                                 </h6>
                             </div>
                             <div class="row">
@@ -171,7 +171,7 @@
                                     Shipping:
                                 </h6>
                                 <h6 class="text-end col-6  ">
-                                    ₱ <span id="shipping-price">{{ $shippingFee }}</span>
+                                    ₱ <span id="shipping-price">{{ number_format($shippingFee) }}</span>
                                 </h6>
                             </div>
                             
@@ -181,7 +181,7 @@
                                     Total:
                                 </h5>
                                 <h5 class="text-end col-6  ">
-                                    ₱ <span id="total-price">{{ $totalPrice + $shippingFee }}</span>
+                                    ₱ <span id="total-price">{{ number_format($totalPrice + $shippingFee,2) }}</span>
                                 </h5>
                             </div>
                             <a href="{{ route('checkout.show') }}" class="btn btn-warning w-100">Checkout</a>

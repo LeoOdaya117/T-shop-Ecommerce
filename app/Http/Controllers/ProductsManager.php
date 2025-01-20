@@ -38,7 +38,10 @@ class ProductsManager extends Controller
     
     function showDetails($slug){
         $products = Products::where('slug', $slug)->first();
-        $relatedProducts = Products::where('brand', $products->brand)->where('id', '!=', $products->id)->paginate(6);
+        $relatedProducts = Products::where('brand', $products->brand)
+            ->where('id', '!=', $products->id)
+            ->where('status', 'active')
+            ->paginate(10);
         $categories = Category::select('name')->where('id', $products->category)->get();
         return view('product_details', compact('products', 'relatedProducts', 'categories'));
     }

@@ -76,17 +76,17 @@
                         <div class="card">
                             <h4 class="card-header d-flex justify-content-between align-items-center">
                                 ORDER: #{{ $orderInfo->id }}
-                                <div class=" badge
+                                <div class=" 
                                     @if ($orderInfo->order_status == "Delivered")
-                                        bg-success
+                                        text-success
                                     @elseif($orderInfo->order_status == "Order Placed")
-                                        bg-dark
+                                        text-dark
                                     @elseif($orderInfo->order_status == "Processing")
-                                        bg-warning
+                                        text-warning
                                     @elseif($orderInfo->order_status == "Shipped")
-                                        bg-info
+                                        text-info
                                     @else
-                                        bg-danger
+                                        text-danger
                                     @endif
                                     ">
                                     {{ $orderInfo->order_status }}
@@ -112,7 +112,7 @@
                                             @else
                                                 bg-danger
                                             @endif
-                                            
+                                            text-white
                                             ">{{ $orderInfo->order_status }}</span></p>
                                         <p class="m-0">Total Amount: ₱ {{ number_format($orderInfo->total_price, 2) }}</p>
                             
@@ -145,9 +145,9 @@
 
                         <div class="card">
                             <h5 class="card-header d-flex">ORDERED ITEMS</h5>
-                            <div class="container-fluid">
+                            <div class="container-fluid table-responsive">
                                 
-                                <table class="table">
+                                <table class="table ">
                                     <thead>
                                         <tr class="">
                                             <th>Product</th>
@@ -157,6 +157,16 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @foreach ($ordered_items as $item)
+
+                                            <tr>
+                                                <td>{{ $item['product_name'] }}</td>
+                                                <td>₱ {{ number_format($item['price'],2) }}</td>
+                                                <td>{{ $item['quantity'] }}</td>
+                                                <td>₱ {{ number_format($item['subtotal'] ,2) }}</td>
+                                            </tr>
+                                                
+                                        @endforeach
                                         
                                         <tr>
                                             <td></td>
@@ -194,10 +204,13 @@
                                     @csrf
                                     @method('PUT')
                                     <select name="order_status" class="form-control rounded-pill mb-3 text-center">
+                                        <option class="text-success fw-bolder" disabled>Choose Status</option>
                                         <option class="text-success fw-bolder" value="Delivered" {{$orderInfo->order_status == 'Delivered' ? 'selected' : ''}}>Delivered</option>
                                         <option class="text-info fw-bolder"  value="Shipped" {{$orderInfo->order_status == 'Shipped' ? 'selected' : ''}}>Shipped</option>
                                         <option class="text-waring fw-bolder"  value="Processing" {{$orderInfo->order_status == 'Processing' ? 'selected' : ''}}>Processing</option>
                                         <option class="text-danger fw-bolder"  value="Cancelled" {{$orderInfo->order_status == 'Cancelled' ? 'selected' : ''}}>Cancel</option>
+                                        <option class="text-danger fw-bolder"  value="Order Placed" {{$orderInfo->order_status == 'Order Placed' ? 'selected' : ''}}>Order Placed</option>
+
     
                                     </select>
                                     <button class="btn btn-primary w-100 rounded" type="submit" {{$orderInfo->order_status == 'Delivered' ? 'disabled' : ''}}>Update</button>

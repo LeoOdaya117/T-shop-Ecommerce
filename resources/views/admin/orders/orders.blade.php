@@ -51,55 +51,26 @@
                 <!-- ============================================================== -->
 
                 <div class="container">
-                    <div class="row text-center">
-                        <!-- Order Placed -->
-                        <div class="col-md-2">
-                            <div class="card bg-light text-white">
-                                <div class="card-body">
-                                    <h5 class="card-title">New Order</h5>
-                                    <h3>30</h3>
+                    <div class="row">
+                        @foreach ($groupOrders as $order)
+                            <div class="col-lg-2 col-md-3 col-sm-4">
+                                <div class="card bg-{{ 
+                                    $order->order_status == 'Delivered' ? 'success' : 
+                                    ($order->order_status == 'Processing' ? 'warning' : 
+                                    ($order->order_status == 'Shipped' ? 'info' : 
+                                    ($order->order_status == 'Cancelled' ? 'danger' : 'secondary')))
+                                }} text-dark">
+                                    <div class="card-header text-center">
+                                        <strong>{{ $order->order_status }}</strong>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title text-white">{{ $order->order_count }} Orders</h5>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                       
-                        <!-- Pending -->
-                        <div class="col-md-2">
-                            <div class="card bg-warning text-dark">
-                                <div class="card-body">
-                                    <h5 class="card-title">Processing</h5>
-                                    <h3>15</h3>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Shipped -->
-                        <div class="col-md-2">
-                            <div class="card bg-info text-white">
-                                <div class="card-body">
-                                    <h5 class="card-title">Shipped</h5>
-                                    <h3>10</h3>
-                                </div>
-                            </div>
-                        </div>
-                         <!-- Delivered -->
-                         <div class="col-md-2 ">
-                            <div class="card bg-success text-white">
-                                <div class="card-body">
-                                    <h5 class="card-title">Delivered</h5>
-                                    <h3>25</h3>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Cancelled -->
-                        <div class="col-md-2">
-                            <div class="card bg-danger text-white">
-                                <div class="card-body">
-                                    <h5 class="card-title">Cancelled</h5>
-                                    <h3>5</h3>
-                                </div>
-                            </div>
-                        </div>
-                        
+                        @endforeach
                     </div>
+                    
                 </div>
                 
                 <!-- ============================================================== -->
@@ -164,7 +135,7 @@
                             </div>
                             <div class="table-responsive">
 
-                                <table class="table">
+                                <table class="table table-striped">
                                     <thead class="bg-light">
                                         <tr class="border-0 text-center">
                                             <th class="border-0">Order ID</th>
@@ -176,41 +147,47 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($orders as $order)
-                                            <tr class="text-center">
-                                                
-                                                
-       
-                                                <td>{{ $order->id }}</td>
-                                                <td>₱ {{ $order->total_price }}</td>
-                                                <td>{{ $order->fname }} {{ $order->lname }}</td>
-                                                <td>{{ $order->created_at }}</td>
+                                        @if ($orders->count() > 0)
+                                            @foreach ($orders as $order)
+                                                <tr class="text-center">
+                                                    
+                                                    <td>{{ $order->id }}</td>
+                                                    <td>₱ {{ $order->total_price }}</td>
+                                                    <td>{{ $order->fname }} {{ $order->lname }}</td>
+                                                    <td>{{ $order->created_at }}</td>
+                                                    <td >
+                                                        <div class="
+                                                            @if ($order->order_status == "Delivered")
+                                                                text-success
+                                                            @elseif($order->order_status == "Order Placed")
+                                                            text-dark
+                                                            @elseif($order->order_status == "Processing")
+                                                            text-warning
+                                                            @elseif($order->order_status == "Shipped")
+                                                            text-info
+                                                            @else
+                                                                text-danger
+                                                            @endif
+                                                        rounded text-white">
+                                                            {{ $order->order_status }}
+                                                        </div>
+                                                    
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{ route('admin.orders.details', $order->id) }}" title="View Order Details"><i class="fas fa-eye"></i></a>
+                                                    </td>
+                                
 
-                                                <td >
-                                                    <div class="
-                                                        @if ($order->order_status == "Delivered")
-                                                            text-success
-                                                        @elseif($order->order_status == "Order Placed")
-                                                        text-dark
-                                                        @elseif($order->order_status == "Processing")
-                                                        text-warning
-                                                        @elseif($order->order_status == "Shipped")
-                                                        text-info
-                                                        @else
-                                                            text-danger
-                                                        @endif
-                                                     rounded text-white">
-                                                        {{ $order->order_status }}
-                                                    </div>
-                                                   
+                                                </tr>
+                                            @endforeach
+                                        @else
+                                            <tr >
+                                                <td colspan="6" class="text-center">
+                                                    <p>No data found</p>
                                                 </td>
-                                                <td>
-                                                    <a href="{{ route('admin.orders.details', $order->id) }}" title="View Order Details"><i class="fas fa-eye"></i></a>
-                                                </td>
-                              
-
                                             </tr>
-                                        @endforeach
+                                        @endif
+                                        
                                         
 
                                       

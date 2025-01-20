@@ -50,7 +50,12 @@
             <div class="col-12">
                 
                 <div class="align-items-center d-flex justify-content-end text-center m-2">
-                   
+                    <div class="d-flex">
+                        <form action="" class="d-flex">
+                            <input type="text" class="form-control">
+                            <button class="btn">Search</button>
+                        </form>
+                    </div>
                     <p class="text-center  mb-0 me-2" style="font-size: 12px">Sort by: </p>
                     <select name="sort" id="sort" class="form-select align-items-end " style="width: 150px; border-radius:10px" onchange="route('{{ route('shop') }}?sort=' + this.value)">
                         <option value="default">Best Match</option>

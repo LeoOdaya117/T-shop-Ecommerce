@@ -79,14 +79,11 @@
                                 <label for="address2">Address 2 <span class="text-muted">(Optional)</span></label>
                                 <input type="text" class="form-control" name="address2" id="address2" placeholder="Apartment or suite">
                             </div>
+                            <div class="mb-3">
+                                <label for="address2">City</label>
+                                <input type="text" class="form-control" name="city" id="city" placeholder="">
+                            </div>
                             <div class="row align-content-center align-items-center">
-                                <div class="col-md-5 mb-3">
-                                    <label for="country">Country</label>
-                                    <select class="custom-select d-block w-100" name="country" id="country" required>
-                                        <option value="{{ $country['name'] }}">{{ $country['name'] }}</option>
-                                    </select>
-                                    <div class="invalid-feedback"> Please select a valid country. </div>
-                                </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="province">Province</label>
                                     <select class="custom-select d-block w-100" name="province" id="province" required>
@@ -97,6 +94,14 @@
                                     </select>
                                     <div class="invalid-feedback"> Please provide a valid province. </div>
                                 </div>
+                                <div class="col-md-5 mb-3">
+                                    <label for="country">Country</label>
+                                    <select class="custom-select d-block w-100" name="country" id="country" required>
+                                        <option value="{{ $country['name'] }}">{{ $country['name'] }}</option>
+                                    </select>
+                                    <div class="invalid-feedback"> Please select a valid country. </div>
+                                </div>
+                                
                                 <div class="col-md-3 mb-3">
                                     <label for="zip">Zip</label>
                                     <input type="text" class="form-control" name="pincode" id="zip" placeholder="" required>

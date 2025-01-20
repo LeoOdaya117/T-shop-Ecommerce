@@ -4,22 +4,60 @@
 <main>
     <style>
         /* Dropdown Container */
-#filterDropdown {
-    position: absolute; /* Position it below the search input */
-    top: 100%; /* Align it right below the input */
-    left: 0;
-    width: 100%; /* Make sure it spans the width of the input */
-    z-index: 1050; /* Set a higher z-index so it stays above other content */
-    max-height: auto; /* Set a max height to avoid overflow */
-    overflow-y: auto; /* Enable scrolling if content exceeds max height */
-    border: 1px solid #ddd; /* Optional: border for the dropdown */
-    border-radius: 5px; /* Optional: rounded corners */
-}
+        #filterDropdown {
+            position: absolute; /* Position it below the search input */
+            top: 100%; /* Align it right below the input */
+            left: 0;
+            width: 100%; /* Make sure it spans the width of the input */
+            z-index: 1050; /* Set a higher z-index so it stays above other content */
+            max-height: auto; /* Set a max height to avoid overflow */
+            overflow-y: auto; /* Enable scrolling if content exceeds max height */
+            border: 1px solid #ddd; /* Optional: border for the dropdown */
+            border-radius: 5px; /* Optional: rounded corners */
+        }
 
-/* Dropdown Items */
-#filterDropdown select {
-    width: 100%; /* Ensure select boxes take the full width */
-}
+        /* Dropdown Items */
+        #filterDropdown select {
+            width: 100%; /* Ensure select boxes take the full width */
+        }
+        /* Hide the dropdown content initially */
+        .dropdown-content {
+            display: none; /* Hide by default */
+            right: 0;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            overflow-y: auto; /* Enable scrolling if content exceeds max height */
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 12356;
+        }
+
+        /* Show the dropdown content when the dropdown is active */
+        .dropdown.show .dropdown-content {
+            display: block;
+        }
+
+        /* Style for dropdown button */
+        .dropdown-button {
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        
+
+        /* Dropdown links */
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            z-index: 12356;
+            overflow-y: auto; /* Enable scrolling if content exceeds max height */
+        }
+
+       
+
 
     </style>
     <!-- ============================================================== -->
@@ -59,6 +97,9 @@
                         </h5>
                         
                         <div class="card-body">
+
+                            {{-- Alert message container --}}
+                            <div id="alert-container"></div>
                             <!-- Form with Search and Filter -->
                             <div class="d-flex  align-items-center justify-content-between mb-2 ">
                                 <form method="GET" action="{{ route('admin.products') }}" class="d-flex align-items-center position-relative">
@@ -121,7 +162,7 @@
                             </div>
                             <div class="table-responsive">
 
-                                <table id="product-table" class="table table-bordered">
+                                <table id="product-table" class="table table-bordered table-hover">
                                     <thead>
                                         <tr class="text-center">
                                             <th>#</th>
@@ -131,6 +172,7 @@
                                             <th>Color</th>
                                             <th>Category</th>
                                             <th>Brand</th>
+                                            <th>Stocks</th>
                                             <th>status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -146,14 +188,25 @@
                                                     <td>{{ $product->color }}</td>
                                                     <td>{{ $product->category }}</td>
                                                     <td>{{ $product->brand }}</td>
+                                                    <td>{{ $product->stock }}</td>
                                                     <td>{{ $product->status }}</td>
                                                     <td>
-                                                        <a href="{{ route('admin.edit.product', $product->id) }}" class="btn btn-warning rounded">
-                                                            <i class="fas fa-edit text-dark"></i>
-                                                        </a>
-                                                        <a  href="#" class="btn btn-danger rounded delete-btn" data-id="{{ $product->id }}">
-                                                            <i class="fas fa-trash"></i>
-                                                        </a>
+                                                        <div class="dropdown">
+                                                            <div>
+                                                                <i class="dropdown-button fas fa-ellipsis-h"></i>
+                                                            </div>
+                                                            <div class="dropdown-content">
+                                                                <a href="{{ route('admin.edit.product', $product->id) }}" class="btn btn-warning rounded">
+                                                                    <i class="fas fa-edit text-dark"></i> Edit
+                                                                </a>
+                                                                <a href="#" class="btn btn-info rounded adjust-btn" data-id="{{ $product->id }}">
+                                                                    <i class="fas fa-cogs"></i> Adjust Stock
+                                                                </a>
+                                                                <a href="#" class="btn btn-danger rounded delete-btn" data-id="{{ $product->id }}">
+                                                                    <i class="fas fa-trash"></i> Delete
+                                                                </a>
+                                                            </div>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -171,7 +224,8 @@
                 
                                 <!-- Pagination Links -->
                                 <div class="mt-2">
-                                    {{ $products->links('pagination::bootstrap-5') }}
+                                    {{ $products->appends(request()->all())->links('pagination::bootstrap-5') }}
+
                                 </div>
                             </div>
                         </div>
@@ -200,13 +254,64 @@
     ',
 ])
 
+@include('partials.modal', [
+    'id' => 'adjustStockModal',
+    'title' => 'ADJUST PRODUCT STOCKS',
+    'body' => '
+        <form method="POST" id="adjustStockForm" >
+    
+            <div class="form-group">
+                <label for="inputText3" class="col-form-label">Quantity</label>
+                <input type="text" name="quantity_changed"  class="form-control rounded-pill" placeholder="0" >
+            </div>
+            
+             <div class="form-group">
+                <label for="inputText3" class="col-form-label">Asjustment Type</label>
+                <select name="change_type" class="form-control rounded-pill mb-2">
+                    <option value="" disable>Select Status</option>
+                    <option value="add" >Add</option>
+                    <option value="subtract">Subtract</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Reason" class="col-form-label">Reason</label>
+                <input type="text" name="reason"  class="form-control rounded-pill" placeholder="Reason..." >
+            </div>
+            <div class="d-flex justify-content-end align-items-end">
+                <button type="button" class="btn btn-secondary mx-1" id="cancelUpdateStockBtn">Cancel</button>
+                <button type="submit" class="btn btn-danger" id="updateStockBtn">Update</button>
+            </div>
+            
+           
+        </form>
+    ',
+    'footer' => '
+       
+    ',
+])
 
 
-    <script>
+
+<script>
     document.addEventListener('DOMContentLoaded', function () {
         let itemIdToInactivate = null;
+        let productIdForStock = null
         const inactivateModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-                
+        const adjustStockModal = new bootstrap.Modal(document.getElementById('adjustStockModal'));
+   
+        
+        // Assuming you have a button or link to open the modal
+        $('.adjust-btn').on('click', function() {
+            $('#adjustStockForm')[0].reset(); // Reset form data
+            productIdForStock  = this.dataset.id;
+            adjustStockModal.show();
+        });
+
+        document.getElementById('cancelUpdateStockBtn').addEventListener('click', function () {
+            adjustStockModal.hide();
+        });
+
+
 
         document.querySelectorAll('.delete-btn').forEach(button => {
             button.addEventListener('click', function () {
@@ -220,6 +325,65 @@
                 inactivateModal.hide();
             }
         });
+
+
+
+        $("#adjustStockForm").submit(function(e) {
+            const url = `{{ route('admin.inventory.stock.update') }}`;
+           
+            var form = $(this);
+            var formData = form.serialize(); // Serialize the form data
+
+            // Append product_id to the serialized form data
+            formData += `&product_id=${productIdForStock}`;
+            e.preventDefault();
+            $.ajax({
+                type: "PUT",
+                url: url,
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
+                },
+                success: function(response) {
+                    if(response.success == true) {
+                        
+                        $('#alert-container').html(`
+                            <div class="alert alert-success">
+                                ${response.message}
+                            </div>
+                        `);
+                        location.reload();
+                        adjustStockModal.hide();
+                    } else {
+                        $('#alert-container').html(`
+                            <div class="alert alert-danger">
+                                Something went wrong. Please try again.
+                            </div>
+                        `);
+                        adjustStockModal.hide();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    adjustStockModal.hide(); // Close the modal on failure
+                    const errors = xhr.responseJSON.errors;
+                    let errorHtml = '<ul>';
+                    for (let field in errors) {
+                        errorHtml += `<li>${errors[field][0]}</li>`;
+                    }
+                    errorHtml += '</ul>';
+                    $('#alert-container').html(`
+                        <div class="alert alert-danger">
+                            ${errorHtml}
+                        </div>
+                    `);
+                    
+                }
+                
+        
+                
+            });
+        });
+
         document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
             if (itemIdToInactivate) {
                 console.log("Deleted");
@@ -250,5 +414,24 @@
     });
 
 
+    // When the dropdown button is clicked, toggle the "show" class on the dropdown
+    document.querySelectorAll('.dropdown-button').forEach(button => {
+            button.addEventListener('click', function() {
+                var dropdown = this.closest('.dropdown');
+                dropdown.classList.toggle('show');
+            });
+        });
+
+        // Optional: Close the dropdown if the user clicks outside of it
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropdown-button')) {
+                var dropdowns = document.querySelectorAll('.dropdown');
+                dropdowns.forEach(function(dropdown) {
+                    if (dropdown.classList.contains('show')) {
+                        dropdown.classList.remove('show');
+                    }
+                });
+            }
+        }
 </script>
 @endsection

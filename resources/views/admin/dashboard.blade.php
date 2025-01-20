@@ -104,34 +104,43 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach ($recentOrders as $recentOrder)
-                                                        <tr>
-                                                            <td>{{ $loop->iteration }}</td>
-                                                            
-                   
-                                                            <td>{{ $recentOrder->id }}</td>
-                                                            <td>₱ {{ $recentOrder->total_price }}</td>
-                                                            <td>{{ $recentOrder->fname }} {{ $recentOrder->lname }}</td>
-                                                            <td>{{ $recentOrder->created_at }}</td>
+                                                    @if ($recentOrders->count() > 0)
+                                                        @foreach ($recentOrders as $recentOrder)
+                                                            <tr>
+                                                                <td>{{ $loop->iteration }}</td>
+                                                                
+                    
+                                                                <td>{{ $recentOrder->id }}</td>
+                                                                <td>₱ {{ $recentOrder->total_price }}</td>
+                                                                <td>{{ $recentOrder->fname }} {{ $recentOrder->lname }}</td>
+                                                                <td>{{ $recentOrder->created_at }}</td>
 
-                                                            <td class="
-                                                                @if ($recentOrder->order_status == "Delivered")
-                                                                    text-success
-                                                                @elseif($recentOrder->order_status == "Order Placed")
-                                                                   text-info
-                                                                @elseif($recentOrder->order_status == "Pending")
-                                                                   text-warning
-                                                                 @elseif($recentOrder->order_status == "Shipped")
-                                                                   text-primary
-                                                                @else
-                                                                    text-danger
-                                                                @endif
-                                                            ">{{ $recentOrder->order_status }}</td>
+                                                                <td class="
+                                                                    @if ($recentOrder->order_status == "Delivered")
+                                                                        text-success
+                                                                    @elseif($recentOrder->order_status == "Order Placed")
+                                                                    text-info
+                                                                    @elseif($recentOrder->order_status == "Pending")
+                                                                    text-warning
+                                                                    @elseif($recentOrder->order_status == "Shipped")
+                                                                    text-primary
+                                                                    @else
+                                                                        text-danger
+                                                                    @endif
+                                                                ">{{ $recentOrder->order_status }}</td>
 
+                                                            </tr>
+                                                        @endforeach
+                                                    @else
+                                                        <tr >
+                                                            <td colspan="6" class="text-center">
+                                                                <p>No data found</p>
+                                                            </td>
                                                         </tr>
-                                                    @endforeach
+                                                    @endif
+                                                   
                                                     
-
+                                                   
                                                     <tr>
                                                         <td colspan="9"><a href="{{ route('admin.orders') }}" class="btn btn-outline-light float-right">View Details</a></td>
                                                     </tr>

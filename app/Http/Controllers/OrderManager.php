@@ -59,6 +59,9 @@ class OrderManager extends Controller
         $request->validate([
             'pincode' => 'required',
             'address' => 'required',
+            'city' => 'required',
+            'province' => 'required',
+            'country' => 'required',
             'phone' => 'required',
             'firstname' => 'required',
             'lastname' => 'required',
@@ -106,10 +109,10 @@ class OrderManager extends Controller
         $order->quantity = json_encode($quantities);
         $order->total_price = $totalPrice;
         $order->order_status = "Order Placed";
-        $order->payment_status = "Order Placed";
+        $order->payment_status = "Processing";
         $order->address2 = $request->address2;
         $order->state = $request->province;
-        $order->city = "none";
+        $order->city = $request->city;
         $order->country = $request->country;
         $order->fname = $request->firstname;
         $order->lname = $request->lastname;
@@ -271,7 +274,7 @@ class OrderManager extends Controller
                 'revenues' => $revenues,
                 'revenue_by_year' =>  $revenueByYear, 
                 
-                'recentOrder' =>  $recentOrder, 
+                
             ]);
     }
 
@@ -307,7 +310,10 @@ class OrderManager extends Controller
          }
         $orders = $orders->orderBy('created_at', 'Desc')->paginate(10);
 
-        return view('admin.orders.orders', compact('orders'));
+
+        $groupOrders = Orders::select('order_status', DB::raw('COUNT(*) as order_count'))
+         ->groupBy('order_status')->get();
+        return view('admin.orders.orders', compact('orders','groupOrders'));
     }
     function update(Request $request, $id){
         $order = Orders::findOrFail($id);
@@ -348,8 +354,27 @@ class OrderManager extends Controller
     function showOrderDetails($id){
 
         $orderInfo = Orders::find($id);
+        $ordered_items = [];
+  
+        $productIds = json_decode($orderInfo->product_id, true); // Decode JSON if stored as a string
+        $quantities = json_decode($orderInfo->quantity, true);   // Decode JSON if stored as a string
+    
+        $products = Products::whereIn('id', $productIds)->get();
 
+        foreach ($products as $index => $product) {
 
-        return view('admin.orders.order-details', compact('orderInfo'));
+            $price =$product->price - $product->discount;
+            $subtotal = $price * $quantities[$index];
+            $ordered_items[] = [
+                'product_name' => $product->title,
+                'price' => $price,
+                'quantity' => $quantities[$index] ?? 1,
+                'subtotal' => $subtotal,
+            ];
+        }
+
+        return view('admin.orders.order-details', compact('orderInfo', 'ordered_items'));
     }
+
+    
 }

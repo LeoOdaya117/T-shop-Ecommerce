@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthManager;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CartManager;
 use App\Http\Controllers\CategoryManager;
+use App\Http\Controllers\InventoryLogManager;
 use App\Http\Controllers\OrderManager;
 use App\Http\Controllers\ProductsManager;
 use App\Http\Controllers\UserManager;
@@ -140,11 +141,12 @@ use Illuminate\Support\Facades\Route;
         ->name('admin.orders.update');
 
 
-        Route::get('inventory', 
-        function () {
-                    return view("admin.products.inventory");
-                })->name('admin.inventory');
-              
+        // INVENTORY ROUTE
+        Route::get('inventory', [InventoryLogManager::class, 'index'])->name('admin.inventory.inventory_logs');
+        Route::put('api/inventory/update', [InventoryLogManager::class, 'store'])
+        ->name("admin.inventory.stock.update");
+
+
         Route::get('bulk-upload', 
         function () {
                     return view("admin.products.bulk-upload");
