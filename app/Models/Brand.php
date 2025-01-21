@@ -9,4 +9,9 @@ class Brand extends Model
 {
     protected $table = 'brand';
     use HasFactory;
+
+    public function products()
+    {
+        return $this->hasMany(Products::class);
+    }
 }

@@ -53,7 +53,7 @@
                     <div class="d-flex">
                         <form action="" class="d-flex">
                             <input type="text" class="form-control">
-                            <button class="btn">Search</button>
+                            <button class="btn b">Search</button>
                         </form>
                     </div>
                     <p class="text-center  mb-0 me-2" style="font-size: 12px">Sort by: </p>

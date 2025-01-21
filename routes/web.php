@@ -142,7 +142,8 @@ use Illuminate\Support\Facades\Route;
 
 
         // INVENTORY ROUTE
-        Route::get('inventory', [InventoryLogManager::class, 'index'])->name('admin.inventory.inventory_logs');
+        Route::get('inventory', [InventoryLogManager::class, 'index'])
+        ->name('admin.inventory.inventory_logs');
         Route::put('api/inventory/update', [InventoryLogManager::class, 'store'])
         ->name("admin.inventory.stock.update");
 

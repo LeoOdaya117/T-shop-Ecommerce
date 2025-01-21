@@ -274,7 +274,7 @@ class OrderManager extends Controller
                 'revenues' => $revenues,
                 'revenue_by_year' =>  $revenueByYear, 
                 
-                
+                    
             ]);
     }
 

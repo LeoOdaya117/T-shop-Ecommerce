@@ -15,7 +15,9 @@ use DataTable;
 class ProductsManager extends Controller
 {
     
-    function showProducts(){
+    function showProducts(Request $request){
+        
+
         $products = Products::where('status', 'active')
         ->paginate(12);
         $categoryManager = new CategoryManager();
@@ -47,11 +49,19 @@ class ProductsManager extends Controller
     }
 
     function searchProduct(Request $request){
+        
         $search = $request->get('search');
+
+        $categoryManager = new CategoryManager();
+        $categories = $categoryManager->getCategory();
+
+        $brandManager = new BrandController();
+        $brands = $brandManager->getBrands();
+
         $products = Products::where('title', 'like', '%'.$search.'%')
         ->where('status', 'active')
         ->paginate(20);
-        return view('products', compact('products'));
+        return view('products', compact('products', 'categories','brands'));
     }
 
     public function index()
@@ -139,53 +149,68 @@ class ProductsManager extends Controller
         return response()->json(['error' => 'Something went wrong']);
     }
 
-    public function getProducts(Request $request)
-    {
-        $categoryManager = new CategoryManager();
-        $categories = $categoryManager->getCategory();
-    
-        // Retrieve filter inputs
-        $search = $request->input('search');
-        $category = $request->input('category');
-        $minPrice = $request->input('min_price');
-        $maxPrice = $request->input('max_price');
-        $status = $request->input('status') ?? 'active';
-    
-        // Build the query
-        $products = Products::query();
-    
-        // Apply search filter
-        if ($search) {
-            $products->where(function ($query) use ($search) {
-                $query->where('title', 'like', '%' . $search . '%')
-                      ->orWhere('category', 'like', '%' . $search . '%');
-            });
-        }
-    
-        // Apply category filter
-        if ($category) {
-            $products->where('category', $category);
-        }
-    
-        // Apply price range filter
-        if ($minPrice || $maxPrice) {
-            $products->whereBetween('price', [
-                $minPrice ?? 0, // Default to 0 if no min price is provided
-                $maxPrice ?? PHP_INT_MAX // Default to maximum value if no max price is provided
-            ]);
-        }
-    
-        // Apply status filter
-        if ($status) {
-            $products->where('status', $status);
-        }
-    
-        // Fetch paginated results
-        $products = $products->orderBy('title', 'ASC')
-        ->paginate(10);
-    
-        return view('admin.products.manage-products', compact('products', 'categories'));
+
+public function getProducts(Request $request)
+{
+    $categoryManager = new CategoryManager();
+    $categories = $categoryManager->getCategory();
+
+    // Retrieve filter inputs
+    $search = $request->input('search');
+    $category = $request->input('category');
+    $minPrice = $request->input('min_price');
+    $maxPrice = $request->input('max_price');
+    $status = $request->input('status') ?? 'active';
+
+    // Build the raw SQL query
+    $query = DB::table('products')
+        ->leftJoin('category', 'products.category', '=', 'category.id')
+        ->leftJoin('brand', 'products.brand', '=', 'brand.id')
+        ->leftJoin('product_variants', 'product_variants.product_id', '=', 'products.id')
+        ->select(
+            'products.*',
+            'category.name as category_name',
+            'brand.name as brand_name',
+            'product_variants.stock as stock',
+            
+            
+        );
+
+    // Apply filters
+    if ($search) {
+        $query->where(function ($query) use ($search) {
+            $query->where('products.title', 'like', '%' . $search . '%')
+                 ;
+        });
     }
+
+    // Apply category filter
+    if ($category) {
+        $query->where('products.category', $category);
+    }
+
+    // Apply price range filter
+    if ($minPrice || $maxPrice) {
+        $query->whereBetween('product_variants.price', [
+            $minPrice ?? 0,
+            $maxPrice ?? PHP_INT_MAX
+        ]);
+    }
+
+    // Apply status filter
+    if ($status) {
+        $query->where('products.status', '=', $status);
+    }
+
+    // Apply sorting and paginate
+    $products = $query->orderBy('stock', 'ASC')->paginate(10);
+    // dd($products)->toArray();
+    return view('admin.products.manage-products', compact('products', 'categories'));
+}
+
+    
+    
+
     
 
 
@@ -198,44 +223,56 @@ class ProductsManager extends Controller
         $brands = $brandManager->getBrands();
         return view("admin.products.edit-product", compact('productInfo','categories','brands'));
     }
-    function update(Request $request, $id){
-
+    function update(Request $request, $id)
+    {
         $request->validate([
             'title' => 'required|string',
-            'slug' => 'required|string',
+            'slug' => 'required|string|unique:products,slug,' . $id,
             'description' => 'required|string',
-            'image' => 'required|string',
             'price' => 'required|numeric',
             'discount' => 'required|numeric',
             'category' => 'required|integer',
             'brand' => 'required|string',
-            'size' => 'required|string',
-            'color' => 'required|string',
+            'image' => 'string',
             'status' => 'required|string',
-            
+            // 'variant_price.*' => 'required|numeric',
+            // 'variant_stock.*' => 'required|integer',
+            // 'variant_color.*' => 'required|string',
+            // 'variant_size.*' => 'required|string',
         ]);
-        
-        $product = Products::findOrFail($id);
 
+        $product = Products::findOrFail($id);
         $product->title = $request->input('title');
         $product->slug = $request->input('slug');
-        $product->category = $request->input('category');
-        $product->brand = $request->input('brand');
-        $product->color = $request->input('color');
-        $product->size = $request->input('size');
+        $product->image = $request->input('image');
+        $product->descrption = $request->input('description');
         $product->price = $request->input('price');
         $product->discount = $request->input('discount');
-        $product->descrption = $request->input('description');
-        $product->image = $request->input('image');
+        $product->category = $request->input('category');
+        $product->brand = $request->input('brand');
         $product->status = $request->input('status');
 
-        if($product->save()){
-            return redirect()->route('admin.edit.product', $id)->with('success', 'Product Updated Successfully.');
+
+        if ($product->save()) {
+            return response()->json(['success' => 'Product updated successfully.']);
+        }else{
+            return response()->json(['error' => 'Something went wrong.']);
         }
-
-        return redirect()->route('admin.products')->with('error', 'Something went wrong.');
-
+        // // Update variants
+        // foreach ($request->input('variant_price') as $index => $price) {
+        //     $variant = $product->variants()->where('id', $index)->first();
+        //     if ($variant) {
+        //         $variant->update([
+        //             'price' => $price,
+        //             'stock' => $request->input('variant_stock')[$index],
+        //             'color' => $request->input('variant_color')[$index],
+        //             'size' => $request->input('variant_size')[$index],
+        //         ]);
+        //     }
+        // }
+        // return redirect()->route('admin.edit.product', $id)->with('success', 'Product and variants updated successfully.');
     }
+
 
     function setInactiveProduct($id){
         $product  = Products::where('id',$id)

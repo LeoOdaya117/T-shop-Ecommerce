@@ -37,7 +37,7 @@
                             
                             <div class="card-body">
                                 <!-- Form with Search and Filter -->
-                                <div class="d-flex  align-items-center justify-content-end mb-2 ">
+                                <div class="d-flex  align-items-center justify-content-end ">
                                     <form method="GET" action="{{ route('admin.inventory.inventory_logs') }}" class="d-flex align-items-center position-relative">
                                         <!-- Search Input -->
                                         <input type="text" name="search" value="{{ request('search') }}" class="form-control rounded-pill" placeholder="Search products..." style="max-width: 100%;">
@@ -77,6 +77,7 @@
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
+                                                <th>#</th>
                                                 <th>Product</th>
                                                 <th class="text-center">Change Type</th>
                                                 <th class="text-center">Quantity Changed</th>
@@ -88,6 +89,7 @@
                                             @if ($inventoryLogs->count() > 0)
                                                 @foreach ($inventoryLogs as $log)
                                                     <tr>
+                                                        <td>{{ ($inventoryLogs->currentPage() - 1) * $inventoryLogs->perPage() + $loop->iteration }}</td>
                                                         <td>
                                                             {{ $log->product->title }} 
                                                             {{ $log->product->color}} 
@@ -110,10 +112,10 @@
                                     </table>
                                     
                     
-                                    {{-- <!-- Pagination Links -->
+                                    <!-- Pagination Links -->
                                     <div class="mt-2">
-                                        {{ $orders->links('pagination::bootstrap-5') }}
-                                    </div> --}}
+                                        {{ $inventoryLogs->links('pagination::bootstrap-5') }}
+                                    </div>
                                 </div>
                             </div>
                         </div>

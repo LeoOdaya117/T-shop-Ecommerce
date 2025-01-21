@@ -165,14 +165,12 @@
                                 <table id="product-table" class="table table-bordered table-hover">
                                     <thead>
                                         <tr class="text-center">
-                                            <th>#</th>
+                                            {{-- <th>#</th> --}}
                                             <th>ID</th>
                                             <th>Title</th>
-                                            <th>Price</th>
-                                            <th>Color</th>
                                             <th>Category</th>
                                             <th>Brand</th>
-                                            <th>Stocks</th>
+                                            <th>Price</th>
                                             <th>status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -180,46 +178,63 @@
                                     <tbody>
                                         @if ($products->count() > 0)
                                             @foreach($products as $product)
-                                                <tr class="text-center" id="tr_{{ $product->id }}">
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $product->id }}</td>
-                                                    <td>{{ $product->title }}</td>
-                                                    <td>₱ {{ $product->price }}</td>
-                                                    <td>{{ $product->color }}</td>
-                                                    <td>{{ $product->category }}</td>
-                                                    <td>{{ $product->brand }}</td>
-                                                    <td>{{ $product->stock }}</td>
-                                                    <td>{{ $product->status }}</td>
-                                                    <td>
-                                                        <div class="dropdown">
-                                                            <div>
-                                                                <i class="dropdown-button fas fa-ellipsis-h"></i>
-                                                            </div>
-                                                            <div class="dropdown-content">
-                                                                <a href="{{ route('admin.edit.product', $product->id) }}" class="btn btn-warning rounded">
-                                                                    <i class="fas fa-edit text-dark"></i> Edit
-                                                                </a>
-                                                                <a href="#" class="btn btn-info rounded adjust-btn" data-id="{{ $product->id }}">
-                                                                    <i class="fas fa-cogs"></i> Adjust Stock
-                                                                </a>
-                                                                <a href="#" class="btn btn-danger rounded delete-btn" data-id="{{ $product->id }}">
-                                                                    <i class="fas fa-trash"></i> Delete
-                                                                </a>
-                                                            </div>
+                                            <tr class="text-center
+                                            @if ($product->stock <= 0)
+                                                bg-danger text-white
+                                            @elseif ($product->stock <= 10)
+                                                bg-warning text-dark
+                                            @else
+                                                
+                                            @endif
+                                            
+                                            ">
+                                                {{-- <td>{{ $loop->iteration }}</td> --}}
+                                                <td>{{ $product->id }}</td>
+                                                <td>{{ $product->title }}</td>
+                                                {{-- <td>
+                                                    @if($product->size && $product->color)
+                                                        <p>{{ $product->size }}, {{ $product->color }}</p>
+                                                    @else
+                                                        <p>No variants available</p>
+                                                    @endif
+                                                </td> --}}
+                                                <td>{{ $product->category_name ?? 'No category' }}</td>
+                                                <td>{{ $product->brand_name ?? 'No brand' }}</td>
+                                                <td>₱ {{ number_format($product->price,2) }}</td>
+                                                <td>{{ $product->status }}</td>
+                                                <td class="text-center">
+                                                    <div class="dropdown">
+                                                        <div>
+                                                            <i class="dropdown-button fas fa-ellipsis-h"></i>
                                                         </div>
-                                                    </td>
-                                                </tr>
+                                                        <div class="dropdown-content">
+                                                            <a href="{{ route('admin.edit.product', $product->id) }}" class="btn btn-warning rounded">
+                                                                <i class="fas fa-edit text-dark"></i> Edit
+                                                            </a>
+                                                            {{-- <a href="#" class="btn btn-info rounded adjust-btn" data-id="{{ $product->id }}">
+                                                                <i class="fas fa-cogs"></i> Adjust Stock
+                                                            </a> --}}
+                                                            <a href="#" class="btn btn-danger rounded delete-btn" data-id="{{ $product->id }}">
+                                                                <i class="fas fa-trash"></i> Delete
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
                                             @endforeach
                                         @else
-                                                
-                                            <tr >
-                                                <td colspan="8" class="text-center">
+                                            <tr>
+                                                <td colspan="10" class="text-center">
                                                     <p>No data found</p>
                                                 </td>
                                             </tr>
-                                            
                                         @endif
                                     </tbody>
+                                    
+                                    
+                                    
+                                    
+                                    
                                 </table>
                 
                                 <!-- Pagination Links -->

@@ -117,7 +117,7 @@
                                                 <option value="Delivered" {{ request('order_status') == 'Delivered' ? 'selected' : '' }}>Delivered</option>
                                                 <option value="Shipped" {{ request('order_status') == 'Shipped' ? 'selected' : '' }}>Shipped</option>
                                                 <option value="Processing" {{ request('order_status') == 'Processing' ? 'selected' : '' }}>Processing</option>
-                                                <option value="Cancelled" {{ request('order_status') == 'Cancelled' ? 'selected' : '' }}>Shipped</option>
+                                                <option value="Cancelled" {{ request('order_status') == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
                                                 <option value="Order Placed" {{ request('order_status') == 'Order Placed' ? 'selected' : '' }}>Order Placed</option>
 
                                             </select>

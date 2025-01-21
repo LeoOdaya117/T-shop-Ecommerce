@@ -18,5 +18,8 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+        $this->call([
+            ProductVariantSeeder::class, // This will run the ProductVariantSeeder
+        ]);
     }
 }

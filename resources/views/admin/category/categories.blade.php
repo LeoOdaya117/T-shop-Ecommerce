@@ -101,6 +101,7 @@
                                 <table id="product-table" class="table table-bordered">
                                     <thead>
                                         <tr class="text-center">
+                                            <th>#</th>
                                             <th>ID</th>
                                             <th>Category Name</th>
                                             <th>Slug</th>
@@ -112,10 +113,11 @@
                                         @if ($categories->count() > 0)
                                             @foreach($categories as $category)
                                                 <tr class="text-center" id="tr_{{ $category->id }}">
+                                                    <td>{{ ($categories->currentPage() - 1) * $categories->perPage() + $loop->iteration }}</td>
                                                     <td>{{ $category->id }}</td>
                                                     <td>{{ $category->name }}</td>
                                                     <td>{{ $category->slug }}</td>
-                                                    <td>{{ $category->status }}</td>
+                                                        <td>{{ $category->status }}</td>
                                                     <td>
                                                         <a href="{{ route('admin.edit.category', $category->id) }}" class="btn btn-warning rounded">
                                                             <i class="fas fa-edit text-dark"></i>
