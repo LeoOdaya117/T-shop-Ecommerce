@@ -106,7 +106,8 @@ use Illuminate\Support\Facades\Route;
         Route::put('admin/product/update/{id}', [ProductsManager::class, 'update'])
         ->name('admin.update.product');
         Route::put('/admin/product/inactivate/{id}', [ProductsManager::class, 'setInactiveProduct']);
-
+        Route::put('admin/update/selected/products', [ProductsManager::class, 'bulkUpdate'])
+        ->name('admin.update.selected.products');
 
         // CATEGORIES ROUTE
         Route::get('/category', [CategoryManager::class, 'index'])->name('admin.categories');

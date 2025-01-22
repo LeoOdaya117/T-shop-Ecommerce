@@ -10,8 +10,10 @@
 <head>
     
     <!-- Required meta tags -->
-    <meta charset="utf-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <meta charset="utf-8">
+   
 
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
@@ -34,7 +36,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     {{-- DATA TABLES CSS
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.1/css/dataTables.bootstrap5.css"> --}}

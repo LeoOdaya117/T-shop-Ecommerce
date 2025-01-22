@@ -39,35 +39,53 @@
         
 
         <section class="py-5 shadow-lg" style="background: rgb(241, 240, 240)">
-            <div class="container px-4 px-lg-5 " >
+            <div class="container px-4 px-lg-5 ">
                 <div class="row gx-4 gx-lg-5 align-items-center">
-                    
-                    <div class="col-md-6"><img class="card-img-top mb-2 mb-md-0 mt-md-0" src="{{ $products->image }}" alt="Product Image" /></div>
                     <div class="col-md-6">
-                        <!-- Heart icon overlay -->
-                        
-                        <div class="container d-flex justify-content-end">
-                            <button class="btn p-0 border-0 bg-transparent rounded-circle">
-                                <i class="fas fa-heart text-danger p-1" style="font-size: 1.5rem;"></i>
-                            </button>
-                        </div>
-                        <div class="small mb-1">SKU: {{ $products->sku }}</div>
-
-                        
+                        <img class="card-img-top mb-2 mb-md-0 mt-md-0" src="{{ $products->image }}" alt="Product Image" />
+                    </div>
+                    <div class="col-md-6">
                         <h1 class="display-5 fw-bolder">{{ $products->title }}</h1>
                         <div class="fs-5 mb-2">
                             @if ($products->discount > 0)
                                 <span class="text-muted text-decoration-line-through">₱ {{ $products->price }}</span>
-                                
                             @endif
                             <span>₱ {{ $products->price - $products->discount }}</span>
                         </div>
-                        {{-- <div class="fs-5 mb-2 text-muted " >
-                            <span class="" style="font-size: 15px">Stocks</span>
-                            <span style="font-size: 15px">{{ $products->stock }}</span>
-                        </div> --}}
-                        <p class="lead">{{ $products->descrption }}</p>
-                        <div class="d-flex mb-2  align-items-center m-0">
+                        @php
+                            $sentences = explode('.', $products->descrption); // Split by periods
+                            $limitedDescription = implode('.', array_slice($sentences, 0, 4)) . (count($sentences) > 4 ? '...' : ''); // Join the first 4 sentences and add '...' if there are more sentences
+                        @endphp
+        
+                        <p class="lead">{{ $limitedDescription }}</p>
+        
+                        @php
+                            // Group variants by color
+                            $groupedByColor = $variants->groupBy('color');
+                        @endphp
+        
+                        <p class="text-muted">Color</p>
+                        @foreach ($groupedByColor as $color => $group)
+                            <button class="btn btn-outline-dark text-dark bg-transparent mb-2" 
+                                    data-color="{{ $color }}" 
+                                    onclick="updateSizeOptions('{{ $color }}')">{{ $color }}</button>
+                        @endforeach
+        
+                        <p class="text-muted">Size</p>
+                        @foreach ($groupedByColor as $color => $group)
+                            <div id="sizes-for-{{ $color }}" class="sizes" style="display: none;">
+                                @foreach ($group as $variant)
+                                    <button class="btn btn-outline-dark text-dark bg-transparent mb-2" 
+                                            onclick="selectSize('{{ $color }}', '{{ $variant->size }}')">
+                                        {{ strtoupper(substr($variant->size, 0, 1)) }}
+                                        </span>
+                                    </button>
+                                @endforeach
+                            </div>
+                        @endforeach
+        
+        
+                        <div class="d-flex mb-2 align-items-center m-0">
                             <div class="input-group d-flex" style="max-width: 8rem;">
                                 <button type="button" class="btn btn-dark" onclick="decrementQuantity()">-</button>
                                 <input 
@@ -80,26 +98,16 @@
                                     max="{{ $products->stock }}" readonly style="max-width: 5rem">
                                 <button type="button" class="btn btn-dark " onclick="incrementQuantity()">+</button>
                             </div>
-                            
-                            {{-- <input type="number" id="quantity" name="quantity" class="form-control text-center me-3" value="1" min="1" max="{{ $products->stock }}" style="max-width: 5rem"> --}}
-                            <p class="text-center text-muted mb-0 ms-3"> 
-                                @if ($products->stock == 0)
-                                    <div class="text-danger mb-0" role="alert">
-                                         Out of stock
-                                    </div>
-                                @else
-                                    {{ $products->stock }} stocks available
-                                @endif
+                            <p class="text-center text-muted mb-0 ms-3 stock-display" id="stock-display">
+                               {{-- STOCK DISPLAY HERE --}}
                             </p>
                         </div>
-                        
+        
                         <div class="d-flex">
-                            @if ($products->stock == 0)
-                                <button class="btn btn-outline-dark text-dark bg-transparent" onclick="addToWishList({{ $products->id}},'{{ $products->title }}')">
-                                    Add to Wishlist</button>
-                            @else
-                                <button class="btn btn-outline-dark text-dark bg-transparent" onclick="addToCart({{ $products->id }})">Add to Cart</button>
-                            @endif
+                            <button class="btn btn-outline-dark text-dark bg-transparent" onclick="addToWishList({{ $products->id}},'{{ $products->title }}')"
+                                id="wishlistButton" style="display: none;">
+                                Add to Wishlist</button>
+                            <button class="btn btn-outline-dark text-dark bg-transparent" onclick="addToCart({{ $products->id }})" id="addToCartButton">Add to Cart</button>
                         </div>
                     </div>
                 </div>
@@ -311,6 +319,48 @@
         function route(routeUrl) {
             window.location.href = routeUrl;
         }
+
+        let selectedColor = '';
+    let selectedSize = '';
+
+    // Update the size options based on the selected color
+    function updateSizeOptions(color) {
+        selectedColor = color;
+        // Hide all size options and show the sizes for the selected color
+        document.querySelectorAll('.sizes').forEach(function(element) {
+            element.style.display = 'none';
+        });
+        document.getElementById(`sizes-for-${color}`).style.display = 'block';
+        // Reset the selected size and stock info
+        selectedSize = '';
+        document.getElementById('stock-display').textContent = 'Select a size to view stock availability.';
+    }
+
+    // Select size and display stock info
+    function selectSize(color, size) {
+        selectedSize = size;
+        let selectedVariant = @json($variants);
+        let variant = selectedVariant.find(variant => variant.color === color && variant.size === size);
+        
+        let stockDisplay = document.getElementById('stock-display');
+        let wishlistButton = document.getElementById('wishlistButton');
+        let addToCartButton = document.getElementById('addToCartButton');
+        if (variant && variant.stock > 0) {
+            stockDisplay.innerHTML = `${variant.stock} stocks available`;
+            stockDisplay.classList.remove('text-danger'); // Remove out-of-stock class if any
+            stockDisplay.classList.add('text-success'); // Add in-stock class
+            wishlistButton.style.display = 'none';
+            addToCartButton.style.display = 'block';
+        } else {
+            stockDisplay.innerHTML = 'Out of stock';
+            stockDisplay.classList.remove('text-success'); // Remove in-stock class if any
+            stockDisplay.classList.add('text-danger'); // Add out-of-stock class
+            wishlistButton.style.display = 'block';
+            addToCartButton.style.display = 'none';
+        }
+
+
+    }
 
     </script>
 @endsection()

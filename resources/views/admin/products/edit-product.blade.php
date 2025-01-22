@@ -124,7 +124,7 @@
                                       
                                         
                                         <div class="d-flex justify-content-end">
-                                            <button class="btn btn-warning rounded" type="button" id="openModal">Update</button>
+                                            <button class="btn btn-warning rounded" type="button" id="updateProductOpenModal">Update</button>
                                         </div>
                                     </form>
                                 </div>
@@ -134,7 +134,7 @@
                                       <div class="row mt-4">
                                         <div class="col">
                                             <h4>Variants</h4>
-                                            <table class="table table-bordered">
+                                            <table class="table table-bordered" id="variants-table">
                                                 <thead>
                                                     <tr class="text-center">
                                                         <th>Variant ID</th>
@@ -146,7 +146,7 @@
                                                 </thead>
                                                 <tbody>
                                                     @foreach ($productInfo->variants as $variant)
-                                                        <tr class="text-center">
+                                                        <tr class="text-center" data-variant-id="{{ $variant->id }}">
                                                             <td>{{ $variant->id }}</td>
                                                             <td>{{ $variant->color }}</td>
                                                             <td>{{ $variant->size }}</td>
@@ -218,7 +218,7 @@
                     <input type="text" name="reason"  class="form-control rounded-pill" placeholder="Reason..." >
                 </div>
                 <div class="d-flex justify-content-end align-items-end">
-                    <button type="button" class="btn btn-secondary mx-1" id="cancelUpdateStockBtn">Cancel</button>
+                    <button type="button" class="btn btn-secondary mx-1" id="cancelUpdateStockBtn" data-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-danger" id="updateStockBtn">Update</button>
                 </div>
                 
@@ -232,12 +232,14 @@
     
     
 
+   <script src="{{ asset('assets/js/products.js') }}"></script>
    <script>
-    document.getElementById('openModal').addEventListener('click', function () {
+    // EDIT PRODUCT BLADE
+    $('#updateProductOpenModal').on('click', function () {
         $('#updateConfirmation').modal('show');
     });
 
-    document.getElementById('confirmUpdate').addEventListener('click', function () {
+    $('#confirmUpdate').on('click', function () {
         const form = document.getElementById('productUpdateForm');
         const formData = new FormData(form);
 
@@ -276,53 +278,32 @@
         });
     });
 
-    document.getElementById('image-url').addEventListener('change', function() {
-        const newImageUrl = this.value;
-        const imageElement = document.getElementById('image-container');
-        
-        if (newImageUrl) {
-            imageElement.src = newImageUrl;
-        } else {
-            imageElement.src = "{{ asset('assets/image/no-product-image.png') }}";
-        }
-    });
-
-    document.getElementById('title').addEventListener('change', function() {
-        const newTitle = this.value;
-        const slugElement = document.getElementById('slug');
-
-        if (newTitle) {
-            slugElement.value = createSlug(newTitle);
-        } else {
-            slugElement.value = "";
-        }
-    });
-
-    function createSlug(title){
-        return title.replace(/ /g,"-").toLowerCase();
-    }
-   
-   
-    document.addEventListener('DOMContentLoaded', function () {
     let productId = null;
-    let variant_id = null;
-    const adjustStockModal = new bootstrap.Modal(document.getElementById('adjustStockModal'));
-   
+    let variantId = null;
+
+
     // Assuming you have a button or link to open the modal
-    $('.adjust-btn').on('click', function() {
-        $('#adjustStockForm')[0].reset(); // Reset form data
-        variantId = this.getAttribute('data-id');
-        productId = this.getAttribute('data-product-id');
-        adjustStockModal.show();
+    $(document).ready(function () {
+        $('.adjust-btn').on('click', function() {
+        
+            $('#adjustStockForm')[0].reset(); // Reset form data
+            variantId = this.getAttribute('data-id');
+            productId = this.getAttribute('data-product-id');
+            $('#adjustStockModal').modal('show');
+        
+        });
+        
     });
 
-    document.getElementById('cancelUpdateStockBtn').addEventListener('click', function () {
-            adjustStockModal.hide();
+
+    $('#cancelUpdateStockBtn').on('click', function () {
+            $('#adjustStockModal').modal('hide');
+        
     });
 
     $("#adjustStockForm").submit(function(e) {
             const url = `{{ route('admin.inventory.stock.update') }}`;
-           
+        
             var form = $(this);
             var formData = form.serialize(); // Serialize the form data
 
@@ -339,16 +320,16 @@
                 },
                 success: function(response) {
                     if(response.success == true) {
-                        
-                        adjustStockModal.hide();
-                        Swal.fire({
-                            icon: 'success', // Icon type ('success', 'error', 'warning', 'info', 'question')
-                            title: 'Success!',
-                            text: response.message, // Display the success message from the response
-                            confirmButtonText: 'OK', // Button text
-                        });
+                        const newStock = response.new_stock; // Assuming the server returns the updated stock value
+                        $('#alert-container').html(`
+                            <div class="alert alert-success">
+                                ${response.message}
+                            </div>
+                        `);
 
-                        location.reload();
+                        $(`tr[data-variant-id="${variantId}"] td:nth-child(4)`).text(newStock);
+                        
+                        $('#adjustStockModal').modal('hide');
                         
                     } else {
                         $('#alert-container').html(`
@@ -356,11 +337,11 @@
                                 Something went wrong. Please try again.
                             </div>
                         `);
-                        adjustStockModal.hide();
+                        $('#adjustStockModal').modal('hide');
                     }
                 },
                 error: function(xhr, status, error) {
-                    adjustStockModal.hide(); // Close the modal on failure
+                    $('#adjustStockModal').modal('hide');
                     const errors = xhr.responseJSON.errors;
                     let errorHtml = '<ul>';
                     for (let field in errors) {
@@ -378,12 +359,7 @@
         
                 
             });
-        });
     });
-    
-
-        
-
 
 
    </script>

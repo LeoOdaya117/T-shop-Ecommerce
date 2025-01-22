@@ -79,15 +79,22 @@ class InventoryLogManager extends Controller
                 'message' => $th->getMessage(),
             ]);
         }
+
+        $product_variant_manager = new ProductVariantManager();
+        $variantInfo = $product_variant_manager->getVariantData($request->variant_id, $request->product_id);
+        
         return response()->json([
             'status' => 200,
             'success' => true,
             'message' => 'Product variant stock updated successfully.',
+            'new_stock' => $variantInfo['stock'],
+
         ]);
         
 
 
     }
+
 
 
 }

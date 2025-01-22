@@ -39,13 +39,15 @@ class ProductsManager extends Controller
     }
     
     function showDetails($slug){
-        $products = Products::where('slug', $slug)->first();
+        $products = Products::with('variants')->where('slug', $slug)->first();
         $relatedProducts = Products::where('brand', $products->brand)
             ->where('id', '!=', $products->id)
             ->where('status', 'active')
             ->paginate(10);
         $categories = Category::select('name')->where('id', $products->category)->get();
-        return view('product_details', compact('products', 'relatedProducts', 'categories'));
+        $variants = $products->variants; // Access variants data
+        // dd($products);
+        return view('product_details', compact('products', 'relatedProducts', 'categories', 'variants'));
     }
 
     function searchProduct(Request $request){
@@ -154,7 +156,8 @@ public function getProducts(Request $request)
 {
     $categoryManager = new CategoryManager();
     $categories = $categoryManager->getCategory();
-
+    $brandManager = new BrandController();
+    $brands = $brandManager->getBrands();
     // Retrieve filter inputs
     $search = $request->input('search');
     $category = $request->input('category');
@@ -205,7 +208,7 @@ public function getProducts(Request $request)
     // Apply sorting and paginate
     $products = $query->orderBy('stock', 'ASC')->paginate(10);
     // dd($products)->toArray();
-    return view('admin.products.manage-products', compact('products', 'categories'));
+    return view('admin.products.manage-products', compact('products', 'categories','brands'));
 }
 
     
@@ -298,14 +301,14 @@ public function getProducts(Request $request)
             'title' => 'required|string',
             'slug' => 'required|string',
             'description' => 'required|string',
-            'image' => 'required|string',
+            'image' => 'nullable|string',
             'price' => 'required|numeric',
             'discount' => 'required|numeric',
-            'category' => 'required|integer',
-            'brand' => 'required|string',
-            'size' => 'required|string',
-            'color' => 'required|string',
-            'status' => 'required|string',
+            'category' => 'nullable|exists:category,id',
+            'brand' => 'nullable|exists:brand,id',
+            // 'size' => 'required|string',
+            // 'color' => 'required|string',
+            'status' => 'nullable|in:active,inactive',
 
         ]);
 
@@ -317,9 +320,9 @@ public function getProducts(Request $request)
         $product->price = $request->input('price');
         $product->category = $request->input('category');
         $product->brand = $request->input('brand');
-        $product->size = $request->input('size');
-        $product->color = $request->input('color');
-        $product->stock = 0;  
+        // $product->size = $request->input('size');
+        // $product->color = $request->input('color');
+        // $product->stock = 0;  
         $product->discount = $request->input('discount');
         $product->status = $request->input('status');
 
@@ -332,6 +335,42 @@ public function getProducts(Request $request)
     }
 
 
+    public function bulkUpdate(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:products,id',
+            'category' => 'nullable|exists:category,id',
+            'brand' => 'nullable|exists:brand,id',
+            'status' => 'nullable|in:active,inactive',
+        ]);
+    
+        $updateData = [];
+        if (isset($request->category)) {
+            $updateData['category'] = $request->category;
+        }
+        if (isset($request->brand))  {
+            $updateData['brand'] = $request->brand;
+        }
+        if (isset($request->status)) {
+            $updateData['status'] = $request->status;
+        }
+    
+        try {
+            Products::whereIn('id', $request->ids)
+                ->update($updateData);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Products updated successfully!',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating products: ' . $e->getMessage(),
+            ]);
+        }
+    }
     
 
     

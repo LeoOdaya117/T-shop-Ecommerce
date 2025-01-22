@@ -156,9 +156,15 @@
                                 </form>
 
                                 <!-- Add New Product Button -->
-                                <a href="{{ route('admin.create.product') }}" class="btn btn-success rounded">
-                                    <i class="fas fa-plus"> Create</i>
-                                </a>
+                                <div class="">
+                                    <button class="btn btn-warning update-btn" id="bulkUpdateButton" style="display: none;">Update</button>
+
+                                    <button class="btn btn-danger delete-btn" id="bulkDeleteButton" style="display: none;">Delete</button>
+                                    <a href="{{ route('admin.create.product') }}" class="btn btn-success rounded">
+                                        <i class="fas fa-plus"> Create</i>
+                                    </a>
+                                </div>
+                                
                             </div>
                             <div class="table-responsive">
 
@@ -166,6 +172,7 @@
                                     <thead>
                                         <tr class="text-center">
                                             {{-- <th>#</th> --}}
+                                            <th><input type="checkbox" id="selectAll"></th>
                                             <th>ID</th>
                                             <th>Title</th>
                                             <th>Category</th>
@@ -178,6 +185,8 @@
                                     <tbody>
                                         @if ($products->count() > 0)
                                             @foreach($products as $product)
+                                            
+
                                             <tr class="text-center
                                             @if ($product->stock <= 0)
                                                 bg-danger text-white
@@ -189,6 +198,7 @@
                                             
                                             ">
                                                 {{-- <td>{{ $loop->iteration }}</td> --}}
+                                                <td><input type="checkbox" class="rowCheckbox" data-id="{{ $product->id }}"></td>
                                                 <td>{{ $product->id }}</td>
                                                 <td>{{ $product->title }}</td>
                                                 {{-- <td>
@@ -305,148 +315,24 @@
     ',
 ])
 
+@include('partials.modal', [
+    'id' => 'updateProductModal',
+    'title' => 'Update Products',
+    'body' => view('partials.update-product-form', compact('categories','brands'))->render(),
+    'footer' => '
+       
+    ',
+])
+
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        let itemIdToInactivate = null;
-        let productIdForStock = null
-        const inactivateModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-        const adjustStockModal = new bootstrap.Modal(document.getElementById('adjustStockModal'));
-   
-        
-        // Assuming you have a button or link to open the modal
-        $('.adjust-btn').on('click', function() {
-            $('#adjustStockForm')[0].reset(); // Reset form data
-            productIdForStock  = this.dataset.id;
-            adjustStockModal.show();
-        });
-
-        document.getElementById('cancelUpdateStockBtn').addEventListener('click', function () {
-            adjustStockModal.hide();
-        });
-
-
-
-        document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                itemIdToInactivate = this.dataset.id;
-                inactivateModal.show();
-            });
-        });
-
-        document.getElementById('cancelDelete').addEventListener('click', function () {
-            if (itemIdToInactivate) {
-                inactivateModal.hide();
-            }
-        });
-
-
-
-        $("#adjustStockForm").submit(function(e) {
-            const url = `{{ route('admin.inventory.stock.update') }}`;
-           
-            var form = $(this);
-            var formData = form.serialize(); // Serialize the form data
-
-            // Append product_id to the serialized form data
-            formData += `&product_id=${productIdForStock}`;
-            e.preventDefault();
-            $.ajax({
-                type: "PUT",
-                url: url,
-                data: formData,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
-                },
-                success: function(response) {
-                    if(response.success == true) {
-                        
-                        $('#alert-container').html(`
-                            <div class="alert alert-success">
-                                ${response.message}
-                            </div>
-                        `);
-                        location.reload();
-                        adjustStockModal.hide();
-                    } else {
-                        $('#alert-container').html(`
-                            <div class="alert alert-danger">
-                                Something went wrong. Please try again.
-                            </div>
-                        `);
-                        adjustStockModal.hide();
-                    }
-                },
-                error: function(xhr, status, error) {
-                    adjustStockModal.hide(); // Close the modal on failure
-                    const errors = xhr.responseJSON.errors;
-                    let errorHtml = '<ul>';
-                    for (let field in errors) {
-                        errorHtml += `<li>${errors[field][0]}</li>`;
-                    }
-                    errorHtml += '</ul>';
-                    $('#alert-container').html(`
-                        <div class="alert alert-danger">
-                            ${errorHtml}
-                        </div>
-                    `);
-                    
-                }
-                
-        
-                
-            });
-        });
-
-        document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-            if (itemIdToInactivate) {
-                console.log("Deleted");
-                $.ajax({
-                    url: '/admin/product/inactivate/' + itemIdToInactivate,
-                    type: 'PUT',  // Using PATCH method
-                    data: {
-                        '_token': $('meta[name="csrf-token"]').attr('content'),  // CSRF token
-                    },
-                    success: function (result) {
-                        $("#"+result['tr']).slideUp("slow");
-                        inactivateModal.hide();
-                    },
-                    error: function () {
-                        alert('An error occurred while updating the product status.');
-                    }
-                });
-            }
-        });
-    });
-    document.getElementById('filterBtn').addEventListener('click', function () {
-        var filterDropdown = document.getElementById('filterDropdown');
-        filterDropdown.classList.toggle('d-none');
-    });
-
-    document.getElementById('closeFilterDropdown').addEventListener('click', function () {
-        document.getElementById('filterDropdown').classList.add('d-none');
-    });
-
-
-    // When the dropdown button is clicked, toggle the "show" class on the dropdown
-    document.querySelectorAll('.dropdown-button').forEach(button => {
-            button.addEventListener('click', function() {
-                var dropdown = this.closest('.dropdown');
-                dropdown.classList.toggle('show');
-            });
-        });
-
-        // Optional: Close the dropdown if the user clicks outside of it
-        window.onclick = function(event) {
-            if (!event.target.matches('.dropdown-button')) {
-                var dropdowns = document.querySelectorAll('.dropdown');
-                dropdowns.forEach(function(dropdown) {
-                    if (dropdown.classList.contains('show')) {
-                        dropdown.classList.remove('show');
-                    }
-                });
-            }
+     $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
+    });
 </script>
+<script src="{{ asset('assets/js/products.js') }}"></script>
+
 @endsection
