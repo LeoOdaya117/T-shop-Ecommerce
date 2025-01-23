@@ -38,7 +38,7 @@
 
         
 
-        <section class="py-5 shadow-lg" style="background: rgb(241, 240, 240)">
+        <section class="py-5 shadow-lg mb-5 shadow-sm" style="background: rgb(241, 240, 240)">
             <div class="container px-4 px-lg-5 ">
                 <div class="row gx-4 gx-lg-5 align-items-center">
                     <div class="col-md-6">
@@ -48,9 +48,9 @@
                         <h1 class="display-5 fw-bolder">{{ $products->title }}</h1>
                         <div class="fs-5 mb-2">
                             @if ($products->discount > 0)
-                                <span class="text-muted text-decoration-line-through">₱ {{ $products->price }}</span>
+                                <span class="text-muted text-decoration-line-through">₱ {{ number_format($products->price,2) }}</span>
                             @endif
-                            <span>₱ {{ $products->price - $products->discount }}</span>
+                            <span>₱ {{ number_format($products->price - $products->discount,2) }}</span>
                         </div>
                         @php
                             $sentences = explode('.', $products->descrption); // Split by periods
@@ -83,7 +83,8 @@
                                 @endforeach
                             </div>
                         @endforeach
-        
+                        <input type="hidden" id="selectedVariantId" name="variant_id" value="">
+
         
                         <div class="d-flex mb-2 align-items-center m-0">
                             <div class="input-group d-flex" style="max-width: 8rem;">
@@ -156,6 +157,35 @@
     
         
         </section> --}}
+
+        <section>
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-5">
+                <div class="tab-regular ">
+                    <ul class="nav nav-tabs " id="myTab7" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="home-tab-justify" data-toggle="tab" href="#home-justify" 
+                               role="tab" aria-controls="home-justify" aria-selected="true"><strong>Description</strong></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="profile-tab-justify" data-toggle="tab" href="#profile-justify" 
+                               role="tab" aria-controls="profile-justify" aria-selected="false"><strong>Review</strong></a>
+                        </li>
+                    </ul>
+                    <div class="container tab-content bg-white p-3" id="myTabContent7">
+                        <div class="tab-pane fade show active container " id="home-justify" role="tabpanel" aria-labelledby="home-tab-justify">
+                            <p class="lead"> <strong>{{ $products->title }} Description</strong></p>
+                            <p>{{ $products->descrption }}</p>
+                        </div>
+                        <div class="tab-pane fade" id="profile-justify" role="tabpanel" aria-labelledby="profile-tab-justify">
+                            <p>No reveiews found.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    
+        {{-- REALATED PRODUCTS --}}
         <section class="mt-5">
             <h4 class="mb-4">Related Products</h4>
             <div class="row">
@@ -217,15 +247,23 @@
 
 @section("script")
     <script>
+        $(document).ready(function () {
+            $('#myTab7 a').on('click', function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+            });
+        });
+
+
        
         function addToCart(productId) {
             // Get the quantity selected by the user
             updateCartItemNumber();
             const quantity = document.getElementById('quantity').value;
-            
+            const varaint_id = document.getElementById('selectedVariantId').value;
             // Send AJAX request to add product to cart
             $.ajax({
-                url: '/cart/' + productId + '/' + quantity,
+                url: '/cart/' + productId + '/' + quantity + '/' + varaint_id,
                 type: 'GET',
                 success: function(response) {
                     if (response.success) {
@@ -341,7 +379,9 @@
         selectedSize = size;
         let selectedVariant = @json($variants);
         let variant = selectedVariant.find(variant => variant.color === color && variant.size === size);
-        
+        document.getElementById('selectedVariantId').value = variant.id;
+
+        console.log(variant.id + " " + variant.stock + " " + variant.size + " " + variant.color);
         let stockDisplay = document.getElementById('stock-display');
         let wishlistButton = document.getElementById('wishlistButton');
         let addToCartButton = document.getElementById('addToCartButton');
@@ -363,4 +403,5 @@
     }
 
     </script>
+    
 @endsection()

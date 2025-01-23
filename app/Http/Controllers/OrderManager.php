@@ -69,30 +69,34 @@ class OrderManager extends Controller
         ]);
 
         $cartItems = DB::table("cart")
-            ->join("products", 'cart.product_id', '=', 'products.id')
-            ->select("cart.product_id", "cart.quantity", 'products.price', 'products.title')
+            ->leftJoin("products", 'cart.product_id', '=', 'products.id')
+            ->leftJoin("product_variants", 'cart.variant_id', '=', 'product_variants.id')
+            ->select("cart.product_id","cart.variant_id", "cart.quantity", 'products.price', 'products.title', 'product_variants.size', 'product_variants.color')
             ->where("cart.user_id", auth()->user()->id)
             ->get();
-
+        // dd($cartItems);
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.show')->with('error', 'Cart is empty.');
         }
 
         $productIds = [];
+        $variantsIds = [];
         $quantities = [];
         $totalPrice = 0;
         $lineItems = [];
 
         foreach ($cartItems as $cartItem) {
             $productIds[] = $cartItem->product_id;
+            $variantsIds[] = $cartItem->variant_id;
             $quantities[] = $cartItem->quantity;
             $totalPrice += $cartItem->price * $cartItem->quantity;
-
+            
             $lineItems[] = [
                 'price_data' => [
                     'currency' => 'php',
                     'product_data' => [
                         'name' => $cartItem->title,
+                        'description' => 'Color: ' . ucfirst($cartItem->color) . ', Size: ' . strtoupper($cartItem->size),
                     ],
                     'unit_amount' => $cartItem->price * 100,
                 ],
@@ -100,12 +104,14 @@ class OrderManager extends Controller
             ];
         }
 
+        // dd($variantsIds);
         $order = new Orders();
         $order->user_id = auth()->user()->id;
         $order->pincode = $request->pincode;
         $order->address = $request->address;
         $order->phone = $request->phone;
         $order->product_id = json_encode($productIds);
+        $order->variant_id = json_encode($variantsIds);
         $order->quantity = json_encode($quantities);
         $order->total_price = $totalPrice;
         $order->order_status = "Order Placed";
@@ -136,8 +142,9 @@ class OrderManager extends Controller
 
                 // Update the stock of the products
                 foreach ($cartItems as $cartItem) {
-                    DB::table('products')
-                        ->where('id', $cartItem->product_id)
+                    DB::table('product_variants')
+                        ->where('id', $cartItem->variant_id)
+                        ->where('product_id', $cartItem->product_id)
                         ->decrement('stock', $cartItem->quantity);
                 }
 
@@ -225,7 +232,8 @@ class OrderManager extends Controller
         //Total number of Customer
         $totalNumberOfCustomer = User::where('is_admin', false)->count();
         // Total orders
-        $totalOrders = Orders::count();
+        $totalOrders = Orders::where('order_status', 'Delivered')
+        ->count();
     
         // Total revenue
         $totalRevenue = Orders::where('payment_status', 'completed')->sum('total_price');
@@ -351,30 +359,51 @@ class OrderManager extends Controller
 
     }
 
-    function showOrderDetails($id){
-
+    function showOrderDetails($id)
+    {
         $orderInfo = Orders::find($id);
-        $ordered_items = [];
-  
-        $productIds = json_decode($orderInfo->product_id, true); // Decode JSON if stored as a string
-        $quantities = json_decode($orderInfo->quantity, true);   // Decode JSON if stored as a string
     
-        $products = Products::whereIn('id', $productIds)->get();
-
+        // Handle missing order
+        if (!$orderInfo) {
+            return redirect()->route('admin.orders.index')->with('error', 'Order not found.');
+        }
+    
+        $ordered_items = [];
+        $productIds = json_decode($orderInfo->product_id, true) ?? []; // Decode JSON or fallback to an empty array
+        $quantities = json_decode($orderInfo->quantity, true) ?? [];   // Decode JSON or fallback to an empty array
+        $variantIds = json_decode($orderInfo->variant_id, true) ?? []; // Decode variant_id if stored as JSON
+    
+        // Ensure the data arrays are valid
+        if (!is_array($productIds) || !is_array($quantities) || !is_array($variantIds)) {
+            return redirect()->route('admin.orders.index')->with('error', 'Invalid order data.');
+        }
+    
+        $products = Products::with('variants')->whereIn('id', $productIds)->get();
+        
         foreach ($products as $index => $product) {
-
-            $price =$product->price - $product->discount;
-            $subtotal = $price * $quantities[$index];
+            $quantity = $quantities[$index] ?? 1; // Fallback to 1 if quantity is missing
+            $price = $product->price - $product->discount;
+            $subtotal = $price * $quantity;
+    
+            // Find the variant by ID
+            $variantId = $variantIds[$index] ?? null; // Get variant ID or null
+            $variant = $product->variants->firstWhere('id', $variantId);
+    
             $ordered_items[] = [
                 'product_name' => $product->title,
                 'price' => $price,
-                'quantity' => $quantities[$index] ?? 1,
+                'quantity' => $quantity,
                 'subtotal' => $subtotal,
+                'variant' => $variant ? [
+                    'color' => $variant->color,
+                    'size' => $variant->size,
+                ] : null, // Include variant details or null if not found
             ];
         }
-
+        // dd( $variantIds ,$ordered_items);
         return view('admin.orders.order-details', compact('orderInfo', 'ordered_items'));
     }
+    
 
     
 }

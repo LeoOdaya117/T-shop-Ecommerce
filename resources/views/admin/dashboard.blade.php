@@ -128,7 +128,9 @@
                                                                         text-danger
                                                                     @endif
                                                                 ">{{ $recentOrder->order_status }}</td>
-
+                                                                <td>
+                                                                    <a href="" class="btn btn-outline-light btn-sm">Accept</a>
+                                                                </td>
                                                             </tr>
                                                         @endforeach
                                                     @else

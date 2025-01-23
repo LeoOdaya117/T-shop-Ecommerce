@@ -11,11 +11,12 @@ use Illuminate\Support\Facades\Session;
 class CartManager extends Controller
 {
     
-    public function addToCart($id, $quantity)
+    public function addToCart($id, $quantity, $variant_id)
     {
         // Check if the product already exists in the user's cart
         $cart = Cart::where('user_id', auth()->user()->id)
                     ->where('product_id', $id)
+                    ->where('variant_id', $variant_id)
                     ->first();
 
         if ($cart) {
@@ -30,6 +31,7 @@ class CartManager extends Controller
             $cart = new Cart();
             $cart->user_id = auth()->user()->id; // Getting the User ID in the AUTH
             $cart->product_id = $id;
+            $cart->variant_id = $variant_id;
             $cart->quantity = $quantity;
 
             if ($cart->save()) {

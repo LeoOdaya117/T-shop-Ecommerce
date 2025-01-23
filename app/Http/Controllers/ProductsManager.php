@@ -81,6 +81,7 @@ class ProductsManager extends Controller
 
         $cartItemCount = 0;
         $popularProducts = $this->getPopularProducts();
+        $new_arrival = $this->getNewArrival();
         if (auth()->check()) {
             $cartController = new CartManager();
             $cartController->updateCartTotal();
@@ -89,7 +90,7 @@ class ProductsManager extends Controller
             
         }
 
-        return view('home', compact('products', 'popularProducts', 'categories', 'cartItemCount', 'brands'));
+        return view('home', compact('products', 'new_arrival', 'popularProducts', 'categories', 'cartItemCount', 'brands'));
     }
 
     private function getPopularProducts()
@@ -126,6 +127,14 @@ class ProductsManager extends Controller
         ->whereIn('id', $topProductIds)->get();
 
         return $popularProducts;
+    }
+
+    private function getNewArrival(){
+        $new_arrival = Products::where('status', 'active')
+        ->orderBy('created_at', 'DESC')->limit(5)->get();
+
+       
+        return $new_arrival;
     }
     
     public function loadMoreProducts(Request $request)

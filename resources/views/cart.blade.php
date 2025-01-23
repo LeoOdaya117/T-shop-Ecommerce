@@ -23,7 +23,7 @@
     .cart-item i.remove-item {
         font-size: 0.9rem; /* Smaller icon size */
     }
-    .container {
+    .main {
         height: 100vh;
     }
 }
@@ -42,7 +42,7 @@
             
         </div>
     </div>
-<main class="container">
+<main class="container main">
     <section class="">
 
         <h2 class="text-center mb-3 mt-3">Your Cart[{{ Session::get('cartTotal', 0) }}]</h2>
@@ -67,41 +67,24 @@
                     Your cart is empty, see <span><a href="{{ route('home') }}">products</a></span>.
                 </div>
             @else
-
-                <div class="table-header row align-items-center mt-2">
-                   <div class="row">
-                        <div class="col-6 col-md-3 d-flex justify-content-center">
-                            <h5>Item</h5>
-                        </div>
-
-                        <div class="col-3 col-md-2 text-center text-md-start">
-                            <h5>Quantity</h5>
-                        </div>
-
-                        <div class="col-3 col-md-1  d-flex justify-content-center">
-                            <h5>Total</h5>
-                        </div>
-                        <hr style="border-top: 2px solid #000000; max-width: auto;">
-                    </div>
-
-                </div>
-                
-                
-
-                <div class="cart-content row" style="max-height: 550px; overflow-y: auto;">
-                    <!-- Cart Items List -->
-                    <div class="col-12 col-md-8" id="cart-items" >
-                        @php 
-                            $totalPrice = 0; 
-                            $shippingFee = 75;
-                        @endphp  <!-- Initialize totalPrice variable -->
-                        @foreach ($cartItems as $key => $items)
-                            <div class="col-12  cart-item" data-id="{{ $items->id }}">
-                                <div class=" ">
-                                    <div class="row align-items-center g-0">
-                                        <!-- Product Image -->
-                                        <!-- filepath: /c:/Users/Leo/Desktop/Laragon/Laragon/www/Ecommerce-app/resources/views/cart.blade.php -->
-                                        <div class="col-5 d-flex flex-column flex-md-row align-items-center">
+ 
+                <div
+                    class="row g-2">
+                    <div class="col">
+                        <table class="table table-hover table-responsive">
+                            <tr class="text-center">
+                                <th >Item</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                            </tr>
+                            @php 
+                                $totalPrice = 0; 
+                                $shippingFee = 75;      
+                             @endphp  <!-- Initialize totalPrice variable -->
+                            @foreach ($cartItems as $key => $items)
+                                <tr class="align-items-center justify-content-center text-center align-middle cart-item" data-id="{{ $items->id }}"> 
+                                    <td>
+                                        <div class="d-flex flex-column gap-0 flex-md-row align-items-center">
                                             <!-- Product Image -->
                                             <div class="order-1 order-md-1 d-flex justify-content-center align-items-center" onclick="clickProduct('{{ route('showDetails', $items->slug) }}')" STYLE="cursor: pointer;">
                                                 <img src="{{ $items->image }}" class="img-fluid" alt="Product Image" style="max-width: 100px; height: auto;">
@@ -112,34 +95,33 @@
                                                 <span class="d-block">₱ {{ number_format($items->price - $items->discount,2) }}</span>
                                             </div>
                                         </div>
-        
-                                        <!-- Quantity Selector -->
-                                        <div class="col-4 col-md-2 d-flex justify-content-center">
+                                    </td>
+                                    <td class=" align-middle">
+                                        <div class=" d-flex justify-content-center align-items-center">
                                             <input type="number" class="form-control quantity text-center" value="{{ $items->quantity }}" min="1" style="width: 75px;" data-price="{{ $items->price }}" data-discount="{{ $items->discount }}" data-id="{{ $items->product_id }}">
+
                                         </div>
-        
-                                        <!-- Total Price per Item -->
-                                        <div class="col-2 col-md-3 d-flex justify-content-center align-items-center">
-                                            <strong class=" item-total-price">₱ {{ number_format(($items->price - $items->discount ) * $items->quantity,2) }}</strong>
-                                        </div>
-        
+                                    </td>
+                                    <td>
+                                        <strong class=" item-total-price">₱ {{ number_format(($items->price - $items->discount ) * $items->quantity,2) }}</strong>
+                                    </td>
+                                    <td>
                                         <!-- Remove Button -->
-                                        <div class="col-1 col-md-1 d-flex justify-content-center align-items-center " style="color: red; cursor: pointer;">
+                                        <div class="col-1 col-md-1" style="color: red; cursor: pointer;">
                                             {{-- <i class="remove-item fa-solid fa-minus fa-lg" style="color: red;"></i> --}}
-                                            <i class=" remove-item fa-solid fa-x"></i>
+                                            <i class="remove-item fa-solid fa-x"></i>
                                         </div>
-                                    </div>
-                                </div>
-                                <hr style="border-top: 2px solid #313131;">
-                                @php $totalPrice += ($items->price - $items->discount ) * $items->quantity; @endphp  <!-- Add to totalPrice -->
-                            </div>
-                            
-                        @endforeach
+                                     </td>
+                                     @php $totalPrice += ($items->price - $items->discount ) * $items->quantity; @endphp  
+                                </tr>
+                            @endforeach
+                        </table>
                     </div>
-        
-                    <!-- Total Price -->
-                    <div class="col-12 col-md-4 justify-content-end mb-5">
-                        <div class="card p-3">
+
+                    {{-- SUMMARY --}}
+                    <div class="col-12 col-md-4">
+                         <!-- Total Price -->
+                         <div class="card p-3">
                             <h5 class="text-center"> Summary</h5>
                             <hr>
                             <div class="row">
@@ -188,7 +170,10 @@
                             <a href="{{ route('home') }}" class="btn btn-outline-secondary w-100 mt-2 text-dark">Continue Shopping</a>
                         </div>
                     </div>
+
                 </div>
+                
+                
             @endif
 
         </div>

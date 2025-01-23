@@ -160,7 +160,16 @@
                                         @foreach ($ordered_items as $item)
 
                                             <tr>
-                                                <td>{{ $item['product_name'] }}</td>
+                                                <td>
+                                                   <div >
+                                                        {{ $item['product_name'] }}
+                                                        <p class="">
+                                                            <small>{{ $item['variant']['color'] ?? '' }}</small>
+                                                            <small>{{ $item['variant']['size'] ?? '' }}</small>
+                                                        </p>
+                                                        
+                                                   </div>
+                                                </td>
                                                 <td>₱ {{ number_format($item['price'],2) }}</td>
                                                 <td>{{ $item['quantity'] }}</td>
                                                 <td>₱ {{ number_format($item['subtotal'] ,2) }}</td>

@@ -13,7 +13,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm fixed-top small-navbar">
 
-  <div class="container-fluid">
+  <div class="container">
       <!-- Brand -->
       <a class="navbar-brand" href="{{ route('home') }}">
           <i class="fa-solid fa-cart-shopping fa-lg"></i>
@@ -45,7 +45,7 @@
                   
                 <a class="btn btn-outline-dark text-dark bg-transparent" type="submit" href="{{ route('cart.show') }}">
                   <i class="fa-solid fa-cart-shopping"></i>
-                  Cart
+                  {{-- Cart --}}
                   <span class="badge bg-dark text-white ms-1 rounded-pill" id="cart-item-number">{{ Session::get('cartItemCount', 0) }}</span>
               </a>
             </li>
