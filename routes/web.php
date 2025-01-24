@@ -7,8 +7,10 @@ use App\Http\Controllers\CategoryManager;
 use App\Http\Controllers\InventoryLogManager;
 use App\Http\Controllers\OrderManager;
 use App\Http\Controllers\ProductsManager;
+use App\Http\Controllers\ProductVariantManager;
 use App\Http\Controllers\UserManager;
 use App\Models\Products;
+use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -108,6 +110,16 @@ use Illuminate\Support\Facades\Route;
         Route::put('/admin/product/inactivate/{id}', [ProductsManager::class, 'setInactiveProduct']);
         Route::put('admin/update/selected/products', [ProductsManager::class, 'bulkUpdate'])
         ->name('admin.update.selected.products');
+        
+        //PRODUCT VARIANT 
+        Route::post('admin/create/variant', [ProductVariantManager::class, 'create'])
+        ->name('admin.create.variant');
+        Route::put('admin/update/variant', [ProductVariantManager::class, 'update'])
+        ->name('admin.update.variant');
+        Route::delete('admin/delete/variant/{id}', [ProductVariantManager::class, 'destroy'])
+        ->name('admin.delete.variant');
+
+       
 
         // CATEGORIES ROUTE
         Route::get('/category', [CategoryManager::class, 'index'])->name('admin.categories');
