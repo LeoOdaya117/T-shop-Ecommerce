@@ -133,38 +133,51 @@
                                       <!-- Variants Section -->
                                       <div class="row mt-4">
                                         <div class="col">
-                                            <h4>Variants</h4>
-                                            <table class="table table-bordered" id="variants-table">
-                                                <thead>
-                                                    <tr class="text-center">
-                                                        <th>Variant ID</th>
-                                                        <th>Color</th>
-                                                        <th>Size</th>
-                                                        <th>Stock</th>
-                                                        <th>Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($productInfo->variants as $variant)
-                                                        <tr class="text-center" data-variant-id="{{ $variant->id }}">
-                                                            <td>{{ $variant->id }}</td>
-                                                            <td>{{ $variant->color }}</td>
-                                                            <td>{{ $variant->size }}</td>
-                                                            <td>{{ $variant->stock }}</td>
-                                                            <td>
-                                                                <button  class="btn btn-info rounded adjust-btn" data-id="{{ $variant->id }}" 
-                                                                    data-product-id="{{ $variant->product_id }}">
-                                                                    <i class="fas fa-cogs"></i> Adjust Stock
-                                                                </button>
-                                                               
-                                                                <a href="#" class="btn btn-danger rounded delete-btn" data-id="{{ $variant->id }}"  >
-                                                                    <i class="fas fa-trash"></i> Delete
-                                                                </a>
-                                                            </td>
+                                            <div id="alert-container2"></div>
+                                            <div class="d-flex m-1">
+                                                <h4>Product Variants</h4>
+                                                <button class="btn btn-success rounded ml-auto" id="addVariantBtn" data-id="{{ $productInfo->id }}" data-title="{{ $productInfo->title }}">
+                                                    <i class="fas fa-plus"></i> Add Variant
+                                                </button>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-hover tabled" id="variants-table">
+                                                    <thead>
+                                                        <tr class="text-center">
+                                                            <th>Variant ID</th>
+                                                            <th>Color</th>
+                                                            <th>Size</th>
+                                                            <th>Stock</th>
+                                                            <th>Actions</th>
                                                         </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($productInfo->variants as $variant)
+                                                            <tr class="text-center" data-variant-id="{{ $variant->id }}">
+                                                                <td>{{ $variant->id }}</td>
+                                                                <td>{{ $variant->color }}</td>
+                                                                <td>{{ $variant->size }}</td>
+                                                                <td>{{ $variant->stock }}</td>
+                                                                <td>
+                                                                    <button  class="btn btn-info rounded adjust-btn" data-id="{{ $variant->id }}" data-product-id="{{ $productInfo->id }}">
+                                                                 
+                                                                        <i class="fas fa-cogs"></i> Adjust Stock
+                                                                    </button>
+                                                                    <button class="btn btn-warning rounded edit-btn" title="Edit Variant Data" data-id="{{ $variant->id }}" data-productid="{{ $variant->product_id }}" 
+                                                                    data-color="{{ $variant->color }}" data-size="{{ $variant->size }}" >
+                                                                        <i class="fas fa-edit"></i> 
+                                                                    </button>
+                                                                   
+                                                                    <button class="btn btn-danger rounded variantDelete-btn" title="Delete Variant Data" data-id="{{ $variant->id }}"  >
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            
                                         </div>
                                     </div>
                                     <!-- End Variants Section -->
@@ -193,7 +206,8 @@
             <button type="button" class="btn btn-warning" id="confirmUpdate">Update</button>
         ',
     ])
-    @include('partials.modal', [
+   {{-- ADJUST STOCK MODAL --}}
+   @include('partials.modal', [
         'id' => 'adjustStockModal',
         'title' => 'ADJUST PRODUCT STOCKS',
         'body' => '
@@ -229,8 +243,100 @@
            
         ',
     ])
-    
-    
+
+    {{-- UPDATE VARIANT MODAL --}}
+    @include('partials.modal', [
+        'id' => 'updateVariantModal',
+        'title' => 'Update Product Variant',
+        'body' => '
+            <form method="PUT" id="updateVariantForm" >
+        
+                <div class="form-group">
+                    <label for="inputText3" class="col-form-label">Variant ID</label>
+                    <input readonly type="text" name="variant_id" id="variantId"  class="form-control rounded-pill" placeholder="" >
+                </div>
+                <div class="form-group">
+                    <label for="inputText3" class="col-form-label">Color</label>
+                    <input type="text" name="color" id="variantColor"  class="form-control rounded-pill" placeholder="" >
+                </div>
+                
+                
+                 <div class="form-group">
+                    <label for="inputText3" class="col-form-label">Size</label>
+                    <select name="size" id="variantSize" class="form-control rounded-pill mb-2">
+                        <option value="" disable>Select size</option>
+                        <option value="Small" >Small</option>
+                        <option value="Medium" >Medium</option>
+                        <option value="Large" >Large</option>
+                        <option value="Xl" >Extra Large</option>
+                        
+                    </select>
+                </div>
+                
+                <div class="d-flex justify-content-end align-items-end">
+                    <button type="button" class="btn btn-secondary mx-1" id="cancelProductVarintBtn" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger" id="updateProductBtn">Update</button>
+                </div>
+                
+               
+            </form>
+        ',
+        'footer' => '
+           
+        ',
+    ])
+
+    {{-- CREATE VARIANT MODAL --}}
+    @include('partials.modal', [
+        'id' => 'createVariantModal',
+        'title' => 'Create Product Variant',
+        'body' => '
+            <form method="POST" id="createVariantForm" >
+        
+                <div class="form-group">
+                    <label for="inputText3" class="col-form-label">Product ID</label>
+                    <input readonly type="text" name="product_Id" id="variant_product_id"  class="form-control rounded-pill" placeholder="" >
+                </div>
+                <div class="form-group">
+                    <label for="inputText3" class="col-form-label">Product Title</label>
+                    <input readonly type="text" name="product_title" id="variant_product_title" class="form-control rounded-pill" placeholder="" >
+                </div>
+                <div class="form-group">
+                    <label for="inputText3" class="col-form-label">Color</label>
+                    <input type="text" name="color"  class="form-control rounded-pill" placeholder="" >
+                </div>
+                
+                <div class="form-group">
+                    <label for="inputText3" class="col-form-label">Size</label>
+                    <select name="size" class="form-control rounded-pill mb-2">
+                        <option value="" disable>Select size</option>
+                        <option value="Small" >Small</option>
+                        <option value="Medium" >Medium</option>
+                        <option value="Large" >Large</option>
+                        <option value="Xl" >Extra Large</option>
+                        
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                        <label for="inputText3" class="col-form-label">Quantity</label>
+                        <input type="text" name="quantity"  class="form-control rounded-pill" placeholder="0" >
+                </div>
+                
+                <div class="d-flex justify-content-end align-items-end">
+                    <button type="button" class="btn btn-secondary mx-1" id="cancelCreateProductVariantBtn" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success" id="createProductBtn">Save</button>
+                </div>
+                
+            
+            </form>
+        ',
+        'footer' => '
+        
+        ',
+    ])
+        
+        
 
    <script src="{{ asset('assets/js/products.js') }}"></script>
    <script>
@@ -321,7 +427,7 @@
                 success: function(response) {
                     if(response.success == true) {
                         const newStock = response.new_stock; // Assuming the server returns the updated stock value
-                        $('#alert-container').html(`
+                        $('#alert-container2').html(`
                             <div class="alert alert-success">
                                 ${response.message}
                             </div>
@@ -332,7 +438,7 @@
                         $('#adjustStockModal').modal('hide');
                         
                     } else {
-                        $('#alert-container').html(`
+                        $('#alert-container2').html(`
                             <div class="alert alert-danger">
                                 Something went wrong. Please try again.
                             </div>
@@ -348,7 +454,7 @@
                         errorHtml += `<li>${errors[field][0]}</li>`;
                     }
                     errorHtml += '</ul>';
-                    $('#alert-container').html(`
+                    $('#alert-container2').html(`
                         <div class="alert alert-danger">
                             ${errorHtml}
                         </div>
@@ -362,5 +468,223 @@
     });
 
 
+    // EDIT PRODUCT VARIANT
+    $(document).ready(function () {
+        $('.edit-btn').on('click', function() {
+            const variantId = this.dataset.id;
+            const productId = this.dataset.productid;
+            const color = this.dataset.color;
+            const size = this.dataset.size;
+            // $('#updateVariantForm')[0].reset(); // Reset form data
+            $('#variantId').val(variantId);
+            $('#variantColor').val(color);
+            $('#variantSize').val(size);
+           
+            $('#updateVariantModal').modal('show');
+        });
+    });
+    $('#cancelProductVarintBtn').on('click', function () {
+        $('#updateVariantModal').modal('hide');
+    });
+
+    $("#updateVariantForm").submit(function(e) {
+        const url = `{{ route('admin.update.variant') }}`;
+        var form = $(this);
+        var formData = form.serialize(); // Serialize the form data
+        e.preventDefault();
+        $.ajax({
+            type: "PUT",
+            url: url,
+            data: formData,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
+            },
+            success: function(response) {
+                if(response.success == true) {
+                    $('#alert-container2').html(`
+                        <div class="alert alert-success">
+                            ${response.message}
+                        </div>
+                    `);
+                    const variantId = response.variant_id;
+                    const color = response.new_color;
+                    const size = response.new_size;
+                    $(`tr[data-variant-id="${variantId}"] td:nth-child(2)`).text(color);
+                    $(`tr[data-variant-id="${variantId}"] td:nth-child(3)`).text(size);
+                    $('#updateVariantModal').modal('hide');
+                } else {
+                    $('#alert-container2').html(`
+                        <div class="alert alert-danger">
+                            Something went wrong. Please try again.
+                        </div>
+                    `);
+                    $('#updateVariantModal').modal('hide');
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#updateVariantModal').modal('hide');
+                const errors = xhr.responseJSON.errors;
+                let errorHtml = '<ul>';
+                for (let field in errors) {
+                    errorHtml += `<li>${errors[field][0]}</li>`;
+                }
+                errorHtml += '</ul>';
+                $('#alert-container2').html(`
+                    <div class="alert alert-danger">
+                        ${errorHtml}
+                    </div>
+                `);
+            }
+        });
+    });
+   
+    // DELETE PRODUCT VARIANT
+    $(document).ready(function () {
+        $('.variantDelete-btn').on('click', function() {
+            const variantId = this.dataset.id;
+            const url = `/admin/delete/variant/${variantId}`; // Dynamic URL construction
+
+           
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: url,
+                        data: {
+                            variant_id: variantId
+                        },
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
+                        },
+                        success: function(response) {
+                            if(response.success == true) {
+                                $('#alert-container2').html(`
+                                    <div class="alert alert-success">
+                                        ${response.message}
+                                    </div>
+                                `);
+                                $(`tr[data-variant-id="${variantId}"]`).remove();
+                            } else {
+                                $('#alert-container2').html(`
+                                    <div class="alert alert-danger">
+                                        Something went wrong. Please try again.
+                                    </div>
+                                `);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            const errors = xhr.responseJSON.errors;
+                            let errorHtml = '<ul>';
+                            for (let field in errors) {
+                                errorHtml += `<li>${errors[field][0]}</li>`;
+                            }
+                            errorHtml += '</ul>';
+                            $('#alert-container2').html(`
+                                <div class="alert alert-danger">
+                                    ${errorHtml}
+                                </div>
+                            `);
+                        }
+                    });
+                }
+            });
+            
+        });
+    });
+   
+   //CREATE PRODOCT VARIANT
+   $(document).ready(function () {
+        $('#addVariantBtn').on('click', function() {
+            $('#createVariantForm')[0].reset(); // Reset form data
+            const productId = this.getAttribute('data-id');
+            const productTitle = this.getAttribute('data-title');
+            $('#variant_product_id').val(productId);
+            $('#variant_product_title').val(productTitle);
+
+            $('#createVariantModal').modal('show');
+        });
+    });
+
+    $('#cancelCreateProductVariantBtn').on('click', function () {
+        $('#createVariantModal').modal('hide');
+    });
+
+    $("#createVariantForm").submit(function(e) {
+        const url = `{{ route('admin.create.variant') }}`;
+        var form = $(this);
+        var formData = form.serialize(); // Serialize the form data
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: formData,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
+            },
+            success: function(response) {
+                if(response.success == true) {
+                    $('#alert-container2').html(`
+                        <div class="alert alert-success">
+                            ${response.message}
+                        </div>
+                    `);
+                    $('#createVariantModal').modal('hide');
+                    const newRow = `
+                        <tr class="text-center" data-variant-id="${response.id}">
+                            <td>${response.id}</td>
+                            <td>${response.color}</td>
+                            <td>${response.size}</td>
+                            <td>${response.stock}</td>
+                            <td>
+                                <button  class="btn btn-info rounded adjust-btn" data-id="${response.id}">
+                                    <i class="fas fa-cogs"></i> Adjust Stock
+                                </button>
+
+                                <button class="btn btn-warning rounded edit-btn" title="Edit Variant Data" data-id="${response.id}" data-productid="${response.product_id}" data-color="${response.color}" data-size="${response.size}}" >
+                                    <i class="fas fa-edit"></i> 
+                                </button>
+                                                                   
+                               <button class="btn btn-danger rounded variantDelete-btn" title="Delete Variant Data" data-id="${response.id}"  >
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+
+                    // Append the new row to the table body
+                    $('#variants-table tbody').append(newRow);
+                } else {
+                    $('#alert-container2').html(`
+                        <div class="alert alert-danger">
+                            Something went wrong. Please try again.
+                        </div>
+                    `);
+                    $('#createVariantModal').modal('hide');
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#createVariantModal').modal('hide');
+                const errors = xhr.responseJSON.errors;
+                let errorHtml = '<ul>';
+                for (let field in errors) {
+                    errorHtml += `<li>${errors[field][0]}</li>`;
+                }
+                errorHtml += '</ul>';
+                $('#alert-container2').html(`
+                    <div class="alert alert-danger">
+                        ${errorHtml}
+                    </div>
+                `);
+            }
+        });
+    });
    </script>
 @endsection
