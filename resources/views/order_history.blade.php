@@ -1,9 +1,22 @@
 @extends('layouts.default')
 @section('title', 'Order History')
 @section('content')
+    <div class="bg-dark text-light">
+        <div class=" container ">
+            <nav aria-label="breadcrumb" class="pt-5 mt-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item" onclick="route('{{ route('home') }}')">Home</li>
+                    <li class="breadcrumb-item" onclick="route('{{ route('order.history',['status'=> 'all']) }}')">Order History</li>
+                    <li class="breadcrumb-item active" aria-current="page">Track Order</li>
+
+                </ol>
+            </nav>
+            
+        </div>
+    </div>
     <main class="container  mb-5">
-        <section class="pt-5">
-            <div class="row pt-4 d-flex align-items-center align-content-center justify-content-between mb-2 w-auto">
+        <section class="pt-3">
+            <div class="row d-flex align-items-center align-content-center justify-content-between mb-2 w-auto">
                 <div class="col-auto">
                     <h5>Order History</h5>
                 </div>
@@ -53,6 +66,7 @@
                                         {{ $order->order_status }}
                                     </span>
                                 </p>
+                                <a href="{{ route('user.order.tracking', $order->id) }}" class="btn btn-info">View</a>
                                 {{-- <a href="{{ route('order.details', $order->id) }}" class="btn btn-primary btn-sm mt-auto">View</a> --}}
                             </div>
                         </div>
@@ -67,7 +81,7 @@
             </div>
             
         </section>
-        <div class="row pt-4">
+        <div class="row pt-1">
             <div class="col-12">
                 {{ $orders->links('pagination::bootstrap-5') }} <!-- Pagination links -->
             </div>
