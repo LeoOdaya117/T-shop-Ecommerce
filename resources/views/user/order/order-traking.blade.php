@@ -61,22 +61,31 @@
             color: #555;
             text-align: center;
         }
+        .table td, .table th {
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
     </style>
 @endsection
 @section('content')
-<div class="bg-dark text-light">
-    <div class=" container ">
-        <nav aria-label="breadcrumb" class="pt-5 mt-4">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item" onclick="route('{{ route('home') }}')">Home</li>
-                <li class="breadcrumb-item" onclick="route('{{ route('home') }}')">Order History</li>
-                <li class="breadcrumb-item active" aria-current="page">Track Order</li>
+    <div class="bg-dark text-light">
+        <div class=" container ">
+            <nav aria-label="breadcrumb" class="pt-5 mt-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item" onclick="route('{{ route('home') }}')">Home</li>
+                    <li class="breadcrumb-item" onclick="route('{{ route('order.history',['status'=> 'all']) }}')">Order History</li>
+                    <li class="breadcrumb-item active" aria-current="page">Track Order</li>
 
-            </ol>
-        </nav>
-        
+                </ol>
+            </nav>
+            
+        </div>
     </div>
-</div>
     <main class="container mb-5">
         <section class="pt-3">
             <div class="container mb-3">
@@ -176,64 +185,120 @@
                         <h5>Order Details</h5>
                     </div>
                     <div class="card-body">
-                        <div class="container-fluid table-responsive">
-                                
-                            <table class="table tabled-hover">
-                                <thead>
-                                    <tr class="">
-                                        <th>Product</th>
-                                        <th>Price</th>
-                                        <th>Quantity</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($ordered_items as $item)
 
-                                        <tr>
-                                            <td>
-                                               <div >
-                                                    {{ $item['product_name'] }}
-                                                    <p class="">
-                                                        <small>{{ $item['variant']['color'] ?? '' }}</small>
-                                                        <small>{{ $item['variant']['size'] ?? '' }}</small>
-                                                    </p>
-                                                    
-                                               </div>
-                                            </td>
-                                            <td>₱ {{ number_format($item['price'],2) }}</td>
-                                            <td>{{ $item['quantity'] }}</td>
-                                            <td>₱ {{ number_format($item['subtotal'] ,2) }}</td>
-                                        </tr>
-                                            
-                                    @endforeach
+                        {{-- Shipping INFORMATION --}}
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <div
+                                    class="row justify-content-center align-items-center g-2"
+                                >
+                                    <div class="col">
+                                        <p class="m-0 text-muted"><strong>Shipping Address</strong></p>
+                                        <p class="m-0">{{ $order->fname }} {{ $order->lname }}</p>
+                                        <p class="m-0">{{ $order->phone ?? 'N/A'}}</p>
+                                        <p class="m-0">{{ $order->address }} 
+                                            @if ($order->address2)
+                                                {{ $order->address2 }}
+                                            @endif
+                                            {{ $order->city }}, {{ $order->state }} {{ $order->pincode }} {{ $order->country }}
+                                        </p>
+                                    </div>
                                     
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td class="text-end"><strong>Subtotal:</strong></td>
-                                        <td class="text-end"><strong>₱  {{ number_format($order->total_price - $order->shipping_fee, 2) }}</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td class="text-end"><strong>Shipping:</strong></td>
-                                        <td class="text-end"><strong>₱ {{ number_format($order->shipping_fee, 2)  }}</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td class="text-end"><h5>Grand Total:</h5></td>
-                                        <td class="text-end"><h5>₱ {{ number_format($order->total_price, 2) }}</h5></td>
-                                    </tr>
-                                    
-                                </tbody>
-                            </table>
+                                </div>
+                                
+                               
+                            </div>
                         </div>
 
+                        {{-- PAYMENT INFORMATION --}}
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <!-- Customer Info -->
+                                <div
+                                    class="row justify-content-center align-items-center g-2"
+                                >
+                                    <div class="col">
+                                        <p class="m-0 text-muted"><strong>Payment Information</strong></p>
+                                        <p class="m-0 ">Payment ID: {{ $order->payment_id ?? 'N/A' }}</p>
+                                        <p class="m-0 ">Payment Method: {{ $order->payment_method ?? 'N/A' }}</p>
+                                        <p class="m-0">Status: {{ $order->payment_status ?? 'N/A'  }}</p>
+                                        @if ($order->payment_status == 'Complete')
+                                            <p class="m-0">Paid Date:     
+                                                {{ $order->payment_date ? \Carbon\Carbon::parse($order->payment_date)->format('M d, Y h:i A') : 'N/A' }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                    
+                                </div>
+                                
+                                
+                            </div>
+                        </div>
+                        {{-- ORDERED ITEMS --}}
+                        <div class="card">
+                            <div class="container-fluid table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th>Product</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($ordered_items as $item)
+                                            <tr>
+                                                <td class="d-flex align-items-start gap-2">
+                                                    <img
+                                                        src="{{ $item['image'] }}"
+                                                        class="img-fluid rounded"
+                                                        alt="Product Image"
+                                                        width="50px"
+                                                        height="50px"
+                                                        style="object-fit: cover;"
+                                                    />
+                                                    <div class="text-start">
+                                                        <span class="fw-bold">{{ $item['product_name'] }}</span>
+                                                        <p class="mb-0 text-muted d-flex gap-1">
+                                                            <small>{{ $item['variant']['color'] ?? '' }}</small><br>
+                                                            <small>{{ $item['variant']['size'] ?? '' }}</small>
+                                                        </p>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center align-middle">₱ {{ number_format($item['price'], 2) }}</td>
+                                                <td class="text-center align-middle">{{ $item['quantity'] }}</td>
+                                                <td class="text-center align-middle">₱ {{ number_format($item['subtotal'], 2) }}</td>
+                                            </tr>
+                                        @endforeach
+                                        <tr>
+                                            <td colspan="2"></td>
+                                            <td class="text-end fw-bold">Subtotal:</td>
+                                            <td class="text-end">₱ {{ number_format($order->total_price - $order->shipping_fee, 2) }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"></td>
+                                            <td class="text-end fw-bold">Shipping:</td>
+                                            <td class="text-end">₱ {{ number_format($order->shipping_fee, 2) }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"></td>
+                                            <td class="text-end"><h5>Grand Total:</h5></td>
+                                            <td class="text-end"><h5>₱ {{ number_format($order->total_price, 2) }}</h5></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
         </section>
     </main>
+    <script>
+        function route(routeUrl) {
+            window.location.href = routeUrl;
+        }
+    </script>
 @endsection
