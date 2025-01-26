@@ -121,7 +121,8 @@ class OrderManager extends Controller
         $order->total_price = $totalPrice;
         $order->order_status = "Order Placed";
         $order->tracking_id = $trackingId;
-        $order->payment_status = "Processing";
+        $order->payment_status = "Pending";
+        $order->payment_method = "Card";
         $order->address2 = $request->address2;
         $order->state = $request->province;
         $order->city = $request->city;
@@ -217,7 +218,8 @@ class OrderManager extends Controller
             
             if ($order) {
                 $order->payment_id = $paymentID;
-                $order->payment_status = 'completed';
+                $order->payment_status = 'Complete';
+                $order->payment_date = now();
                 $order->save();
             }
         }
