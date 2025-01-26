@@ -40,6 +40,7 @@ class OrderTrackingManager extends Controller
     
             $ordered_items[] = [
                 'product_name' => $product->title,
+                'image' => $product->image,
                 'price' => $price,
                 'quantity' => $quantity,
                 'subtotal' => $subtotal,
