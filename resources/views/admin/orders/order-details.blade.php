@@ -114,6 +114,7 @@
                                             @endif
                                             text-white
                                             ">{{ $orderInfo->order_status }}</span></p>
+                                        <p class="m-0">Payment Method: {{ $orderInfo->payment_method }}</p>    
                                         <p class="m-0">Total Amount: ₱ {{ number_format($orderInfo->total_price, 2) }}</p>
                             
         
@@ -213,8 +214,9 @@
                                     @csrf
                                     @method('PUT')
                                     <select name="order_status" class="form-control rounded-pill mb-3 text-center">
-                                        <option class="text-success fw-bolder" disabled>Choose Status</option>
+                                        <option class=" fw-bolder" disabled>Choose Status</option>
                                         <option class="text-success fw-bolder" value="Delivered" {{$orderInfo->order_status == 'Delivered' ? 'selected' : ''}}>Delivered</option>
+                                        <option class="text-primary fw-bolder" value="Out for Delivery" {{$orderInfo->order_status == 'Out for Delivery' ? 'selected' : ''}}>Out for Delivery</option>
                                         <option class="text-info fw-bolder"  value="Shipped" {{$orderInfo->order_status == 'Shipped' ? 'selected' : ''}}>Shipped</option>
                                         <option class="text-waring fw-bolder"  value="Processing" {{$orderInfo->order_status == 'Processing' ? 'selected' : ''}}>Processing</option>
                                         <option class="text-danger fw-bolder"  value="Cancelled" {{$orderInfo->order_status == 'Cancelled' ? 'selected' : ''}}>Cancel</option>

@@ -19,15 +19,25 @@
 @section('content')
     <main class="container full-height">
         <section class="content-box">
+            <h1 class="text-success fw-bold" style="font-size: 50px;"><i class="fa-solid fa-check"></i></h1>
             <h1>Payment Successful</h1>
             <p>Thank you for your purchase. Your order is being processed.</p>
-            <p style="font-size: 13px">Redirecting to the cart in <span id="countdown">10</span> seconds...</p>
+            <div class="d-flex gap-1 align-items-center justify-content-center text-center align-content-center">
+                
+                <p>
+                    <a href="{{ route('user.order.tracking', $order_id) }}" class="fw-bold">View Order</a>
+                    or 
+                    <a href="{{ route('home') }}" class="fw-bold">Continue Shopping</a>
+                </p>
+                
+            </div>
+            {{-- <p style="font-size: 13px">Redirecting to the cart in <span id="countdown">10</span> seconds...</p> --}}
         </section>
     </main>
 @endsection
 
 @section('script')
-    <script>
+    {{-- <script>
         document.addEventListener('DOMContentLoaded', function () {
            
             var countdownElement = document.getElementById('countdown');
@@ -47,5 +57,5 @@
                 }
             }, 1000);
         });
-    </script>
+    </script> --}}
 @endsection

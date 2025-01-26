@@ -64,29 +64,39 @@
                             $groupedByColor = $variants->groupBy('color');
                         @endphp
         
-                        <p class="text-muted">Color</p>
-                        @foreach ($groupedByColor as $color => $group)
-                            <button class="btn btn-outline-dark text-dark bg-transparent mb-2" 
-                                    data-color="{{ $color }}" 
-                                    onclick="updateSizeOptions('{{ $color }}')">{{ $color }}</button>
-                        @endforeach
-        
-                        <p class="text-muted">Size</p>
-                        @foreach ($groupedByColor as $color => $group)
-                            <div id="sizes-for-{{ $color }}" class="sizes" style="display: none;">
-                                @foreach ($group as $variant)
-                                    <button class="btn btn-outline-dark text-dark bg-transparent mb-2" 
-                                            onclick="selectSize('{{ $color }}', '{{ $variant->size }}')">
-                                        {{ strtoupper(substr($variant->size, 0, 1)) }}
-                                        </span>
-                                    </button>
+                        <div class="d-flex gap-2 align-content-center text-center align-items-center">
+                            <p class="text-muted">Color: </p>
+                            <select name="" id="" class="form-select mb-3 w-50 ml-2" onchange="updateSizeOptions(this.value)">
+                                <option selected disabled>Select color</option>
+                                @foreach ($groupedByColor as $color => $group)
+                                    <option value="{{ $color }}">{{ $color }}</option>
                                 @endforeach
-                            </div>
-                        @endforeach
+                            </select>
+                        </div>
+                       
+        
+                        <div class="d-flex gap-3 align-content-center text-center align-items-center mb-2">
+                            <p class="text-muted">Size: </p>
+                            @foreach ($groupedByColor as $color => $group)
+                                <div id="sizes-for-{{ $color }}" class="sizes" style="display: none;">
+                                    <select class="form-select mb-2 ml-2" onchange="selectSize('{{ $color }}', this.value)">
+                                        <option value="" selected disabled>Select Size</option>
+                                        @foreach ($group as $variant)
+                                            <option value="{{ $variant->size }}">
+                                                {{ strtoupper(substr($variant->size, 0, 1)) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            @endforeach
+                        </div>
+                        
+                        
                         <input type="hidden" id="selectedVariantId" name="variant_id" value="">
 
         
                         <div class="d-flex mb-2 align-items-center m-0">
+                            
                             <div class="input-group d-flex" style="max-width: 8rem;">
                                 <button type="button" class="btn btn-dark" onclick="decrementQuantity()">-</button>
                                 <input 

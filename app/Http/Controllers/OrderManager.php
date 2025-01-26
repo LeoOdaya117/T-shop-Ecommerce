@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Orders;
+use App\Models\OrderTracking;
 use App\Models\Products;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,7 @@ use Illuminate\Http\Request;
 use Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str; // Import Str
 
 class OrderManager extends Controller
 {
@@ -104,6 +106,9 @@ class OrderManager extends Controller
             ];
         }
 
+        $trackingId = strtoupper(Str::random(10)); // e.g., "X7T9GQ2HFA"
+
+
         // dd($variantsIds);
         $order = new Orders();
         $order->user_id = auth()->user()->id;
@@ -115,6 +120,7 @@ class OrderManager extends Controller
         $order->quantity = json_encode($quantities);
         $order->total_price = $totalPrice;
         $order->order_status = "Order Placed";
+        $order->tracking_id = $trackingId;
         $order->payment_status = "Processing";
         $order->address2 = $request->address2;
         $order->state = $request->province;
@@ -138,6 +144,17 @@ class OrderManager extends Controller
                     'metadata' => [
                         'order_id' => $order->id,
                     ],
+                ]);
+
+                // Update tracking_id in the order
+                $orderTracking = DB::table('order_tracking')->insert([
+                    'tracking_id' => $trackingId,
+                    'order_id' => $order->id,
+                    'status' => 'Order Placed',
+                    'notes' => 'Order has been placed.',
+                    'created_by' => auth()->user()->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
 
                 // Update the stock of the products
@@ -325,16 +342,61 @@ class OrderManager extends Controller
     }
     function update(Request $request, $id){
         $order = Orders::findOrFail($id);
+
+        $request->validate([
+            'order_status' => 'required|string',
+        ]);
         $order->order_status = $request->input('order_status');
-        
+
+        // Set tracking notes based on the order status
+        switch ($request->order_status) {
+            case 'Processing':
+                $tracking_notes = 'Order has been accepted by the seller.';
+                break;
+
+            case 'Delivered':
+                $tracking_notes = 'Order has been delivered to the customer.';
+                break;
+
+            case 'Cancelled':
+                $tracking_notes = 'Order has been cancelled by the seller.';
+                break;
+
+            case 'Order Placed':
+                $tracking_notes = 'Order has been placed.';
+                break;
+
+            case 'Shipped':
+                $tracking_notes = 'Order has been shipped.';
+                break;
+
+            default:
+                $tracking_notes = 'Order status has been updated.';
+                break;
+        }
+
+    
         if($order->save()){
-           
+             // Create a new tracking record
+            try {
+                $orderTracking = new OrderTracking();
+                $orderTracking->tracking_id = $order->tracking_id;
+                $orderTracking->order_id = $order->id;
+                $orderTracking->status = $request->order_status;
+                $orderTracking->notes = $tracking_notes;
+                $orderTracking->created_by = auth()->user()->id;
+                $orderTracking->save();
+            } catch (\Throwable $th) {
+                return redirect()->intended(route('admin.orders.details', $id))
+                ->with("error", $th->getMessage());
+            }
             return redirect()->intended(route('admin.orders.details', $id))
                 ->with("success", "Order Status Successfully Updated.");
         }
         return redirect()->intended(route('admin.orders.details' , $id))
                 ->with("error", "Something went wrong");
     }
+
     function create(Request $request){
         
     }
@@ -405,5 +467,60 @@ class OrderManager extends Controller
     }
     
 
-    
+    function statusUpdate(Request $request){
+        $request->validate([
+            'order_id' => 'required|exists:orders,id',
+            'order_status' => 'required|string|in:Order Placed,Processing,Delivered,Cancelled',
+        ]);
+
+        $message = null;
+        if($request->order_status == 'Processing'){
+            $message = 'Order Accepted successfully';
+            $tracking_notes = 'Order has been accepted by the seller.';
+        }
+        else{
+            $message = 'Order Declined successfully';
+            $tracking_notes = 'Order has been declined by the seller.';
+        }
+
+        $order = Orders::find($request->order_id);
+
+        if(!$order){
+            return response()->json([
+                'error' => true,
+                'message' => 'Order not found.',
+            ]);
+        }
+
+        try {
+            $order->order_status = $request->order_status;
+            $order->save();
+
+            // Update tracking_id in the order
+            $orderTracking = DB::table('order_tracking')->insert([
+                'tracking_id' => $order->tracking_id,
+                'order_id' => $order->id,
+                'status' => $request->order_status,
+                'notes' => $tracking_notes,
+                'created_by' => auth()->user()->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+               
+            ]);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ]);
+        }
+
+      
+        return response()->json([
+            'success' => true,
+            'message' => $message ,
+        ]);
+    }
+
+
 }

@@ -117,7 +117,7 @@
                                                 <option value="Delivered" {{ request('order_status') == 'Delivered' ? 'selected' : '' }}>Delivered</option>
                                                 <option value="Shipped" {{ request('order_status') == 'Shipped' ? 'selected' : '' }}>Shipped</option>
                                                 <option value="Processing" {{ request('order_status') == 'Processing' ? 'selected' : '' }}>Processing</option>
-                                                <option value="Cancelled" {{ request('order_status') == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                                <option value="Cancelled" {{ request('order_status') == 'Cancelled' ? 'selected' : '' }}>Cancel</option>
                                                 <option value="Order Placed" {{ request('order_status') == 'Order Placed' ? 'selected' : '' }}>Order Placed</option>
 
                                             </select>
@@ -152,7 +152,7 @@
                                                 <tr class="text-center">
                                                     
                                                     <td>{{ $order->id }}</td>
-                                                    <td>₱ {{ $order->total_price }}</td>
+                                                    <td>₱ {{ number_format($order->total_price,2) }}</td>
                                                     <td>{{ $order->fname }} {{ $order->lname }}</td>
                                                     <td>{{ $order->created_at }}</td>
                                                     <td >

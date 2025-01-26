@@ -6,6 +6,7 @@ use App\Http\Controllers\CartManager;
 use App\Http\Controllers\CategoryManager;
 use App\Http\Controllers\InventoryLogManager;
 use App\Http\Controllers\OrderManager;
+use App\Http\Controllers\OrderTrackingManager;
 use App\Http\Controllers\ProductsManager;
 use App\Http\Controllers\ProductVariantManager;
 use App\Http\Controllers\UserManager;
@@ -92,6 +93,9 @@ use Illuminate\Support\Facades\Route;
             ->name('order.history');
         Route::get('/order-details/{id}', [OrderManager::class, 'orderDetails'])
             ->name('order.details');
+        Route::get('/order-tracking/{orderId}', [OrderTrackingManager::class, 'orderTracking'])
+        ->name('user.order.tracking');
+
 
         //ADMIN ROUTES
         Route::get('dashboard', [AuthManager::class,'admin_Index'])->name("admin.dashboard");
@@ -152,6 +156,9 @@ use Illuminate\Support\Facades\Route;
         ->name('admin.orders.details');
         Route::put('/orders/update/{id}',[OrderManager::class, 'update'])
         ->name('admin.orders.update');
+        Route::put('admin/orders/status-Update', [OrderManager::class, 'statusUpdate'])
+        ->name('admin.orders.orderStatus');
+
 
 
         // INVENTORY ROUTE

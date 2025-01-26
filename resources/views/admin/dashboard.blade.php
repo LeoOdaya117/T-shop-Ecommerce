@@ -94,19 +94,20 @@
                                         <div class="table-responsive">
                                             <table class="table">
                                                 <thead class="bg-light">
-                                                    <tr class="border-0">
-                                                        <th class="border-0">#</th>
-                                                        <th class="border-0">Order ID</th>
-                                                        <th class="border-0">Total Price</th>
-                                                        <th class="border-0">Customer</th>
-                                                        <th class="border-0">Order Time</th>
-                                                        <th class="border-0">Status</th>
+                                                    <tr class="text-center">
+                                                        <th class="">#</th>
+                                                        <th class="">Order ID</th>
+                                                        <th class="">Total Price</th>
+                                                        <th class="">Customer</th>
+                                                        <th class="">Order Time</th>
+                                                        <th class="">Status</th>
+                                                        <th class="">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     @if ($recentOrders->count() > 0)
                                                         @foreach ($recentOrders as $recentOrder)
-                                                            <tr>
+                                                            <tr class="text-center">
                                                                 <td>{{ $loop->iteration }}</td>
                                                                 
                     
@@ -129,7 +130,8 @@
                                                                     @endif
                                                                 ">{{ $recentOrder->order_status }}</td>
                                                                 <td>
-                                                                    <a href="" class="btn btn-outline-light btn-sm">Accept</a>
+                                                                    <button class="btn  btn-sm btn-success" onclick="orderStatus('{{ $recentOrder->id }}','Processing')">Accept</button>
+                                                                    <button class="btn  btn-sm btn-danger" onclick="orderStatus('{{ $recentOrder->id }}','Cancelled')">Decline</button>
                                                                 </td>
                                                             </tr>
                                                         @endforeach
@@ -359,6 +361,42 @@
 
         }
         
+        function orderStatus(orderId,status){
+            $.ajax({
+                url: "{{ route('admin.orders.orderStatus') }}",
+                method: 'PUT',
+                data: {
+                    order_id: orderId,
+                    order_status: status
+                },
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
+                },
+                success: function(response) {
+                    console.log(response);
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.onmouseenter = Swal.stopTimer;
+                            toast.onmouseleave = Swal.resumeTimer;
+                        }
+                        });
+                        Toast.fire({
+                        icon: "success",
+                        title: response.message,
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("An error occurred while accepting the order: ", error);
+                }
+            });
+        }
+        
     </script>
+
 @endsection()
                                 

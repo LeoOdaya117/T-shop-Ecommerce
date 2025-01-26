@@ -15,18 +15,11 @@
                             </li>
                             {{-- DASHBOARD --}}
                             <li class="nav-item ">
-                                <a class="nav-link active" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-1" aria-controls="submenu-1"><i class="fa fa-fw fa-user-circle"></i>Dashboard <span class="badge badge-success">6</span></a>
-                                <div id="submenu-1" class="collapse submenu" style="">
-                                    <ul class="nav flex-column">
-                                        
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('admin.dashboard') }}">Overview</a>
-                                        </li>
-                                       
-                                    </ul>
-                                </div>
+                                <a class="nav-link active" href="{{ route('admin.dashboard') }}"  aria-expanded="false" aria-controls="submenu-1"><i class="fa fa-fw fa-user-circle"></i>Dashboard</a>
+                               
                             </li>
-                            
+                            <li class="nav-item ">
+                                <a class="nav-link" href="{{ route('home') }}" aria-expanded="false" aria-controls="submenu-1"><i class="fa fa-fw fa-user-circle"></i>Shop</a>                            </li>
                           
 
                            
@@ -78,16 +71,8 @@
                                 </li> --}}
                                 {{-- ORDERS MENU --}}
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#order-menu" aria-controls="submenu-6"><i class="fas fa-fw fa-file"></i> Orders </a>
-                                    <div id="order-menu" class="collapse submenu" style="">
-                                        <ul class="nav flex-column">
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="{{ route('admin.orders') }}">Orders</a>
-                                            </li>
-                                          
-                                            
-                                        </ul>
-                                    </div>
+                                    <a class="nav-link" href="{{ route('admin.orders') }}" aria-expanded="false"  aria-controls="submenu-6"><i class="fas fa-fw fa-file"></i> Orders </a>
+                                   
                                 </li>
                                 {{-- USERS MENU --}}
                                 <li class="nav-item">
