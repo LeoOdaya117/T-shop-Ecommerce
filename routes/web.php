@@ -10,6 +10,7 @@ use App\Http\Controllers\OrderTrackingManager;
 use App\Http\Controllers\ProductsManager;
 use App\Http\Controllers\ProductVariantManager;
 use App\Http\Controllers\UserManager;
+use App\Http\Controllers\WishlistManager;
 use App\Models\Products;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Route;
@@ -87,6 +88,14 @@ use Illuminate\Support\Facades\Route;
             ->name('payment.success');
         Route::get('/payment/error', [OrderManager::class, 'paymentError'])
             ->name('payment.error');
+
+        // MY ACCOUNT
+        Route::get('profile',[UserManager::class, 'profile'])->name('user.profile');
+        Route::get('change-password', function(){
+            return view('user.account.change-password');
+        })->name('user.change-password');
+        Route::get('wishlist',[WishlistManager::class, 'show'])->name('user.wishlist');
+        
 
         //ORDER ROUTES
         Route::get('/order-history/{status}', [OrderManager::class, 'orderHistory'])

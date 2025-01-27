@@ -55,7 +55,7 @@
                        <strong> {{ auth()->user()->name }}</strong>
                     </a>
                     <ul class="dropdown-menu w-auto" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><a class="dropdown-item" href="{{ route('user.profile') }}">Profile</a></li>
                         {{-- <li>
                             <a class="dropdown-item"  href="{{ route('home') }}">Products</a>
                         </li> --}}

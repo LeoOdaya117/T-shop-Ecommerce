@@ -233,14 +233,14 @@ class OrderManager extends Controller
             $orders = Orders::where('user_id', auth()->user()->id)
             ->orderBy('created_at', 'desc')
             ->paginate(6);
-            return view('order_history', compact('orders'));
+            return view('user.order.order_history', compact('orders'));
         }
         else{
             $orders = Orders::where('user_id', auth()->user()->id, 'and')
             ->where('order_status', $status)
             ->orderBy('created_at', 'desc')
             ->paginate(6);
-            return view('order_history', compact('orders'));
+            return view('user.order.order_history', compact('orders'));
         }
 
     }
@@ -255,7 +255,7 @@ class OrderManager extends Controller
         ->count();
     
         // Total revenue
-        $totalRevenue = Orders::where('payment_status', 'completed')->sum('total_price');
+        $totalRevenue = Orders::where('payment_status', 'Complete')->sum('total_price');
     
         // Revenue by category
         $revenueByCategory = DB::table('products')

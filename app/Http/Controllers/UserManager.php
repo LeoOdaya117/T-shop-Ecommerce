@@ -77,4 +77,8 @@ class UserManager extends Controller
 
         return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
+
+    function profile(){
+        return view('user.account.profile');
+    }
 }
