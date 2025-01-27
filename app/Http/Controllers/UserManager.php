@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Address;
 use Illuminate\Http\Request;
 
 class UserManager extends Controller
@@ -56,15 +57,20 @@ class UserManager extends Controller
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8',
+            'phone_number' => 'string'
+            // 'password' => 'nullable|string|min:8',
         ]);
 
         $user->update([
+            'firstname' => $request->firstname,
+            'lastname' => $request->lastname,
             'name' => $request->name,
             'email' => $request->email,
-            'password' => $request->password ? bcrypt($request->password) : $user->password,
+            'phone_number' => $request->phone_number,
+            // 'password' => $request->password ? bcrypt($request->password) : $user->password,
         ]);
 
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
@@ -79,6 +85,10 @@ class UserManager extends Controller
     }
 
     function profile(){
-        return view('user.account.profile');
+        $userInfo = User::find(auth()->user()->id);
+        $addressManager = new AddressManager();
+        $addresses = Address::where('user_id', auth()->id())->get(); // Fetch addresses for the user
+
+        return view('user.account.profile', compact('userInfo','addresses'));
     }
 }

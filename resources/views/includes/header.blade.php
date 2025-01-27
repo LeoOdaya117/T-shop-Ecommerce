@@ -50,22 +50,11 @@
               </a>
             </li>
               @auth
-                <li class="nav-item dropdown active">
-                    <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                       <strong> {{ auth()->user()->name }}</strong>
+                
+                <li class="nav-item">
+                    <a class="nav-link active rounded-circle mx-1 btn" href="{{ route('user.profile') }}" title="Profile">
+                        <i class="fa-solid fa-user"></i>
                     </a>
-                    <ul class="dropdown-menu w-auto" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="{{ route('user.profile') }}">Profile</a></li>
-                        {{-- <li>
-                            <a class="dropdown-item"  href="{{ route('home') }}">Products</a>
-                        </li> --}}
-                        <li>
-                            <a class="dropdown-item"  href="{{ route('home') }}">Wishlist</a>
-                        </li>
-                        <li><a class="dropdown-item w-100" href="{{ route('order.history', ['status'=> 'all'] ) }}">Order History</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ route('logout') }}">Logout</a></li>
-                    </ul>
                 </li>
               @endauth
               @guest

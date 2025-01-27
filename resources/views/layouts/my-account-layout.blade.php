@@ -59,9 +59,7 @@
                                 <a class="btn btn-menu" href="{{ route('user.wishlist') }}">
                                     <i class="fa-solid fa-heart"></i> Wishlist
                                 </a>
-                                <a class="btn btn-menu" href="{{ route('user.addresses') }}">
-                                    <i class="fa-solid fa-heart"></i> Addresses
-                                </a>
+                              
                                 <a class="btn btn-menu" href="{{ route('user.change-password') }}">
                                     <i class="fa-solid fa-key"></i> Change Password
                                 </a>

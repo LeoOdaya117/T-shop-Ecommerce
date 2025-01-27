@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressManager;
 use App\Http\Controllers\AuthManager;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CartManager;
@@ -91,6 +92,9 @@ use Illuminate\Support\Facades\Route;
 
         // MY ACCOUNT
         Route::get('profile',[UserManager::class, 'profile'])->name('user.profile');
+        Route::post('/create/address', [AddressManager::class, 'store'])
+        ->name('user.create.address');
+        
         Route::get('change-password', function(){
             return view('user.account.change-password');
         })->name('user.change-password');
