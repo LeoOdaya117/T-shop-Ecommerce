@@ -327,22 +327,7 @@
             
         }
 
-        function addToWishList(id, titile){
-            Swal.fire({
-                icon: 'success',
-                title: `${titile} added to wishlist`,
-                toast: true,
-                position: 'center-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer);
-                    toast.addEventListener('mouseleave', Swal.resumeTimer);
-                }
-            });
-        }
-
+       
         function incrementQuantity() {
             let input = document.getElementById('quantity');
             let currentValue = parseInt(input.value);
@@ -368,7 +353,7 @@
             window.location.href = routeUrl;
         }
 
-        let selectedColor = '';
+    let selectedColor = '';
     let selectedSize = '';
 
     // Update the size options based on the selected color
@@ -410,6 +395,53 @@
         }
 
 
+    }
+
+    function addToWishList(product_id, title) {
+        const variant_id = document.getElementById('selectedVariantId').value;  // Corrected typo
+        const url = "{{ route('add.wishlist') }}";
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                product_id: product_id,   // Correctly formatted data object
+                variant_id: variant_id    // Corrected typo
+            },
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
+            },
+            success: function(response) {
+                if(response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: `${title} added to wishlist`,  // Corrected typo in title
+                        toast: true,
+                        position: 'center-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer);
+                            toast.addEventListener('mouseleave', Swal.resumeTimer);
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: response.message,
+                        toast: true,
+                        position: 'center-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer);
+                            toast.addEventListener('mouseleave', Swal.resumeTimer);
+                        }
+                    });
+                }
+            }
+        });
     }
 
     </script>

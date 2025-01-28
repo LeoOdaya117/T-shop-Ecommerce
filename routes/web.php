@@ -96,12 +96,18 @@ use Illuminate\Support\Facades\Route;
         ->name('profile.update');
         Route::post('/create/address', [AddressManager::class, 'store'])
         ->name('user.create.address');
-        
+
         Route::get('change-password', function(){
             return view('user.account.change-password');
         })->name('user.change-password');
-        Route::get('wishlist',[WishlistManager::class, 'show'])->name('user.wishlist');
+        Route::get('wishlist',[WishlistManager::class, 'show'])
+        ->name('user.wishlist');
+        Route::post('add/wishlist', [WishlistManager::class, 'store'])
+        ->name('add.wishlist');
+        Route::delete('delete/wishlist', [WishlistManager::class, 'destroy'])
+        ->name('delete.wishlist');
         
+
 
         //ORDER ROUTES
         Route::get('/order-history', [OrderManager::class, 'orderHistory'])
