@@ -53,7 +53,7 @@
                                 <a class="btn btn-menu" href="{{ route('user.profile') }}">
                                     <i class="fa-solid fa-user"></i> Profile
                                 </a>
-                                <a class="btn btn-menu" href="{{ route('order.history', ['status'=> 'all'] ) }}">
+                                <a class="btn btn-menu" href="{{ route('order.history') }}">
                                     <i class="fa-solid fa-box"></i> Orders
                                 </a>
                                 <a class="btn btn-menu" href="{{ route('user.wishlist') }}">

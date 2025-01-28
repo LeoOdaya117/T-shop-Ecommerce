@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use App\Models\Orders;
 use App\Models\Products;
@@ -10,34 +11,40 @@ class OrderTrackingManager extends Controller
 {
     public function orderTracking($orderId)
     {
-        $orderInfo = Orders::find($orderId);
+        // Fetch the order with the shipping address and tracking relation
+        $orderInfo = Orders::with( 'shippingAddress') // Define the `shippingAddress` relationship in the model
+            ->find($orderId);
     
         // Handle missing order
         if (!$orderInfo) {
-            return redirect()->route('user.order.order-traking')->with('error', 'Order not found.');
+            return redirect()->route('user.order.tracking')->with('error', 'Order not found.');
         }
     
-        $ordered_items = [];
-        $productIds = json_decode($orderInfo->product_id, true) ?? []; // Decode JSON or fallback to an empty array
-        $quantities = json_decode($orderInfo->quantity, true) ?? [];   // Decode JSON or fallback to an empty array
-        $variantIds = json_decode($orderInfo->variant_id, true) ?? []; // Decode variant_id if stored as JSON
+        // Decode JSON fields safely
+        $productIds = json_decode($orderInfo->product_id, true) ?? [];
+        $quantities = json_decode($orderInfo->quantity, true) ?? [];
+        $variantIds = json_decode($orderInfo->variant_id, true) ?? [];
     
-        // Ensure the data arrays are valid
+        // Validate data integrity
         if (!is_array($productIds) || !is_array($quantities) || !is_array($variantIds)) {
-            return redirect()->route('user.order.order-traking')->with('error', 'Invalid order data.');
+            return redirect()->route('user.order.tracking')->with('error', 'Invalid order data.');
         }
     
         $products = Products::with('variants')->whereIn('id', $productIds)->get();
-        
+
+        $ordered_items = [];
         foreach ($products as $index => $product) {
-            $quantity = $quantities[$index] ?? 1; // Fallback to 1 if quantity is missing
+            $quantity = $quantities[$index] ?? 1;
+            $variantId = isset($variantIds[$index]) ? (int) $variantIds[$index] : null;
+
+            // Calculate price and subtotal
             $price = $product->price - $product->discount;
             $subtotal = $price * $quantity;
-    
-            // Find the variant by ID
-            $variantId = $variantIds[$index] ?? null; // Get variant ID or null
-            $variant = $product->variants->firstWhere('id', $variantId);
-    
+
+            // Find the variant
+            // $variant = $product->variants->firstWhere('id', $variantId);
+            $variant  = ProductVariant::find( $variantId);
+
             $ordered_items[] = [
                 'product_name' => $product->title,
                 'image' => $product->image,
@@ -47,15 +54,16 @@ class OrderTrackingManager extends Controller
                 'variant' => $variant ? [
                     'color' => $variant->color,
                     'size' => $variant->size,
-                ] : null, // Include variant details or null if not found
+                ] : null,
             ];
         }
 
-        $order = Orders::with('tracking')->findOrFail($orderId); // Assuming you have a tracking relation or table
+        //  dd($orderInfo);
         return view('user.order.order-traking', [
-            'order' => $order,
+            'order' => $orderInfo,
             'ordered_items' => $ordered_items,
+            'shipping_address' => $orderInfo->shippingAddress,
         ]);
-       
     }
+    
 }

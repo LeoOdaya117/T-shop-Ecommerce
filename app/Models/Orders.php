@@ -15,4 +15,9 @@ class Orders extends Model
     {
         return $this->hasMany(OrderTracking::class, 'order_id')->orderBy('updated_at', 'desc');
     }
+    public function shippingAddress()
+    {
+        return $this->belongsTo(Address::class, 'shipping_id');
+    }
+
 }

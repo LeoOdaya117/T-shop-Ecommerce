@@ -14,7 +14,18 @@ class AddressManager extends Controller
     }
 
     function store(Request $request){
-      
+
+        //write validation
+        $request->validate([
+            'user_id' => 'required|integer',
+            'address1' => 'required|string|max:255',
+            'address2' => 'nullable|string|max:255',
+            'city' => 'required|string|max:100',
+            'province' => 'required|string|max:100',
+            'postal_code' => 'required|string|max:20',
+            'country' => 'required|string|max:100',
+        ]);
+
        try {
         $address = new Address();
         $address->user_id = $request->user_id;

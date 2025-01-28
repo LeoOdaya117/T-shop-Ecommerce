@@ -51,7 +51,10 @@
                 @endif
 
                 <div class="form-group">
-                    <input class="form-control form-control-lg" type="text" name="name" required placeholder="Name" autocomplete="off">
+                    <input class="form-control form-control-lg" type="text" name="firstname" required placeholder="Firstname" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <input class="form-control form-control-lg" type="text" name="lastname" required placeholder="Lastname" autocomplete="off">
                 </div>
                 
                 <div class="form-group">

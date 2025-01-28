@@ -17,122 +17,218 @@
     <main class="container  mb-5">
         <section class="">
             <div class="row d-flex align-items-center align-content-center justify-content-between mb-2 w-auto">
-                <div class="col-auto">
-                    <h5>Order History</h5>
-                </div>
-                <div class="col-auto">
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="statusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            Filter by Status
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="statusDropdown">
-                            <li><a class="dropdown-item" href="{{ route('order.history', ['status' => 'all']) }}">All</a></li>
-                            <li><a class="dropdown-item" href="{{ route('order.history', ['status' => 'Delivered']) }}">Delivered</a></li>
-                            <li><a class="dropdown-item" href="{{ route('order.history', ['status' => 'Shipped']) }}">Shipped</a></li>
-                            <li><a class="dropdown-item" href="{{ route('order.history', ['status' => 'Processing']) }}">Processing</a></li>
-                            <li><a class="dropdown-item" href="{{ route('order.history', ['status' => 'Cancelled']) }}">Cancelled</a></li>
+                <div class="col-12">
+                    <h5>Orders</h5>
 
-                        </ul>
+                    {{-- ACTIVE ORDERS --}}
+                    <div class="container mt-3  w-100">
+                        <h6 class="text-muted">Active Orders</h6>
+
+                        {{-- ALERT MESSAGE CONTAINER --}}
+                        <div id="alert-container"></div>
+
+                        @forelse($active_orders as $order)
+                            <div class="card shawdow-sm p-3 mb-2">
+                                <div class="row justify-content-center align-items-center g-2">
+                                    <div class="col-9">
+                                        <div class="product-images d-flex gap-2">
+                                            @foreach($order->products as $product)
+                                            <div>
+                                                <img src="{{ $product->image }}" alt="Product Image" style="width: 100px; height: auto;">
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <div class="order-info d-flex gap-1">
+                                            <div class="d-block shadow-sm p-1 border-dark">
+                                                <p class="fw-bold m-0">Order number</p>
+                                                <p class="m-0">{{ $order->id }}</p>
+                                            </div>
+                                            <div class="d-block shadow-sm p-1">
+                                                <p class="fw-bold m-0">Order Date</p>
+                                                <p class="m-0">{{ $order->created_at->format('M j, Y') }}</p>
+                                            </div>
+                                            <div class="d-block shadow-sm p-1">
+                                                <p class="fw-bold m-0">Total</p>
+                                                <p class="m-0">₱ {{ number_format($order->total_price,2) }}</p>
+                                            </div>
+                                            <div class="d-block shadow-sm p-1">
+                                                <p class="fw-bold m-0">Status</p>
+                                                <p class="m-0 
+                                                    @if ($order->order_status == 'Delivered')
+                                                        text-success
+                                                    @elseif ($order->order_status == 'Shipped')
+                                                        text-info
+                                                    @elseif ($order->order_status == 'Processing')
+                                                        text-warning
+                                                    @elseif ($order->order_status == 'Out for Delivery')
+                                                        text-primary
+                                                    @else
+                                                        
+                                                    @endif
+                                                ">{{ $order->order_status }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col text-center">
+                                        <a href="{{ route('user.order.tracking', $order->id) }}" class="btn btn-light text-dark btn-outline-dark fw-bold">Track Order</a>
+                                        <form id="cancelOrderForm" action="{{ route('admin.orders.orderStatus') }}" method="post">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="text" name="order_id" value="{{ $order->id }}" hidden>
+                                            <input type="text" name="order_status" value="Cancelled" hidden>
+                                            <button class="text-danger btn" type="submit">Cancel order</button>
+                                        </form>
+                                    </div>
+                                
+                                </div>
+                            
+                                
+                            </div>
+                        @empty
+                            <div class="col-12">
+                                <div class="card" >
+                                        
+                                    <div class="card-body text-center">
+                                        <p class="">No active orders.</p>
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                    
+            
+                        @endforelse
+
+                      
                     </div>
+
+                    {{-- Previous ORDERS --}}
+                    <div class="container mt-3  w-100">
+                        <h6 class="text-muted">Previous Orders</h6>
+                        @forelse($past_orders as $order)
+                            <div class="card shawdow-sm p-3 mb-2">
+                                <div class="row justify-content-center align-items-center g-2">
+                                    <div class="col-9">
+                                        <div class="product-images d-flex gap-2">
+                                            @foreach($order->products as $product)
+                                            <div>
+                                                <img src="{{ $product->image }}" alt="Product Image" style="width: 100px; height: auto;">
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <div class="order-info d-flex gap-1">
+                                            <div class="d-block shadow-sm p-1 border-dark">
+                                                <p class="fw-bold m-0">Order number</p>
+                                                <p class="m-0">{{ $order->id }}</p>
+                                            </div>
+                                            <div class="d-block shadow-sm p-1">
+                                                <p class="fw-bold m-0">Order Date</p>
+                                                <p class="m-0">{{ $order->created_at->format('M j, Y') }}</p>
+                                            </div>
+                                            <div class="d-block shadow-sm p-1">
+                                                <p class="fw-bold m-0">Total</p>
+                                                <p class="m-0">₱ {{ number_format($order->total_price,2) }}</p>
+                                            </div>
+                                            <div class="d-block shadow-sm p-1">
+                                                <p class="fw-bold m-0">Status</p>
+                                                <p class="m-0 
+                                                    @if ($order->order_status == 'Delivered')
+                                                        text-success
+                                                
+                                                    @else
+                                                        text-danger
+                                                    @endif
+                                                ">{{ $order->order_status }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col text-center">
+                                        <a href="{{ route('user.order.tracking', $order->id) }}" class="btn btn-light text-dark btn-outline-dark fw-bold">View Order</a>
+                                    </div>
+                                
+                                </div>
+                            
+                                
+                            </div>
+                        @empty
+                            <div class="col-12">
+                                <div class="card" >
+                                        
+                                    <div class="card-body text-center">
+                                        <p class="">No previous orders.</p>
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                    
+            
+                        @endforelse
+                        <div class="col-12 d-flex justify-content-end">
+                            {{ $past_orders->links('pagination::bootstrap-4') }} <!-- Pagination links -->
+                        </div>
+                    </div>
+
+
                 </div>
+
             </div>
-            <div class="row">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="text-center">
-                            <th>#</th>
-                            <th>Order ID</th>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </thead>
-                        <tbody>
-                            @foreach ($orders as $order)
-                                <tr class="text-center">
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $order->id }}</td>
-                                    <td>{{ $order->created_at->format('M d Y h:i A') }}</td>
-                                    <td>₱ {{ number_format($order->total_price ,2)}}</td>
-                                    <td>
-                                        <span class="
-                                            @if($order->order_status == 'Delivered')
-                                                bg-success text-white
-                                            @elseif($order->order_status == 'Shipped')
-                                                bg-info text-dark
-                                            @elseif($order->order_status == 'Processing')
-                                                bg-warning text-dark
-    
-                                            @elseif($order->order_status == 'Cancelled')
-                                                bg-danger text-white
-                                            @else
-                                                bg-secondary text-white
-                                            @endif
-                                            p-1 rounded
-                                        " >
-                                            {{ $order->order_status }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('user.order.tracking', $order->id) }}" class=" text-dark" title="View Details">
-                                            <i class="fa-solid fa-eye"></i>
-                                        </a>
-    
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                
-            </div>
+
             
         </section>
-        <div class="row pt-1">
-            <div class="col-12">
-                {{ $orders->links('pagination::bootstrap-5') }} <!-- Pagination links -->
-            </div>
-        </div>
+       
     </main>
 @endsection
-
-{{-- @forelse ($orders as $order)
-                    <div class="col-md-4 mb-4 d-flex align-items-stretch" >
-                        <div class="card w-100" style="font-size: 0.875rem;"> <!-- Smaller font size -->
-                            <div class="card-body d-flex flex-column p-3"> <!-- Smaller padding -->
-                                <strong class="card-title" style="font-size: 17px">Order ID # {{ $order->id }}</strong>
-                                <hr>
-                                <p class="card-text"><strong>Payment ID:</strong> {{ $order->payment_id ?? 'N/A' }}</p>
-                                <p class="card-text"><strong>Date:</strong> {{ $order->created_at->format('M d Y h:i A') }}</p>
-                                <p class="card-text"><strong>Total Price: ₱ </strong> {{ $order->total_price }}</p>
-                                <p class="card-text">
-                                    <strong>Status:</strong> 
-                                    <span class="
-                                        @if($order->order_status == 'Delivered')
-                                            bg-success text-white
-                                        @elseif($order->order_status == 'Shipped')
-                                            bg-info text-dark
-                                        @elseif($order->order_status == 'Processing')
-                                            bg-warning text-dark
-
-                                        @elseif($order->order_status == 'Cancelled')
-                                            bg-danger text-white
-                                        @else
-                                            bg-secondary text-white
-                                        @endif
-                                        p-1 rounded
-                                    " >
-                                        {{ $order->order_status }}
-                                    </span>
-                                </p>
-                                <a href="{{ route('user.order.tracking', $order->id) }}" class="btn btn-info">View</a>
+@section('script')
+    <script>
+        $("#cancelOrderForm").submit(function(e) {
+           
+            var form = $(this);
+            var formData = form.serialize(); // Serialize the form data
+            var url = form.attr('action'); 
+            e.preventDefault();
+            $.ajax({
+                type: "PUT",
+                url: url,
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
+                },
+                success: function(response) {
+                    if(response.success == true) {
+                        $('#alert-container').html(`
+                            <div class="alert alert-success">
+                                ${response.message}
                             </div>
+                        `);
+                       
+                        // $(`tr[data-variant-id="${variantId}"] td:nth-child(2)`).text(color);
+                        // $(`tr[data-variant-id="${variantId}"] td:nth-child(3)`).text(size);
+
+                    } else {
+                        $('#alert-container').html(`
+                            <div class="alert alert-danger">
+                                Something went wrong. Please try again.
+                            </div>
+                        `);
+                       
+                    }
+                },
+                error: function(xhr, status, error) {
+                   
+                    const errors = xhr.responseJSON.errors;
+                    let errorHtml = '<ul>';
+                    for (let field in errors) {
+                        errorHtml += `<li>${errors[field][0]}</li>`;
+                    }
+                    errorHtml += '</ul>';
+                    $('#alert-container').html(`
+                        <div class="alert alert-danger">
+                            ${errorHtml}
                         </div>
-                    </div>
-                @empty
-                    <div class="col-12">
-                        <div class="alert alert-info text-center">
-                            No orders found.
-                        </div>
-                    </div>
-                @endforelse --}}
+                    `);
+                }
+            });
+        });
+    
+
+    </script>
+@endsection

@@ -5,7 +5,7 @@
 <main class="container mb-5">
     <section>
         <h5>My Profile</h5>
-        <form action="" method="POST">
+        <form action="{{ route('profile.update') }}" method="POST" id="UpdateProfileForm">
             @csrf
             @method('PUT')
             <div class="row mt-4 mb-2">
@@ -16,13 +16,13 @@
                 <div class="col-6">
                     <div class="form-group mb-3">
                         <label for="first_name" class="col-form-label">First Name</label>
-                        <input type="text" name="first_name" id="first_name" class="form-control"  value="{{ $userInfo->firstname }}">
+                        <input type="text" name="firstname" id="first_name" class="form-control"  value="{{ $userInfo->firstname }}">
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="form-group mb-3">
                         <label for="last_name" class="col-form-label">Last Name</label>
-                        <input type="text" name="last_name" id="last_name" class="form-control" value="{{ $userInfo->lastname }}">
+                        <input type="text" name="lastname" id="last_name" class="form-control" value="{{ $userInfo->lastname }}">
                     </div>
                 </div>
                 <div class="col-6">
@@ -34,7 +34,7 @@
                 <div class="col-6">
                     <div class="form-group mb-3">
                         <label for="phone" class="col-form-label">Phone Number</label>
-                        <input type="text" name="phone" id="phone" class="form-control" value="{{ $userInfo->phone_number }}" >
+                        <input type="text" name="phone_number" id="phone" class="form-control" value="{{ $userInfo->phone_number }}" >
                     </div>
                 </div>
                     
@@ -168,6 +168,60 @@
 
     });
     
+    $("#UpdateProfileForm").submit(function(e) {
+        
+        e.preventDefault();
+        
+        var url = $(this).attr('action'); 
+        // Collect the form data
+        var formData = new FormData(this); // 'this' refers to the form element
+
+        // Add userId to the form data
+        formData.append('user_id', user_id);
+    
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: formData,
+            processData: false, // Don't process the data
+            contentType: false, // Don't set content type
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
+            },
+            success: function(response) {
+                if(response.success == true) {
+                    $('#alert-container1').html(`
+                        <div class="alert alert-success">
+                            ${response.message}
+                        </div>
+                    `);
+                   
+                   
+                } else {
+                    $('#alert-container1').html(`
+                        <div class="alert alert-danger">
+                            Something went wrong. Please try again.
+                        </div>
+                    `);
+                   
+                }
+            },
+            error: function(xhr, status, error) {
+               
+                const errors = xhr.responseJSON.errors;
+                let errorHtml = '<ul>';
+                for (let field in errors) {
+                    errorHtml += `<li>${errors[field][0]}</li>`;
+                }
+                errorHtml += '</ul>';
+                $('#alert-container1').html(`
+                    <div class="alert alert-danger">
+                        ${errorHtml}
+                    </div>
+                `);
+            }
+        });
+    });
     $("#createAddressForm").submit(function(e) {
         
         e.preventDefault();
@@ -214,7 +268,7 @@
                     errorHtml += `<li>${errors[field][0]}</li>`;
                 }
                 errorHtml += '</ul>';
-                $('#alert-container').html(`
+                $('#alert-container1').html(`
                     <div class="alert alert-danger">
                         ${errorHtml}
                     </div>

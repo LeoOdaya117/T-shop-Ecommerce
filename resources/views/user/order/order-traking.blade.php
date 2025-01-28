@@ -78,7 +78,7 @@
             <nav aria-label="breadcrumb" class="pt-5 mt-4">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item" onclick="route('{{ route('home') }}')">Home</li>
-                    <li class="breadcrumb-item" onclick="route('{{ route('order.history',['status'=> 'all']) }}')">Order History</li>
+                    <li class="breadcrumb-item" onclick="route('{{ route('order.history') }}')">Order History</li>
                     <li class="breadcrumb-item active" aria-current="page">Track Order</li>
 
                 </ol>
@@ -196,11 +196,11 @@
                                         <p class="m-0 text-muted"><strong>Shipping Address</strong></p>
                                         <p class="m-0">{{ $order->fname }} {{ $order->lname }}</p>
                                         <p class="m-0">{{ $order->phone ?? 'N/A'}}</p>
-                                        <p class="m-0">{{ $order->address }} 
-                                            @if ($order->address2)
-                                                {{ $order->address2 }}
+                                        <p class="m-0">{{ $shipping_address->address_line_1 }} 
+                                            @if ($shipping_address->address_line_2)
+                                                {{ $shipping_address->address_line_2 }}
                                             @endif
-                                            {{ $order->city }}, {{ $order->state }} {{ $order->pincode }} {{ $order->country }}
+                                            {{ $shipping_address->city }}, {{ $shipping_address->province }} {{ $shipping_address->postal_code }} {{ $shipping_address->country }}
                                         </p>
                                     </div>
                                     
@@ -271,20 +271,20 @@
                                                 <td class="text-center align-middle">₱ {{ number_format($item['subtotal'], 2) }}</td>
                                             </tr>
                                         @endforeach
-                                        <tr>
+                                        <tr class="text-center">
                                             <td colspan="2"></td>
-                                            <td class="text-end fw-bold">Subtotal:</td>
-                                            <td class="text-end">₱ {{ number_format($order->total_price - $order->shipping_fee, 2) }}</td>
+                                            <td class="text-start fw-bold">Subtotal:</td>
+                                            <td class="">₱ {{ number_format($order->total_price - $order->shipping_fee, 2) }}</td>
                                         </tr>
-                                        <tr>
+                                        <tr  class="text-center">
                                             <td colspan="2"></td>
-                                            <td class="text-end fw-bold">Shipping:</td>
-                                            <td class="text-end">₱ {{ number_format($order->shipping_fee, 2) }}</td>
+                                            <td class="text-start fw-bold">Shipping:</td>
+                                            <td >₱ {{ number_format($order->shipping_fee, 2) }}</td>
                                         </tr>
-                                        <tr>
+                                        <tr  class="text-center">
                                             <td colspan="2"></td>
-                                            <td class="text-end"><h5>Grand Total:</h5></td>
-                                            <td class="text-end"><h5>₱ {{ number_format($order->total_price, 2) }}</h5></td>
+                                            <td class="text-start "><h5>Grand Total:</h5></td>
+                                            <td><h5>₱ {{ number_format($order->total_price, 2) }}</h5></td>
                                         </tr>
                                     </tbody>
                                 </table>

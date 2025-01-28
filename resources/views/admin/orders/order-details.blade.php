@@ -126,12 +126,12 @@
                                         <p class="m-0">Email: {{ $orderInfo->email ?? 'N/A'}}</p>
                                         <p>Phone: {{ $orderInfo->phone ?? 'N/A'}}</p>
                                         <p class="m-0"><strong>Shipping Address:</strong></p>
-                                        <p class="m-0">{{ $orderInfo->address }}</p>
-                                            @if ($orderInfo->address2)
-                                                <p class="m-0">{{ $orderInfo->address2 }}</p>
+                                        <p class="m-0">{{ $orderInfo->shippingAddress->address_line_1 }}</p>
+                                            @if ($orderInfo->shippingAddress->address_line_2)
+                                                <p class="m-0">{{ $orderInfo->shippingAddress->address_line_2 }}</p>
                                             @endif
-                                        <p class="m-0">{{ $orderInfo->city }}, {{ $orderInfo->state }} {{ $orderInfo->pincode }}</p>
-                                        <p class="m-0">{{ $orderInfo->country }}</p>
+                                        <p class="m-0">{{ $orderInfo->shippingAddress->city }}, {{ $orderInfo->shippingAddress->province }} {{ $orderInfo->shippingAddress->postal_code }}</p>
+                                        <p class="m-0">{{ $orderInfo->shippingAddress->country }}</p>
                                 
                                     </div>
                                 </div>

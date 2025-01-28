@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Orders;
 use App\Models\OrderTracking;
 use App\Models\Products;
+use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Stripe\Exception\SignatureVerificationException;
@@ -22,8 +23,8 @@ class OrderManager extends Controller
     {
         $authManager = new AuthManager();
         $authManager->sessionCheck();
-    
-        
+        $addressManager = new AddressManager();
+        $user_addresses = $addressManager->show(auth()->user()->id);
         // Define the Philippines and its provinces
         $country = ['id' => 1, 'name' => 'Philippines'];
         $provinces = [
@@ -51,22 +52,22 @@ class OrderManager extends Controller
             // Add more provinces as needed
         ];
 
-        return view('checkout', compact('country', 'provinces'));
+        
+        return view('checkout', compact('country', 'provinces', 'user_addresses'));
     }
 
     public function checkoutPost(Request $request)
     {
         $authManager = new AuthManager();
         $authManager->sessionCheck();
+
         $request->validate([
-            'pincode' => 'required',
-            'address' => 'required',
-            'city' => 'required',
-            'province' => 'required',
-            'country' => 'required',
+            'email' => 'required',
             'phone' => 'required',
             'firstname' => 'required',
             'lastname' => 'required',
+            'shipping_id' => 'required',
+            'payment_method' => 'required',
 
         ]);
 
@@ -112,24 +113,23 @@ class OrderManager extends Controller
         // dd($variantsIds);
         $order = new Orders();
         $order->user_id = auth()->user()->id;
-        $order->pincode = $request->pincode;
-        $order->address = $request->address;
-        $order->phone = $request->phone;
         $order->product_id = json_encode($productIds);
         $order->variant_id = json_encode($variantsIds);
         $order->quantity = json_encode($quantities);
         $order->total_price = $totalPrice;
-        $order->order_status = "Order Placed";
-        $order->tracking_id = $trackingId;
-        $order->payment_status = "Pending";
-        $order->payment_method = "Card";
-        $order->address2 = $request->address2;
-        $order->state = $request->province;
-        $order->city = $request->city;
-        $order->country = $request->country;
+        $order->shipping_fee = 70.0;
+        $order->shipping_id = $request->shipping_id;
         $order->fname = $request->firstname;
         $order->lname = $request->lastname;
         $order->email = $request->email;
+        $order->phone = $request->phone;
+        $order->payment_method = $request->payment_method;
+        $order->order_status = "Order Placed";
+        $order->payment_status = "Pending";
+        $order->tracking_id = $trackingId;
+        
+        
+        
 
         if ($order->save()) {
             try {
@@ -173,11 +173,23 @@ class OrderManager extends Controller
                 return redirect($checkoutSession->url);
             } catch (\Throwable $th) {
                 $order->delete();
-                return redirect()->route('cart.show')->with("error", $th->getMessage());
+                 return redirect()->route('cart.show')->with("error", $th->getMessage());
+
+                // return response()->json([
+                //     'status' => 500,
+                //     'success' => false,
+                //     'message' => $th->getMessage(),
+                // ]);
             }
         }
 
-        return redirect()->route('cart.show')->with('error', 'Something went wrong.');
+        return response()->json([
+            'status' => 500,
+            'success' => false,
+            'message' => 'Something went wrong.',
+        ]);
+
+            
     }
 
     function paymentSuccess($order_id)
@@ -227,21 +239,49 @@ class OrderManager extends Controller
         return response()->json(['status' => 'success']); 
     }  
 
-    public function orderHistory($status)
+    public function orderHistory()
     {
-        if($status == 'all'){
-            $orders = Orders::where('user_id', auth()->user()->id)
-            ->orderBy('created_at', 'desc')
-            ->paginate(6);
-            return view('user.order.order_history', compact('orders'));
+        $active_orders = Orders::where('user_id', auth()->id())
+            ->where('order_status', '!=', 'Delivered')
+            ->where('order_status', '!=', 'Cancelled')
+            ->orderBy('created_at', 'DESC')
+            ->get();
+
+        $past_orders = Orders::where('user_id', auth()->id())
+            ->whereIn('order_status', ['Delivered', 'Cancelled'])
+            ->orderBy('created_at', 'DESC')
+            ->paginate(4);
+
+        // Process orders to include product details
+        foreach ($active_orders as $order) {
+            $product_ids = json_decode($order->product_id); // Decode product_id array
+            $order->products = Products::whereIn('id', $product_ids)->get(); // Fetch related products
         }
-        else{
-            $orders = Orders::where('user_id', auth()->user()->id, 'and')
-            ->where('order_status', $status)
-            ->orderBy('created_at', 'desc')
-            ->paginate(6);
-            return view('user.order.order_history', compact('orders'));
+
+        foreach ($past_orders as $order) {
+            $product_ids = json_decode($order->product_id);
+            $order->products = Products::whereIn('id', $product_ids)->get();
         }
+
+
+        // dd($active_orders,$past_orders);
+
+        // if($status == 'all'){
+        //     $orders = Orders::where('user_id', auth()->user()->id)
+        //     ->orderBy('created_at', 'desc')
+        //     ->paginate(6);
+        //     return view('user.order.order_history', compact('orders', 'active_orders', 'past_orders'));
+        // }
+        // else{
+        //     $orders = Orders::where('user_id', auth()->user()->id, 'and')
+        //     ->where('order_status', $status)
+        //     ->orderBy('created_at', 'desc')
+        //     ->paginate(6);
+        //     return view('user.order.order_history', compact('orders', 'active_orders', 'past_orders'));
+        // }
+
+        return view('user.order.order_history', compact('active_orders', 'past_orders'));
+
 
     }
 
@@ -425,8 +465,8 @@ class OrderManager extends Controller
 
     function showOrderDetails($id)
     {
-        $orderInfo = Orders::find($id);
-    
+        $orderInfo = Orders::with(['tracking', 'shippingAddress']) // Define the `shippingAddress` relationship in the model
+        ->find($id);
         // Handle missing order
         if (!$orderInfo) {
             return redirect()->route('admin.orders.index')->with('error', 'Order not found.');
@@ -451,8 +491,8 @@ class OrderManager extends Controller
     
             // Find the variant by ID
             $variantId = $variantIds[$index] ?? null; // Get variant ID or null
-            $variant = $product->variants->firstWhere('id', $variantId);
-    
+            // $variant = $product->variants->firstWhere('id', $variantId);
+            $variant  = ProductVariant::find($variantId);
             $ordered_items[] = [
                 'product_name' => $product->title,
                 'price' => $price,

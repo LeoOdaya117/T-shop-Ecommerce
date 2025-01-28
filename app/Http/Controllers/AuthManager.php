@@ -69,7 +69,8 @@ class AuthManager extends Controller
     }
     function registrationPost(Request $request){
         $request->validate([
-            'name' => 'required',
+            'firstname' => 'required',
+            'lastname' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
         ],[
@@ -78,7 +79,8 @@ class AuthManager extends Controller
         ]);
 
         $user = new User();
-        $user->name = $request->name;
+        $user->firstname = $request->firstname;
+        $user->lastname = $request->lastname;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
 
@@ -100,4 +102,6 @@ class AuthManager extends Controller
 
         return redirect("login");
     }
+
+    
 }

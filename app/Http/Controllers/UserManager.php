@@ -54,26 +54,44 @@ class UserManager extends Controller
     }
 
     // Update the specified resource in storage
-    public function update(Request $request, User $user)
+    public function update(Request $request)
     {
         $request->validate([
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => 'required|email',
             'phone_number' => 'string'
-            // 'password' => 'nullable|string|min:8',
+          
         ]);
 
-        $user->update([
-            'firstname' => $request->firstname,
-            'lastname' => $request->lastname,
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            // 'password' => $request->password ? bcrypt($request->password) : $user->password,
-        ]);
+        try {
+            $user = User::findOrFail(auth(0)->user()->id);
+            $user->firstname = $request->firstname; 
+            $user->lastname = $request->lastname; 
+            
+            if( $user->email != $request->email ){
+                $user->email = $request->email; 
+            }
+            
+            $user->phone_number = $request->phone_number;   
+            
+            $user->save();
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => $th->getMessage(),
+    
+            ]);
+        }
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        return response()->json([
+            'status' => 200,
+            'success' => true,
+            'message' => 'Updated Successfully',
+
+        ]);
+        // return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
     // Remove the specified resource from storage

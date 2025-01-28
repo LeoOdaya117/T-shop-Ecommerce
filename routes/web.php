@@ -92,6 +92,8 @@ use Illuminate\Support\Facades\Route;
 
         // MY ACCOUNT
         Route::get('profile',[UserManager::class, 'profile'])->name('user.profile');
+        Route::put('/update/profile', [UserManager::class, 'update'])
+        ->name('profile.update');
         Route::post('/create/address', [AddressManager::class, 'store'])
         ->name('user.create.address');
         
@@ -102,7 +104,7 @@ use Illuminate\Support\Facades\Route;
         
 
         //ORDER ROUTES
-        Route::get('/order-history/{status}', [OrderManager::class, 'orderHistory'])
+        Route::get('/order-history', [OrderManager::class, 'orderHistory'])
             ->name('order.history');
         Route::get('/order-details/{id}', [OrderManager::class, 'orderDetails'])
             ->name('order.details');
