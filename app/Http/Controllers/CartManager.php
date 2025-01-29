@@ -54,11 +54,15 @@ class CartManager extends Controller
         $authManager->sessionCheck();
     
         
-        $cartItems = DB::table("cart")
-        ->join("products",'cart.product_id', '=', 'products.id')
-        ->select("cart.product_id", "cart.quantity", 'products.title', 'cart.id','products.price', 'products.image', 'products.slug','products.discount')
-        ->where("cart.user_id", auth()->user()->id)->get();
+        // $cartItems = DB::table("cart")
+        // ->join("products",'cart.product_id', '=', 'products.id')
+        // ->select("cart.product_id", "cart.quantity", 'products.title', 'cart.id','products.price', 'products.image', 'products.slug','products.discount')
+        // ->where("cart.user_id", auth()->user()->id)->get();
 
+        $cartItems = Cart::with(['variant','product'])
+        ->where('user_id', auth()->user()->id)
+        ->get();
+        // dd($cartItems);
         $cartTotal = $cartItems->count(); // Count the distinct items in the cart
         Session::put( Session::put('cartTotal', $cartTotal));
         // Return view with cart items and cart total

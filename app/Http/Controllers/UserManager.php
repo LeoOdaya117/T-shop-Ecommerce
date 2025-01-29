@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Address;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserManager extends Controller
 {
@@ -94,7 +96,7 @@ class UserManager extends Controller
         // return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
-    // Remove the specified resource from storage
+ // Remove the specified resource from storage
     public function destroy(User $user)
     {
         $user->delete();
@@ -108,5 +110,50 @@ class UserManager extends Controller
         $addresses = Address::where('user_id', auth()->id())->get(); // Fetch addresses for the user
 
         return view('user.account.profile', compact('userInfo','addresses'));
+    }
+
+    
+    function updatePassword(Request $request){
+
+       
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:6',
+            'confirm_password' => 'required|same:new_password'
+        ]);
+    
+
+        $user = auth()->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'status' => 400,
+                'success' => false,
+                'message' => 'Current password is incorrect.',
+            ]);
+        }
+
+    
+    
+        try {
+            // Update password
+            $user = User::find(auth()->user()->id);
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'success' => true,
+                'message' => $th->getMessage(),
+            ]);
+        }
+
+
+        
+        return response()->json([
+            'status' => 200,
+            'success' => true,
+            'message' => 'Password Updated Successfully.',
+        ]);
     }
 }

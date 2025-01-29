@@ -11,7 +11,7 @@
     </style>
 @endsection
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm fixed-top small-navbar">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top small-navbar">
 
   <div class="container">
       <!-- Brand -->

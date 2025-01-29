@@ -57,6 +57,7 @@
                     <div class="card" >
                             
                         <div class="card-body">
+                            <h4 class="fw-bold text-danger text-end m-0 p-0">x</h4>
                             <p class="m-0">{{ $address->address_line_1 }},</p>
                             @if (isset($address->address_line_2))
                                 <p class="m-0">{{ $address->address_line_2 }},</p>

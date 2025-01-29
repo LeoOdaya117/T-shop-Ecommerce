@@ -7,10 +7,23 @@
 @endsection
 @include("includes.scripts")
 @section("content")
-    <main class="container w-100 mb-5">
-        <section class="pt-5">
-            <main class="container mt-5 mb-5">
-                <h2 class="text-center mb-4">Checkout</h2>
+    <div class="bg-dark text-light pt-2">
+        <div class=" container ">
+            <nav aria-label="breadcrumb" class="pt-5 mt-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item" onclick="route('{{ route('home') }}')">Home</li>
+                    <li class="breadcrumb-item" onclick="route('{{ route('cart.show') }}')">Cart</li>
+                    <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+
+                </ol>
+            </nav>
+            
+        </div>
+    </div>
+    <main class="container mb-5">
+        <section class="">
+            <main class="container mt-3 mb-5">
+                <h2 class="text-start mb-4">Checkout</h2>
                 <div class="row">
                     <!-- Billing and Shipping Details -->
                     <div class="col-lg-7">
@@ -87,21 +100,29 @@
                         <div class="card p-4 shadow-sm">
                             <h5 class="mb-3">Order Summary</h5>
                             <ul class="list-group mb-3">
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <span>Product Name 1</span>
-                                    <span>$50.00</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <span>Product Name 2</span>
-                                    <span>$30.00</span>
-                                </li>
+                                @php
+                                    $totalPrice =0;
+                                @endphp
+                                @foreach ($cartItems as $item)
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>
+                                            {{ $item->product->title }}
+                                            <small class="fw-bold">x</small>
+                                            {{ $item->quantity }}
+                                        </span>
+                                        <span>₱ {{ number_format(($item->product->price - $item->product->discount ) * $item->quantity,2) }}</span>
+                                    </li>
+                                    @php $totalPrice += ($item->product->price - $item->product->discount ) * $item->quantity; @endphp  
+
+                                @endforeach
+                               
                                 <li class="list-group-item d-flex justify-content-between">
                                     <span>Shipping</span>
-                                    <span>$10.00</span>
+                                    <span name="shipping_fee" class="shipping_fee">₱ 75.00</span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
                                     <strong>Total</strong>
-                                    <strong>$90.00</strong>
+                                    <strong>₱ {{ number_format($totalPrice + 75,2) }}</strong>
                                 </li>
                             </ul>
                             {{-- <button class="btn btn-primary w-100">Place Order</button> --}}
@@ -169,5 +190,9 @@
 @endsection
 
 @section('script')
-
+    <script>
+         function route(routeUrl) {
+                window.location.href = routeUrl;
+        }
+    </script>
 @endsection

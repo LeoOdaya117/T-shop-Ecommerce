@@ -6,6 +6,7 @@ use App\Models\User;
 use Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Session;
 
 class AuthManager extends Controller
@@ -45,24 +46,26 @@ class AuthManager extends Controller
         $recentOrders = $OrderManager->getRecentOrders();
         return view("admin.dashboard", compact('recentOrders'));
     }
-    function loginPost(Request $request){
+    function loginPost(Request $request) {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
-        $credentials = $request->only('email','password');
-
+    
+        $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
-
-            if(Auth::user()->is_admin){
-                return redirect()->intended(route("admin.dashboard"));
-            }
-            
-            return redirect()->intended(route("home"));
+            return response()->json([
+                'success' => true,
+                'redirect' => Auth::user()->is_admin ? route("admin.dashboard") : route("home")
+            ]);
         }
-        return redirect("login")->with("error", "Invalid email or password.");
+    
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid email or password.',
+        ]);
     }
+    
 
     function registration(){
         return view("auth.register");
@@ -86,14 +89,28 @@ class AuthManager extends Controller
 
         if ($user->save()) {
             try {
-                return redirect()->intended(route('register'))
-                ->with("success", "You have been registered successfully.");
+               
+
+                return response()->json([
+                    'status' => 200,
+                    'success' => true,
+                    'message' => 'You have been registered successfully.',
+                ]);
             } catch (\Throwable $th) {
-                return redirect()->intended(route('register'))
-                ->with("error", $th->getMessage());
+                
+                return response()->json([
+                    'status' => 500,
+                    'success' => false,
+                    'message' => $th->getMessage(),
+                ]);
             }
         }
-        return redirect(route("register"))->with("error", "Something went wrong");
+        return response()->json([
+            'status' => 500,
+            'success' => false,
+            'message' => 'Something went wrong',
+        ]);
+       
     }
 
     function logout(){

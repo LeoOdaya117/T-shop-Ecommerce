@@ -94,6 +94,8 @@ use Illuminate\Support\Facades\Route;
         Route::get('profile',[UserManager::class, 'profile'])->name('user.profile');
         Route::put('/update/profile', [UserManager::class, 'update'])
         ->name('profile.update');
+        Route::put('/update/password', [UserManager::class, 'updatePassword'])
+        ->name('user.update.password');
         Route::post('/create/address', [AddressManager::class, 'store'])
         ->name('user.create.address');
 

@@ -286,10 +286,10 @@
                             showConfirmButton: false,
                             timer: 3000,
                             timerProgressBar: true,
-                            html: '<a class="btn btn-outline-dark text-dark bg-transparent" type="submit" href="{{ route("cart.show") }}"><i class="fa-solid fa-cart-shopping"></i>Cart</a>',
+                            // html: '<a class="btn btn-outline-dark text-dark bg-transparent" type="submit" href="{{ route("cart.show") }}"><i class="fa-solid fa-cart-shopping"></i>Cart</a>',
                             didOpen: (toast) => {
-                                toast.addEventListener('mouseenter', Swal.stopTimer);
-                                toast.addEventListener('mouseleave', Swal.resumeTimer);
+                                // toast.addEventListener('mouseenter', Swal.stopTimer);
+                                // toast.addEventListener('mouseleave', Swal.resumeTimer);
 
                                 // Add event listener to the custom button
                                 document.getElementById('customButton').addEventListener('click', function() {

@@ -49,20 +49,9 @@
                     </span>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('login.post') }}">
+                    <form method="POST" action="{{ route('login.post') }}" id="loginForm">
                         @csrf
-                        @if (session()->has("success"))
-                            <div class="alert alert-success">
-                                {{session()->get("success")}}
-                            </div>
-                        
-                        @endif
-                        @if (session("error"))
-                            <div class="alert alert-danger">
-                                {{session("error")}}
-                            </div>
-                        
-                        @endif
+                        <div id="alert-container"></div>
                         <div class="form-group">
                             <input name="email" class="form-control form-control-lg" id="username" type="email" placeholder="Email" autocomplete="off">
                         </div>
@@ -90,4 +79,45 @@
     </main>
 
 
+@endsection
+
+@section('script')
+    <script>
+        $("#loginForm").submit(function(e) {
+
+            var form = $(this);
+          
+            e.preventDefault();
+            var url = form.attr('action');
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        window.location.href = response.redirect; // Redirect on success
+                    } else {
+                        $("#alert-container").html(`
+                            <div class="alert alert-danger">${response.message}</div>
+                        `);
+                    }
+
+                },
+                error: function(xhr, status, error) {
+                    const errors = xhr.responseJSON.errors;
+                    let errorHtml = '<ul>';
+                    for (let field in errors) {
+                        errorHtml += `<li>${errors[field][0]}</li>`;
+                    }
+                    errorHtml += '</ul>';
+                    $('#alert-container').html(`
+                        <div class="alert alert-danger">
+                            ${errorHtml}
+                        </div>
+                    `);
+                }
+       
+            });
+        });
+    </script>
 @endsection

@@ -9,4 +9,15 @@ class Cart extends Model
 {
     protected $table = 'cart';
     use HasFactory;
+
+    public function variant(){
+
+        return $this->belongsTo(ProductVariant::class, 'variant_id');
+
+    }
+    public function product(){
+
+        return $this->belongsTo(Products::class, 'product_id');
+        
+    }
 }

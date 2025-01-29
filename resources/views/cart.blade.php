@@ -86,24 +86,25 @@
                                     <td>
                                         <div class="d-flex flex-column gap-0 flex-md-row align-items-center">
                                             <!-- Product Image -->
-                                            <div class="order-1 order-md-1 d-flex justify-content-center align-items-center" onclick="clickProduct('{{ route('showDetails', $items->slug) }}')" STYLE="cursor: pointer;">
-                                                <img src="{{ $items->image }}" class="img-fluid" alt="Product Image" style="max-width: 100px; height: auto;">
+                                            <div class="order-1 order-md-1 d-flex justify-content-center align-items-center" onclick="clickProduct('{{ route('showDetails', $items->product->slug) }}')" STYLE="cursor: pointer;">
+                                                <img src="{{ $items->product->image }}" class="img-fluid" alt="Product Image" style="max-width: 100px; height: auto;">
                                             </div>
                                             <!-- Product Details -->
                                             <div class="card-body order-2 order-md-2 text-center">
-                                                <strong class="card-title">{{ $items->title }}</strong>
-                                                <span class="d-block">₱ {{ number_format($items->price - $items->discount,2) }}</span>
+                                                <strong class="card-title">{{ $items->product->title }}</strong>
+                                                <p class="text-muted">{{ $items->variant->color }} {{ $items->variant->size }}</p>
+                                                <span class="d-block">₱ {{ number_format($items->product->price - $items->product->discount,2) }}</span>
                                             </div>
                                         </div>
                                     </td>
                                     <td class=" align-middle">
                                         <div class=" d-flex justify-content-center align-items-center">
-                                            <input type="number" class="form-control quantity text-center" value="{{ $items->quantity }}" min="1" style="width: 75px;" data-price="{{ $items->price }}" data-discount="{{ $items->discount }}" data-id="{{ $items->product_id }}">
+                                            <input type="number" class="form-control quantity text-center" value="{{ $items->quantity }}" min="1" style="width: 75px;" data-price="{{ $items->product->price }}" data-discount="{{ $items->product->discount }}" data-id="{{ $items->product_id }}">
 
                                         </div>
                                     </td>
                                     <td>
-                                        <strong class=" item-total-price">₱ {{ number_format(($items->price - $items->discount ) * $items->quantity,2) }}</strong>
+                                        <strong class=" item-total-price">₱ {{ number_format(($items->product->price - $items->product->discount ) * $items->quantity,2) }}</strong>
                                     </td>
                                     <td>
                                         <!-- Remove Button -->
@@ -112,8 +113,8 @@
                                             <i class="remove-item fa-solid fa-x"></i>
                                         </div>
                                      </td>
-                                     @php $totalPrice += ($items->price - $items->discount ) * $items->quantity; @endphp  
-                                </tr>
+                                     @php $totalPrice += ($items->product->price - $items->product->discount ) * $items->quantity; @endphp  
+                                    </tr>
                             @endforeach
                         </table>
                     </div>

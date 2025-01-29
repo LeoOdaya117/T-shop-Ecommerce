@@ -1,5 +1,5 @@
 @extends('layouts.default')
-@section('title', 'Order History')
+@section('title', 'Track Order')
 @section('style')
     <style>
        .date {
@@ -221,7 +221,15 @@
                                         <p class="m-0 text-muted"><strong>Payment Information</strong></p>
                                         <p class="m-0 ">Payment ID: {{ $order->payment_id ?? 'N/A' }}</p>
                                         <p class="m-0 ">Payment Method: {{ $order->payment_method ?? 'N/A' }}</p>
-                                        <p class="m-0">Status: {{ $order->payment_status ?? 'N/A'  }}</p>
+                                        <p class="m-0">Status: 
+                                            <span class=" fw-bold
+                                            
+                                                @if ($order->payment_status == 'Complete')
+                                                text-success
+                                                @else
+                                                    text-warning
+                                                @endif
+                                            ">{{ $order->payment_status ?? 'N/A'  }}</span></p>
                                         @if ($order->payment_status == 'Complete')
                                             <p class="m-0">Paid Date:     
                                                 {{ $order->payment_date ? \Carbon\Carbon::parse($order->payment_date)->format('M d, Y h:i A') : 'N/A' }}

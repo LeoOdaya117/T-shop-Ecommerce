@@ -19,9 +19,9 @@
 <!-- ============================================================== -->
     <!-- signup form  -->
     <!-- ============================================================== -->
-    <form class="splash-container" method="POST" action="{{ route("register.post") }}">
+    <form class="splash-container" method="POST" id="registerForm" action="{{ route("register.post") }}">
         @csrf
-
+        @method('post')
         <div class="card">
             <div class="card-header">
                 <h3 class="mb-1">Registrations Form</h3>
@@ -38,7 +38,7 @@
                     </div>
                 @endif
 
-                @if (session('success'))
+                {{-- @if (session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
                     </div>
@@ -48,7 +48,9 @@
                     <div class="alert alert-danger">
                         {{ session('error') }}
                     </div>
-                @endif
+                @endif --}}
+
+                <div id="alert-container"></div>
 
                 <div class="form-group">
                     <input class="form-control form-control-lg" type="text" name="firstname" required placeholder="Firstname" autocomplete="off">
@@ -90,4 +92,51 @@
     </form>
     
 
+@endsection
+
+@section('script')
+    <script>
+        $("#registerForm").submit(function(e) {
+
+            var form = $(this);
+          
+            e.preventDefault();
+            var url = form.attr('action');
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(),
+                success: function(response) {
+                    if(response.success == true) {
+                        $('#alert-container').html(`
+                            <div class="alert alert-success">
+                                ${response.message}
+                            </div>
+                        `);
+                    
+                    } else {
+                        $('#alert-container').html(`
+                            <div class="alert alert-danger">
+                                 ${response.message}
+                            </div>
+                        `);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    const errors = xhr.responseJSON.errors;
+                    let errorHtml = '<ul>';
+                    for (let field in errors) {
+                        errorHtml += `<li>${errors[field][0]}</li>`;
+                    }
+                    errorHtml += '</ul>';
+                    $('#alert-container').html(`
+                        <div class="alert alert-danger">
+                            ${errorHtml}
+                        </div>
+                    `);
+                }
+       
+            });
+        });
+    </script>
 @endsection

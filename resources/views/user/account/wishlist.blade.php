@@ -1,5 +1,5 @@
 @extends('layouts.my-account-layout')
-@section('title', 'Order History')
+@section('title', 'My Wishlist')
 @section('my-account')
     
     <main class="container  mb-5">

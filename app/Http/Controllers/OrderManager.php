@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\Orders;
 use App\Models\OrderTracking;
 use App\Models\Products;
@@ -51,9 +52,11 @@ class OrderManager extends Controller
             ['id' => 21, 'name' => 'Rizal'],
             // Add more provinces as needed
         ];
-
+        $cartItems = Cart::with(['variant','product'])
+        ->where('user_id', auth()->user()->id)
+        ->get();
         
-        return view('checkout', compact('country', 'provinces', 'user_addresses'));
+        return view('checkout', compact('cartItems','country', 'provinces', 'user_addresses'));
     }
 
     public function checkoutPost(Request $request)
