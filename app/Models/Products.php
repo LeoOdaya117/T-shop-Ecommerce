@@ -20,7 +20,7 @@ class Products extends Model
         return $this->belongsTo(Category::class, 'category'); // 'category_id' is the foreign key
     }
 
-    public function brand()
+    public function brands()
     {
         return $this->belongsTo(Brand::class,'brand');
     }
@@ -30,6 +30,11 @@ class Products extends Model
     public function variants()
     {
         return $this->hasMany(ProductVariant::class, 'product_id');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Reviews::class, 'product_id');
     }
 
     

@@ -18,10 +18,13 @@ class WishlistManager extends Controller
 
     function store(Request $request){
         $request->validate([
-            
             'product_id' => 'required',
             'variant_id' => 'required',
+        ], [
+            'product_id.required' => 'The product is required.',
+            'variant_id.required' => 'Please select color and size before adding to your wishlist.',
         ]);
+        
 
        
         try {

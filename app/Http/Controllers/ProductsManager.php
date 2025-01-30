@@ -6,11 +6,13 @@ use App\Models\Cart;
 use App\Models\Products;
 use App\Models\Orders;
 use App\Models\Category;
+use App\Models\Wishlist;
 use Illuminate\Support\Facades\DB;
 use Session;
 use Illuminate\Http\Request;
 
 use DataTable;
+use Illuminate\Support\Facades\Auth;
 
 class ProductsManager extends Controller
 {
@@ -39,15 +41,18 @@ class ProductsManager extends Controller
     }
     
     function showDetails($slug){
-        $products = Products::with('variants')->where('slug', $slug)->first();
+        $products = Products::with(['variants','brands','reviews'])->where('slug', $slug)->first();
         $relatedProducts = Products::where('brand', $products->brand)
             ->where('id', '!=', $products->id)
             ->where('status', 'active')
             ->paginate(10);
         $categories = Category::select('name')->where('id', $products->category)->get();
-        $variants = $products->variants; // Access variants data
-        // dd($products);
-        return view('product_details', compact('products', 'relatedProducts', 'categories', 'variants'));
+        $variants = $products->variants; // Access variants 
+        $wishlistItems = Wishlist::where('user_id', Auth::id())->pluck('variant_id')->toArray();
+
+        // dd($wishlistItems);
+   
+        return view('product_details', compact('products', 'wishlistItems', 'relatedProducts', 'categories', 'variants'));
     }
 
     function searchProduct(Request $request){

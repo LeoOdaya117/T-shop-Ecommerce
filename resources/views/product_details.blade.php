@@ -37,33 +37,74 @@
         
 
         
-
+        {{-- PRODUCT SECTION --}}
         <section class="py-5 shadow-lg mb-5 shadow-sm" style="background: rgb(241, 240, 240)">
-            <div class="container px-4 px-lg-5 ">
+            <div class="container px-4 px-lg-5">
                 <div class="row gx-4 gx-lg-5 align-items-center">
                     <div class="col-md-6">
                         <img class="card-img-top mb-2 mb-md-0 mt-md-0" src="{{ $products->image }}" alt="Product Image" />
                     </div>
                     <div class="col-md-6">
-                        <h1 class="display-5 fw-bolder">{{ $products->title }}</h1>
-                        <div class="fs-5 mb-2">
+                        {{-- Brand Name --}}
+                        {{-- <h5 class="text-muted">{{ $products->brands->name }}</h5> --}}
+                        
+                        {{-- Product Title & Wishlist Button --}}
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h1 class="display-5 fw-bolder">{{ $products->title }}</h1>
+                            
+                            
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                    
+                            {{-- Star Rating Section --}}
+                            @php
+                                 $averageRating = $products->reviews->avg('rating') ?? 0;
+                                 $roundedRating = round($averageRating);
+                            @endphp
+                            <div class="d-flex align-items-center mb-2">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <i class="fa-star {{ $i <= $roundedRating ? 'fa-solid text-warning' : 'fa-regular text-muted' }}"></i>
+                                @endfor
+                                <span class="ms-2 text-muted">({{ $products->reviews->count()  }} reviews)</span>
+                            </div>
+                            {{-- Wishlist Heart Icon --}}
+                            <button class="btn btn-light border-0" onclick="toggleWishlist(this, {{ $products->id }}, '{{ $products->title }}')">
+                                <i class="fa-solid fa-heart 
+                                
+                                
+                                 @php
+                                    // Default to dark (black)
+                                    $wishlistClass = 'text-dark';
+
+                                    // Check if any variant of this product is in the wishlist
+                                    if ($variants->whereIn('id', $wishlistItems)->count() > 0) {
+                                        $wishlistClass = 'text-danger';
+                                    }
+                                @endphp
+                                " id="wishlist-icon-{{ $products->id }}"></i>
+                            </button>
+                        </div>
+                        <p class="text-muted">Brand: {{ $products->brands->name }}</p>
+                        {{-- Price --}}
+                        <h2 class="fs-5 mb-2">
                             @if ($products->discount > 0)
                                 <span class="text-muted text-decoration-line-through">₱ {{ number_format($products->price,2) }}</span>
                             @endif
                             <span>₱ {{ number_format($products->price - $products->discount,2) }}</span>
-                        </div>
+                        </h2>
+
                         @php
-                            $sentences = explode('.', $products->descrption); // Split by periods
-                            $limitedDescription = implode('.', array_slice($sentences, 0, 4)) . (count($sentences) > 4 ? '...' : ''); // Join the first 4 sentences and add '...' if there are more sentences
+                            $sentences = explode('.', $products->descrption);
+                            $limitedDescription = implode('.', array_slice($sentences, 0, 2)) . (count($sentences) > 4 ? '...' : '');
                         @endphp
-        
+
                         <p class="lead">{{ $limitedDescription }}</p>
-        
+
                         @php
                             // Group variants by color
                             $groupedByColor = $variants->groupBy('color');
                         @endphp
-        
+
                         <div class="d-flex gap-2 align-content-center text-center align-items-center">
                             <p class="text-muted">Color: </p>
                             <select name="" id="" class="form-select mb-3 w-50 ml-2" onchange="updateSizeOptions(this.value)">
@@ -73,8 +114,7 @@
                                 @endforeach
                             </select>
                         </div>
-                       
-        
+
                         <div class="d-flex gap-3 align-content-center text-center align-items-center mb-2">
                             <p class="text-muted">Size: </p>
                             @foreach ($groupedByColor as $color => $group)
@@ -90,13 +130,10 @@
                                 </div>
                             @endforeach
                         </div>
-                        
-                        
+
                         <input type="hidden" id="selectedVariantId" name="variant_id" value="">
 
-        
                         <div class="d-flex mb-2 align-items-center m-0">
-                            
                             <div class="input-group d-flex" style="max-width: 8rem;">
                                 <button type="button" class="btn btn-dark" onclick="decrementQuantity()">-</button>
                                 <input 
@@ -106,68 +143,27 @@
                                     class="form-control text-center text-dark" 
                                     value="1" 
                                     min="1" 
-                                    max="{{ $products->stock }}" readonly style="max-width: 5rem">
+                                    max="" readonly style="max-width: 5rem">
                                 <button type="button" class="btn btn-dark " onclick="incrementQuantity()">+</button>
                             </div>
                             <p class="text-center text-muted mb-0 ms-3 stock-display" id="stock-display">
-                               {{-- STOCK DISPLAY HERE --}}
+                                {{-- STOCK DISPLAY HERE --}}
                             </p>
                         </div>
-        
+
                         <div class="d-flex">
-                            <button class="btn btn-outline-dark text-dark bg-transparent" onclick="addToWishList({{ $products->id}},'{{ $products->title }}')"
-                                id="wishlistButton" style="display: none;">
-                                Add to Wishlist</button>
-                            <button class="btn btn-outline-dark text-dark bg-transparent" onclick="addToCart({{ $products->id }})" id="addToCartButton">Add to Cart</button>
+                            <button class="btn btn-outline-dark text-dark bg-transparent" onclick="addToCart({{ $products->id }})" id="addToCartButton">
+                                Add to Cart
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-        {{-- <section class="card mt-5">
-            <div class="container-fluid">
-                <div class="row  shawdow-sm">
-                    <!-- Product Image -->
-                    <div class="col-12 col-md-6 mb-3 mb-md-0 align-content-center align-items-center">
-                        <img src="{{ $products->image }}" alt="Product Image" class="img-fluid align-content-center">
-                    </div>
-                    
-                    <!-- Product Details -->
-                    <div class="col-12 col-md-6 d-flex flex-column justify-content-center align-items-start">
-                        <div class="row mb-3">
-                            <h3>{{ $products->title }}</h3>
-                        </div>
-                        <div class="row mb-3">
-                            <p><strong>₱ {{ $products->price }}</strong></p>
-                        </div>
-                        <div class="row mb-3">
-                            <p>{{ $products->descrption }}</p>
-                        </div>
-                        
-                        <!-- Quantity Input -->
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label for="quantity" class="form-label">Quantity</label>
-                                <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1">
-                            </div>
-                        </div>
-    
-                        <!-- Buttons -->
-                        <div class="row w-100">
-                            <div class="col-12 col-sm-6 mb-2 mb-sm-0">
-                                <button class="btn bg-warning w-100">Buy now</button>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <button class="btn bg-success w-100" onclick="addToCart({{ $products->id }})">Add to Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    
-        
-        </section> --}}
 
+        
+
+        {{-- DESCRIPTION AND REVEIEWS --}}
         <section>
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-5">
                 <div class="tab-regular ">
@@ -353,96 +349,138 @@
             window.location.href = routeUrl;
         }
 
-    let selectedColor = '';
-    let selectedSize = '';
+        let selectedColor = '';
+let selectedSize = '';
+let variant = null;
 
-    // Update the size options based on the selected color
-    function updateSizeOptions(color) {
-        selectedColor = color;
-        // Hide all size options and show the sizes for the selected color
-        document.querySelectorAll('.sizes').forEach(function(element) {
-            element.style.display = 'none';
-        });
-        document.getElementById(`sizes-for-${color}`).style.display = 'block';
-        // Reset the selected size and stock info
-        selectedSize = '';
-        document.getElementById('stock-display').textContent = 'Select a size to view stock availability.';
-    }
+// Update the size options based on the selected color
+function updateSizeOptions(color) {
+    selectedColor = color;
+    document.querySelectorAll('.sizes').forEach(el => el.style.display = 'none');
+    document.getElementById(`sizes-for-${color}`).style.display = 'block';
 
-    // Select size and display stock info
-    function selectSize(color, size) {
-        selectedSize = size;
-        let selectedVariant = @json($variants);
-        let variant = selectedVariant.find(variant => variant.color === color && variant.size === size);
+    // Reset size and stock display
+    selectedSize = '';
+    variant = null;
+    document.getElementById('stock-display').textContent = 'Select a size to view stock availability.';
+    updateWishlistIcon();
+}
+
+// Select size and display stock info
+function selectSize(color, size) {
+    selectedSize = size;
+    let selectedVariant = @json($variants);
+    variant = selectedVariant.find(v => v.color === color && v.size === size);
+
+    if (variant) {
         document.getElementById('selectedVariantId').value = variant.id;
+        console.log(variant.id, variant.stock, variant.size, variant.color);
 
-        console.log(variant.id + " " + variant.stock + " " + variant.size + " " + variant.color);
         let stockDisplay = document.getElementById('stock-display');
-        let wishlistButton = document.getElementById('wishlistButton');
+        let stocksMax = document.getElementById('quantity');
+        // let wishlistButton = document.getElementById('wishlistButton');
         let addToCartButton = document.getElementById('addToCartButton');
-        if (variant && variant.stock > 0) {
+
+        if (variant.stock > 0) {
             stockDisplay.innerHTML = `${variant.stock} stocks available`;
-            stockDisplay.classList.remove('text-danger'); // Remove out-of-stock class if any
-            stockDisplay.classList.add('text-success'); // Add in-stock class
-            wishlistButton.style.display = 'none';
+            stocksMax.value = 1;
+            stocksMax.max = variant.stock;
+            stockDisplay.classList.add('text-success');
+            stockDisplay.classList.remove('text-danger');
+            // wishlistButton.style.display = 'none';
             addToCartButton.style.display = 'block';
         } else {
             stockDisplay.innerHTML = 'Out of stock';
-            stockDisplay.classList.remove('text-success'); // Remove in-stock class if any
-            stockDisplay.classList.add('text-danger'); // Add out-of-stock class
-            wishlistButton.style.display = 'block';
+            stockDisplay.classList.add('text-danger');
+            stockDisplay.classList.remove('text-success');
+            // wishlistButton.style.display = 'block';
             addToCartButton.style.display = 'none';
         }
 
+        updateWishlistIcon(); // Update the wishlist icon based on the selected variant
+    }
+}
 
+// Function to toggle wishlist icon
+function toggleWishlist(button, productId, productTitle) {
+    if (!variant) {
+        alert("Please select a color and size first.");
+        return;
     }
 
-    function addToWishList(product_id, title) {
-        const variant_id = document.getElementById('selectedVariantId').value;  // Corrected typo
-        const url = "{{ route('add.wishlist') }}";
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: {
-                product_id: product_id,   // Correctly formatted data object
-                variant_id: variant_id    // Corrected typo
-            },
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
-            },
-            success: function(response) {
-                if(response.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: `${title} added to wishlist`,  // Corrected typo in title
-                        toast: true,
-                        position: 'center-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.addEventListener('mouseenter', Swal.stopTimer);
-                            toast.addEventListener('mouseleave', Swal.resumeTimer);
-                        }
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: response.message,
-                        toast: true,
-                        position: 'center-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.addEventListener('mouseenter', Swal.stopTimer);
-                            toast.addEventListener('mouseleave', Swal.resumeTimer);
-                        }
-                    });
-                }
+    let icon = document.getElementById(`wishlist-icon-${productId}`);
+
+    if (icon.classList.contains("text-dark")) {
+        icon.classList.remove("text-dark");
+        icon.classList.add("text-danger");
+        addToWishList(productId, productTitle, variant.id);
+    } else {
+        icon.classList.remove("text-danger");
+        icon.classList.add("text-dark");
+        // removeFromWishList(productId, productTitle, variant.id);
+    }
+}
+
+// Add to wishlist AJAX
+function addToWishList(product_id, title, variant_id) {
+    $.ajax({
+        type: "POST",
+        url: "{{ route('add.wishlist') }}",
+        data: { product_id, variant_id, _token: "{{ csrf_token() }}" },
+        success: function(response) {
+            if (response.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: `${title} added to wishlist`,
+                    toast: true, position: 'center-end',
+                    showConfirmButton: false, timer: 3000, timerProgressBar: true
+                });
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: response.message,
+                    toast: true, position: 'center-end',
+                    showConfirmButton: false, timer: 3000, timerProgressBar: true
+                });
             }
-        });
+        },
+        error: function(xhr) {
+            Swal.fire({
+                icon: 'error',
+                title: xhr.responseJSON.message || 'An error occurred',
+                toast: true, position: 'center-end',
+                showConfirmButton: false, timer: 3000, timerProgressBar: true
+            });
+        }
+    });
+}
+
+
+
+// Update wishlist icon when a variant is selected
+function updateWishlistIcon() {
+    if (!variant) {
+        return; // If no variant is selected, do nothing
     }
+    console.log('asd ' + variant.id);
+    let icon = document.getElementById(`wishlist-icon-{{ $products->id }}`);
+    let wishlistItems = @json($wishlistItems); // Wishlist from controller
+    console.log(wishlistItems[0]);
+    // Check if the selected variant is in the wishlist
+    if (wishlistItems[0] === variant.id) {
+        icon.classList.remove("text-dark");
+        icon.classList.add("text-danger"); // Show red icon
+    } else {
+        icon.classList.remove("text-danger");
+        icon.classList.add("text-dark"); // Show black icon
+    }
+}
+
+// On page load, call the updateWishlistIcon to set the correct state
+document.addEventListener("DOMContentLoaded", function() {
+    updateWishlistIcon();
+});
+
 
     </script>
     

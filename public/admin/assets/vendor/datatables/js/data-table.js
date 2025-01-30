@@ -1,21 +1,12 @@
 jQuery(document).ready(function($) {
     'use strict';
 
-
-    
-    if ($("#product-table").length) {
+    if ($("table.first").length) {
 
         $(document).ready(function() {
-            $('#product-table').DataTable();
+            $('table.first').DataTable();
         });
     }
-    if ($("#customer-table").length) {
-
-        $(document).ready(function() {
-            $('#customer-table').DataTable();
-        });
-    }
-
 
     /* Calender jQuery **/
 
