@@ -3,72 +3,85 @@
 @section('style')
     <style>
        .date {
-            font-size: 11px;
-            color: #555;
-        }
+    font-size: 11px;
+    color: #555;
+}
 
-        .progress-container {
-            position: relative;
-            width: 100%;
-            height: 4px;
-            background-color: #ddd;
-            margin: 20px 0;
-        }
+.progress-container {
+    position: relative;
+    width: 100%;
+    height: 4px;
+    background-color: #ddd;
+    margin: 20px 0;
+}
 
-        .progress-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background-color: green;
-            transition: width 0.3s ease;
-        }
+.progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: green;
+    transition: width 0.3s ease;
+}
 
-        .dot {
-            height: 10px;
-            width: 10px;
-            margin: 0 10px;
-            background-color: #ddd;
-            border-radius: 50%;
-            display: inline-block;
-            position: relative;
-        }
+.dot-container {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-top: 20px;  /* Adjusted for spacing */
+}
 
-        .dot.active {
-            background-color: green;
-        }
+.dot {
+    height: 10px;
+    width: 10px;
+    background-color: #ddd;
+    border-radius: 50%;
+    position: relative;
+}
 
-        .big-dot {
-            height: 25px;
-            width: 25px;
-            margin: 0 10px;
-            background-color: green;
-            border-radius: 50%;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            z-index: 2;
-        }
+.dot.active {
+    background-color: green;
+}
 
-        .big-dot i {
-            font-size: 12px;
-            color: white;
-        }
+.big-dot {
+    height: 25px;
+    width: 25px;
+    background-color: green;
+    border-radius: 50%;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-        .label {
-            font-size: 12px;
-            color: #555;
-            text-align: center;
-        }
+.big-dot i {
+    font-size: 12px;
+    color: white;
+}
+
+.label {
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+}
+
+/* Adjust positioning for each dot based on progress bar steps */
+.dot-container .dot,
+.dot-container .big-dot {
+    position: relative;
+    left: 0;
+}
+
+
         .table td, .table th {
-    white-space: nowrap; /* Prevent text wrapping */
-}
+            white-space: nowrap; /* Prevent text wrapping */
+        }
 
-.table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
 
     </style>
 @endsection
@@ -146,8 +159,10 @@
                                         $latestStatus = $latestTrack->status ?? null;
 
                                         $currentStepIndex = array_search($latestStatus, $steps);
+
+                                        // Include "Order Placed" in the progress calculation
                                         $progressPercentage = $currentStepIndex !== false
-                                            ? (($currentStepIndex / (count($steps) - 1)) * 100)
+                                            ? (($currentStepIndex + 1) / count($steps)) * 100
                                             : 0;
 
                                         $dates = $order->tracking->pluck('updated_at', 'status')->toArray();
@@ -166,7 +181,7 @@
                                                     @endif
                                                 </span>
                                                 <span class="label">{{ $step }}</span>
-                                                <span class="date">
+                                                <span class="date" id="step-{{ $index }}-date">
                                                     {{ isset($dates[$step]) ? \Carbon\Carbon::parse($dates[$step])->format('d M, Y') : '' }}
                                                 </span>
                                             </div>
@@ -309,52 +324,42 @@
 <!-- Include CSRF Token for Fetch Requests -->
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
- <!-- Include Pusher.js and Laravel Echo from CDN -->
+ <!-- Include Pusher.js from CDN -->
 <script src="https://cdn.jsdelivr.net/npm/pusher-js@7.0.3/dist/web/pusher.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.11.3/dist/echo.iife.js"></script>
 
 <script>
-    // Initialize Echo with Pusher
-    window.Pusher = Pusher;
-    const echo = new Echo({
-        broadcaster: 'pusher',
-        key: '5e0f5df8b31983965bc4',  // Pusher Key from your .env
-        cluster: 'ap1',  // Pusher Cluster
-        forceTLS: true
+    
+     Pusher.logToConsole = true;
+    // Initialize Pusher
+    const pusher = new Pusher('5e0f5df8b31983965bc4', {
+        cluster: 'ap1'
     });
 
     const orderId = document.getElementById('order_id').innerText;
 
-    // Listen to the 'OrderStatusUpdated' event
-    echo.channel('order.' + orderId)
-    .listen('OrderStatusUpdated', (event) => {
-        // console.log('Received event:', event);  // Log event to verify the structure
+    // Subscribe to the Pusher channel
+    const channel = pusher.subscribe('order.' + orderId);
 
-        // Directly access event properties instead of event.order
+    // Listen to the 'OrderStatusUpdated' event
+    // Listen for the 'OrderStatusUpdated' event
+    channel.bind('App\\Events\\OrderStatusUpdated', function(event) {
+        console.log('Received event:', event);  // Log event to verify the structure
+
         if (event) {
             const tracking_id = event.tracking_id;
             const status = event.status;
             const updated_at = event.updated_at;
 
-            // Log the order data to debug
-            // console.log('Tracking ID:', tracking_id);
-            // console.log('Status:', status);
-            // console.log('Updated At:', updated_at);
-
             // Ensure tracking_id and status exist before updating DOM
             if (tracking_id) {
                 document.getElementById('tracking_number').textContent = tracking_id;
-            } else {
-                console.error('tracking_id is missing in the event data.');
             }
 
             if (status) {
                 document.querySelector('.order-details span').textContent = `Your Order has been ${status}`;
-            } else {
-                console.error('status is missing in the event data.');
             }
 
-            // Update the progress bar dynamically based on the order status
+            // Update progress bar dynamically based on the order status
             const steps = ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
             const currentStepIndex = steps.indexOf(status);
 
@@ -363,14 +368,15 @@
                 document.querySelector('.progress-bar').style.width = progressPercentage + '%';
             }
 
-            // 🔥 Remove all previous check icons before updating
+            // 🔥 Remove old check icons before updating
             document.querySelectorAll('.dot i.fa-check').forEach(icon => icon.remove());
 
-            // Update dot classes to reflect the current step
+            // Update dot classes
             const dots = document.querySelectorAll('.dot');
             dots.forEach((dot, index) => {
                 dot.classList.remove('active', 'big-dot');  // Reset all dots
 
+                // Add active and big-dot classes
                 if (index < currentStepIndex) {
                     dot.classList.add('active');
                 } else if (index === currentStepIndex) {
@@ -382,6 +388,19 @@
                         checkIcon.className = 'fa fa-check';
                         dot.appendChild(checkIcon);
                     }
+
+                    // Update the date for the current step
+                    const dateElement = document.getElementById(`step-${index}-date`);
+                    if (dateElement && updated_at) {
+                        // Format the updated_at date and display it
+                        // Format the updated_at date as "31 Jan, 2025"
+                        const formattedDate = new Date(updated_at).toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                        });
+                        dateElement.textContent = `${formattedDate}`;
+                    }
                 }
             });
         } else {
@@ -389,7 +408,13 @@
         }
     });
 
+
+    function route(routeUrl) {
+            window.location.href = routeUrl;
+    }
+
 </script>
+
 
 
 
