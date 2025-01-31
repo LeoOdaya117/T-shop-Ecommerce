@@ -304,9 +304,93 @@
             </div>
         </section>
     </main>
-    <script>
-        function route(routeUrl) {
-            window.location.href = routeUrl;
+
+
+<!-- Include CSRF Token for Fetch Requests -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+ <!-- Include Pusher.js and Laravel Echo from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/pusher-js@7.0.3/dist/web/pusher.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.11.3/dist/echo.iife.js"></script>
+
+<script>
+    // Initialize Echo with Pusher
+    window.Pusher = Pusher;
+    const echo = new Echo({
+        broadcaster: 'pusher',
+        key: '5e0f5df8b31983965bc4',  // Pusher Key from your .env
+        cluster: 'ap1',  // Pusher Cluster
+        forceTLS: true
+    });
+
+    const orderId = document.getElementById('order_id').innerText;
+
+    // Listen to the 'OrderStatusUpdated' event
+    echo.channel('order.' + orderId)
+    .listen('OrderStatusUpdated', (event) => {
+        // console.log('Received event:', event);  // Log event to verify the structure
+
+        // Directly access event properties instead of event.order
+        if (event) {
+            const tracking_id = event.tracking_id;
+            const status = event.status;
+            const updated_at = event.updated_at;
+
+            // Log the order data to debug
+            // console.log('Tracking ID:', tracking_id);
+            // console.log('Status:', status);
+            // console.log('Updated At:', updated_at);
+
+            // Ensure tracking_id and status exist before updating DOM
+            if (tracking_id) {
+                document.getElementById('tracking_number').textContent = tracking_id;
+            } else {
+                console.error('tracking_id is missing in the event data.');
+            }
+
+            if (status) {
+                document.querySelector('.order-details span').textContent = `Your Order has been ${status}`;
+            } else {
+                console.error('status is missing in the event data.');
+            }
+
+            // Update the progress bar dynamically based on the order status
+            const steps = ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
+            const currentStepIndex = steps.indexOf(status);
+
+            if (currentStepIndex !== -1) {
+                const progressPercentage = (currentStepIndex / (steps.length - 1)) * 100;
+                document.querySelector('.progress-bar').style.width = progressPercentage + '%';
+            }
+
+            // 🔥 Remove all previous check icons before updating
+            document.querySelectorAll('.dot i.fa-check').forEach(icon => icon.remove());
+
+            // Update dot classes to reflect the current step
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active', 'big-dot');  // Reset all dots
+
+                if (index < currentStepIndex) {
+                    dot.classList.add('active');
+                } else if (index === currentStepIndex) {
+                    dot.classList.add('big-dot');
+                    
+                    // ✅ Ensure only one check icon is added
+                    if (!dot.querySelector('i.fa-check')) {
+                        const checkIcon = document.createElement('i');
+                        checkIcon.className = 'fa fa-check';
+                        dot.appendChild(checkIcon);
+                    }
+                }
+            });
+        } else {
+            console.error('Event data is missing:', event);
         }
-    </script>
+    });
+
+</script>
+
+
+
 @endsection

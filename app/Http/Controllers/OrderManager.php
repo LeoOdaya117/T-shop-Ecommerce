@@ -17,6 +17,7 @@ use Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str; // Import Str
+use App\Events\OrderStatusUpdated;
 
 class OrderManager extends Controller
 {
@@ -385,44 +386,46 @@ class OrderManager extends Controller
          ->groupBy('order_status')->get();
         return view('admin.orders.orders', compact('orders','groupOrders'));
     }
-    function update(Request $request, $id){
-        $order = Orders::findOrFail($id);
 
+    public function update(Request $request, $id)
+    {
+        $order = Orders::findOrFail($id);
+    
         $request->validate([
             'order_status' => 'required|string',
         ]);
+    
         $order->order_status = $request->input('order_status');
-
+    
         // Set tracking notes based on the order status
         switch ($request->order_status) {
             case 'Processing':
                 $tracking_notes = 'Order has been accepted by the seller.';
                 break;
-
+    
             case 'Delivered':
                 $tracking_notes = 'Order has been delivered to the customer.';
                 break;
-
+    
             case 'Cancelled':
                 $tracking_notes = 'Order has been cancelled by the seller.';
                 break;
-
+    
             case 'Order Placed':
                 $tracking_notes = 'Order has been placed.';
                 break;
-
+    
             case 'Shipped':
                 $tracking_notes = 'Order has been shipped.';
                 break;
-
+    
             default:
                 $tracking_notes = 'Order status has been updated.';
                 break;
         }
-
     
-        if($order->save()){
-             // Create a new tracking record
+        if ($order->save()) {
+            // Create a new tracking record
             try {
                 $orderTracking = new OrderTracking();
                 $orderTracking->tracking_id = $order->tracking_id;
@@ -431,16 +434,23 @@ class OrderManager extends Controller
                 $orderTracking->notes = $tracking_notes;
                 $orderTracking->created_by = auth()->user()->id;
                 $orderTracking->save();
+    
+                // Broadcast the event after saving the tracking record
+                broadcast(new OrderStatusUpdated($order));
             } catch (\Throwable $th) {
                 return redirect()->intended(route('admin.orders.details', $id))
-                ->with("error", $th->getMessage());
+                    ->with("error", $th->getMessage());
             }
+    
             return redirect()->intended(route('admin.orders.details', $id))
                 ->with("success", "Order Status Successfully Updated.");
         }
-        return redirect()->intended(route('admin.orders.details' , $id))
-                ->with("error", "Something went wrong");
+    
+        return redirect()->intended(route('admin.orders.details', $id))
+            ->with("error", "Something went wrong");
     }
+    
+
 
     function create(Request $request){
         
@@ -539,6 +549,10 @@ class OrderManager extends Controller
 
         try {
             $order->order_status = $request->order_status;
+
+            if($request->order_status == "Cancelled"){
+                $order->payment_status = "Refunded";
+            }
             $order->save();
 
             // Update tracking_id in the order
@@ -552,7 +566,7 @@ class OrderManager extends Controller
                 'updated_at' => now(),
                
             ]);
-
+            broadcast(new OrderStatusUpdated($order));
         } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
@@ -569,4 +583,5 @@ class OrderManager extends Controller
     }
 
 
+    
 }

@@ -120,7 +120,7 @@ use Illuminate\Support\Facades\Route;
             ->name('order.details');
         Route::get('/order-tracking/{orderId}', [OrderTrackingManager::class, 'orderTracking'])
         ->name('user.order.tracking');
-
+        
 
         //ADMIN ROUTES
         Route::get('dashboard', [AuthManager::class,'admin_Index'])->name("admin.dashboard");
