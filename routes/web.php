@@ -10,6 +10,7 @@ use App\Http\Controllers\OrderManager;
 use App\Http\Controllers\OrderTrackingManager;
 use App\Http\Controllers\ProductsManager;
 use App\Http\Controllers\ProductVariantManager;
+use App\Http\Controllers\ReviewsManager;
 use App\Http\Controllers\UserManager;
 use App\Http\Controllers\WishlistManager;
 use App\Models\Products;
@@ -110,6 +111,10 @@ use Illuminate\Support\Facades\Route;
         ->name('add.wishlist');
         Route::delete('delete/wishlist', [WishlistManager::class, 'destroy'])
         ->name('delete.wishlist');
+
+        Route::post('product-review/store',[ReviewsManager::class, 'store'])
+        ->name('store.product.review');
+
         
 
 

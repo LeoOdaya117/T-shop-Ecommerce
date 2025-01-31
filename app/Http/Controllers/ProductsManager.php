@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\Products;
 use App\Models\Orders;
 use App\Models\Category;
+use App\Models\Reviews;
 use App\Models\Wishlist;
 use Illuminate\Support\Facades\DB;
 use Session;
@@ -41,7 +42,7 @@ class ProductsManager extends Controller
     }
     
     function showDetails($slug){
-        $products = Products::with(['variants','brands','reviews'])->where('slug', $slug)->first();
+        $products = Products::with(['variants','brands'])->where('slug', $slug)->first();
         $relatedProducts = Products::where('brand', $products->brand)
             ->where('id', '!=', $products->id)
             ->where('status', 'active')
@@ -49,10 +50,26 @@ class ProductsManager extends Controller
         $categories = Category::select('name')->where('id', $products->category)->get();
         $variants = $products->variants; // Access variants 
         $wishlistItems = Wishlist::where('user_id', Auth::id())->pluck('variant_id')->toArray();
+        $reviews = Reviews::with('user')
+        ->where('product_id', $products->id)->get();
+        $ratings = [];
+        $totalReviews = Reviews::where('product_id', $products->id)->count();
+        $averageRating = $totalReviews > 0 ? Reviews::where('product_id', $products->id)->avg('rating') : 0;
 
-        // dd($wishlistItems);
+        for ($i = 5; $i >= 1; $i--) {
+            $ratings[$i] = [
+                'count' => Reviews::where('product_id', $products->id)->where('rating', $i)->count(),
+                'percentage' => $totalReviews > 0 ? (Reviews::where('product_id', $products->id)->where('rating', $i)->count() / $totalReviews) * 100 : 0
+            ];
+        }
+
+        $reviewSummary = [
+            'total_reviews' => $totalReviews,
+            'average_rating' => number_format($averageRating, 1),
+            'ratings' => $ratings
+        ];
    
-        return view('product_details', compact('products', 'wishlistItems', 'relatedProducts', 'categories', 'variants'));
+        return view('product_details', compact('products', 'wishlistItems', 'relatedProducts', 'categories', 'variants','reviews','reviewSummary'));
     }
 
     function searchProduct(Request $request){

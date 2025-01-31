@@ -359,6 +359,22 @@
                 document.querySelector('.order-details span').textContent = `Your Order has been ${status}`;
             }
 
+            // Update the button dynamically based on the status
+            const statusButton = document.querySelector('.tracking-details .btn');
+            if (statusButton) {
+                // Define button classes based on status
+                const buttonClass = {
+                    'Delivered': 'btn-outline-success',
+                    'Shipped': 'btn-outline-info',
+                    'Processing': 'btn-outline-warning',
+                    'Cancelled': 'btn-outline-danger',
+                    default: 'btn-outline-secondary'
+                }[status] || buttonClass.default;
+
+                // Update button class and label
+                statusButton.className = `btn ${buttonClass} btn-sm fw-bold`;  // Update the button class
+                statusButton.textContent = status;  // Update the button label with the current status
+            }
             // Update progress bar dynamically based on the order status
             const steps = ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
             const currentStepIndex = steps.indexOf(status);

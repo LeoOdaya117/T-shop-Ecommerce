@@ -183,7 +183,88 @@
                             <p>{{ $products->descrption }}</p>
                         </div>
                         <div class="tab-pane fade" id="profile-justify" role="tabpanel" aria-labelledby="profile-tab-justify">
-                            <p>No reveiews found.</p>
+                            <div class="container">
+
+                                <div class="container mb-3">
+                                    <div class="card shadow-sm">
+                                        <div class="card-header">
+                                            <h3 class="card-title">{{ $products->title }} Reviews</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="container row">
+                                                <!-- Left Section: Overall Rating & Review Count -->
+                                                <div class="col-md-2 text-center">
+                                                    <h2 class="font-weight-bold mb-1">{{ number_format($reviewSummary['average_rating'], 1) }}</h2>
+                                                    <div class="d-flex justify-content-center mb-2">
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            <i class="fa fa-star {{ $i <= round($reviewSummary['average_rating']) ? 'text-warning' : 'text-secondary' }}"></i>
+                                                        @endfor
+                                                    </div>
+                                                    <p class="text-muted">{{ $reviewSummary['total_reviews'] }} Reviews</p>
+                                                </div>
+                                
+                                                <!-- Right Section: Star Breakdown -->
+                                                <div class="col-md-10">
+                                                    @foreach ($reviewSummary['ratings'] as $stars => $data)
+                                                        <div class="d-flex align-items-center mb-2">
+                                                            <span class="mr-2">{{ $stars }} <i class="fa fa-star text-warning"></i></span>
+                                                            <div class="progress flex-grow-1" style="height: 10px;">
+                                                                <div class="progress-bar bg-warning" role="progressbar" 
+                                                                     style="width: {{ $data['percentage'] }}%;" 
+                                                                     aria-valuenow="{{ $data['percentage'] }}" aria-valuemin="0" aria-valuemax="100">
+                                                                </div>
+                                                            </div>
+                                                            <span class="ml-2">{{ $data['count'] }}</span>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                
+                                <div class="container">
+                                    @foreach ($reviews as $review)
+    
+                                    <div class="card shadow-sm mb-3">
+                                        <div class="card-body">
+                                            <div class="row align-items-center">
+                                                <!-- User Image -->
+                                                <div class="col-auto">
+                                                    <img class="rounded-circle" src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" alt="User Avatar" width="50px" height="50px">
+                                                </div>
+                                    
+                                                <!-- User Name and Rating -->
+                                                <div class="col d-flex flex-column">
+                                                    <h5 class="mb-1">{{ $review->user->firstname }} {{ $review->user->lastname }}</h5>
+                                                    <div class="d-flex">
+                                                        @for ($i = 1; $i <= $review->rating; $i++)
+                                                            <i class="fa fa-star text-warning mr-1"></i>
+                                                        @endfor
+                                                    </div>
+                                                </div>
+                                    
+                                                <!-- Date (Aligned to the Right) -->
+                                                <div class="col-auto text-right">
+                                                    <p class="text-muted mb-0">{{ $review->created_at->format('M d, Y') }}</p>
+                                                </div>
+                                            </div>
+                                    
+                                            <!-- Review Title and Comment -->
+                                            <div class="mt-3">
+                                                <p class="fw-bold">{{ $review->title }}</p>
+                                                <p>{{ $review->comment }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                    
+                                    
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
