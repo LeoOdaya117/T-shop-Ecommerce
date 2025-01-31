@@ -107,7 +107,7 @@
                                                 <tbody>
                                                     @if ($recentOrders->count() > 0)
                                                         @foreach ($recentOrders as $recentOrder)
-                                                            <tr class="text-center">
+                                                            <tr class="text-center" data-order-id="{{  $recentOrder->id  }}">
                                                                 <td>{{ $loop->iteration }}</td>
                                                                 
                     
@@ -373,7 +373,7 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
                 },
                 success: function(response) {
-                    console.log(response);
+                    
                     const Toast = Swal.mixin({
                         toast: true,
                         position: "top-end",
@@ -389,6 +389,7 @@
                         icon: "success",
                         title: response.message,
                     });
+                    $(`tr[data-order-id="${response.order_id}"]`).remove();
                 },
                 error: function(xhr, status, error) {
                     console.error("An error occurred while accepting the order: ", error);

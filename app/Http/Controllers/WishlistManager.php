@@ -73,4 +73,32 @@ class WishlistManager extends Controller
             ]);
         }
     }
+
+    function userRemoveWishlist(Request $request){
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'variant_id' => 'required|exists:product_variants,id'
+        ]);
+
+        try {
+            $wishlist = Wishlist::where('user_id',auth()->user()->id)
+                ->where('product_id', $request->product_id)
+                ->where('variant_id', $request->variant_id)
+            ;
+            $wishlist->delete();
+
+            return response()->json([
+                'status' => 200,
+                'success' => true,
+                'wishlist_id' =>$request->wishlist_id,
+                'message' => 'Wishlist item deleted successfully.',
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => $th->getMessage(),
+            ]);
+        }
+    }
 }

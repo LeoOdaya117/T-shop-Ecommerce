@@ -58,7 +58,7 @@
                                 <!-- Shipping Address Section -->
                                 <div class="mb-3">
                                     <label for="address" class="form-label d-flex justify-content-between">Shipping Address
-                                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#createAddressModal">
+                                        <button type="button" class="btn btn-secondary" id="createAddressBtn" data-id="{{ auth()->user()->id }}">
                                             Add New Address
                                         </button>
                                     </label>
@@ -132,8 +132,8 @@
             </main>
             {{-- MODAL --}}
 
-            <!-- Add New Address Modal -->
-            <div class="modal fade" id="createAddressModal" tabindex="-1" aria-labelledby="createAddressModalLabel" aria-hidden="true">
+            {{-- <!-- Add New Address Modal -->
+            <div class="modal fade" id="createAddressModal" tabindex="-1" aria-labelledby="createAddressModalLabel">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -183,16 +183,118 @@
                     </div>
                 </div>
             </div>
-                    
+                     --}}
             
         </section>
     </main>
+     {{-- CREATE ADDRESS MODAL --}}
+ @include('partials.modal', [
+    'id' => 'createAddressModal',
+    'title' => 'Create New Address',
+    'body' => '
+        <form id="createAddressForm"  method="POTS">
+               
+                
+                <div class="mb-3">
+                    <label for="new_street" class="form-label">Address 1</label>
+                    <input type="text" name="address1" class="form-control" placeholder="Enter your street address" required>
+                </div>
+                <div class="mb-3">
+                    <label for="new_street" class="form-label">Address 2 <span class="text-muted">(Optionanl)</span></label>
+                    <input type="text" name="address2" class="form-control" placeholder="Enter your street address" >
+                </div>
+                <div class="mb-3">
+                    <label for="new_city" class="form-label">City</label>
+                    <input type="text" name="city" class="form-control" placeholder="Enter your city" required>
+                </div>
+                <div class="mb-3">
+                    <label for="new_state" class="form-label">Province</label>
+                    <input type="text" name="province" class="form-control" placeholder="Enter your province" required>
+                </div>
+                <div class="mb-3">
+                    <label for="new_postal_code" class="form-label">Postal Code</label>
+                    <input type="text" name="postal_code" class="form-control" placeholder="Enter your postal code" required>
+                </div>
+                <div class="mb-3">
+                    <label for="new_country" class="form-label">Country</label>
+                    <select class="custom-select d-block w-100 form-control" name="country" id="country" required>
+                        <option value="Philippines">Philippines</option>
+                    </select>
+                </div>
+                <div  class="d-flex justify-content-end align-items-end gap-1">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="saveAddressBtn">Save Address</button>
+                </div>
+                
+        </form>
+    ',
+    'footer' => '
+       
+    ',
+])
+
 @endsection
+
 
 @section('script')
     <script>
-         function route(routeUrl) {
+        function route(routeUrl) {
                 window.location.href = routeUrl;
         }
+        let user_id = null;
+        $('#createAddressBtn').on('click', function(){
+            user_id = $(this).data('id');
+            $('#createAddressModal').modal('show');
+        }); 
+
+        // var modal = new bootstrap.Modal(document.getElementById('createAddressModal'));
+        // modal.show(); // This ensures Bootstrap properly manages aria attributes.
+        $('#createAddressForm').submit(function(e){
+            e.preventDefault();
+
+            var formData = new FormData(this); 
+            var url = "{{ route('user.create.address') }}";
+
+            formData.append('user_id', user_id);
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: formData,
+                processData: false, // Don't process the data
+                contentType: false, // Don't set content type
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
+                },
+                success: function(response) {
+                    if(response.success == true) {
+                        location.reload();
+
+                        $('#createAddressModal').modal('hide');
+                    } else {
+                       
+                        $('#createAddressModal').modal('hide');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#createAddressModal').modal('hide');
+                    const errors = xhr.responseJSON.errors;
+                    let errorHtml = '<ul>';
+                    for (let field in errors) {
+                        errorHtml += `<li>${errors[field][0]}</li>`;
+                    }
+                    errorHtml += '</ul>';
+                    $('#alert-container1').html(`
+                        <div class="alert alert-danger">
+                            ${errorHtml}
+                        </div>
+                    `);
+                    
+                }
+
+            });
+
+        });
+
     </script>
 @endsection

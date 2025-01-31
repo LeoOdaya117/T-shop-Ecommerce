@@ -564,6 +564,7 @@ class OrderManager extends Controller
         return response()->json([
             'success' => true,
             'message' => $message ,
+            'order_id' => $request->order_id,
         ]);
     }
 

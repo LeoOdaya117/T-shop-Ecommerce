@@ -260,7 +260,6 @@
             });
         });
 
-
        
         function addToCart(productId) {
             // Get the quantity selected by the user
@@ -268,6 +267,25 @@
             const quantity = document.getElementById('quantity').value;
             const varaint_id = document.getElementById('selectedVariantId').value;
             // Send AJAX request to add product to cart
+
+            if(!varaint_id){
+                // alert('No color and size selected!');
+                Swal.fire({
+                            icon: 'error',
+                            title: `No color and size selected!`,
+                            toast: true,
+                            position: 'center-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer);
+                                toast.addEventListener('mouseleave', Swal.resumeTimer);
+                            }
+                        });
+                return;
+            }
+            
             $.ajax({
                 url: '/cart/' + productId + '/' + quantity + '/' + varaint_id,
                 type: 'GET',
@@ -294,7 +312,7 @@
                                 });
                             }
                         });
-                       
+                        
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -323,7 +341,7 @@
             
         }
 
-       
+
         function incrementQuantity() {
             let input = document.getElementById('quantity');
             let currentValue = parseInt(input.value);
@@ -350,136 +368,174 @@
         }
 
         let selectedColor = '';
-let selectedSize = '';
-let variant = null;
+        let selectedSize = '';
+        let variant = null;
 
-// Update the size options based on the selected color
-function updateSizeOptions(color) {
-    selectedColor = color;
-    document.querySelectorAll('.sizes').forEach(el => el.style.display = 'none');
-    document.getElementById(`sizes-for-${color}`).style.display = 'block';
+        // Update the size options based on the selected color
+        function updateSizeOptions(color) {
+            selectedColor = color;
+            document.querySelectorAll('.sizes').forEach(el => el.style.display = 'none');
+            document.getElementById(`sizes-for-${color}`).style.display = 'block';
 
-    // Reset size and stock display
-    selectedSize = '';
-    variant = null;
-    document.getElementById('stock-display').textContent = 'Select a size to view stock availability.';
-    updateWishlistIcon();
-}
-
-// Select size and display stock info
-function selectSize(color, size) {
-    selectedSize = size;
-    let selectedVariant = @json($variants);
-    variant = selectedVariant.find(v => v.color === color && v.size === size);
-
-    if (variant) {
-        document.getElementById('selectedVariantId').value = variant.id;
-        console.log(variant.id, variant.stock, variant.size, variant.color);
-
-        let stockDisplay = document.getElementById('stock-display');
-        let stocksMax = document.getElementById('quantity');
-        // let wishlistButton = document.getElementById('wishlistButton');
-        let addToCartButton = document.getElementById('addToCartButton');
-
-        if (variant.stock > 0) {
-            stockDisplay.innerHTML = `${variant.stock} stocks available`;
-            stocksMax.value = 1;
-            stocksMax.max = variant.stock;
-            stockDisplay.classList.add('text-success');
-            stockDisplay.classList.remove('text-danger');
-            // wishlistButton.style.display = 'none';
-            addToCartButton.style.display = 'block';
-        } else {
-            stockDisplay.innerHTML = 'Out of stock';
-            stockDisplay.classList.add('text-danger');
-            stockDisplay.classList.remove('text-success');
-            // wishlistButton.style.display = 'block';
-            addToCartButton.style.display = 'none';
+            // Reset size and stock display
+            selectedSize = '';
+            variant = null;
+            document.getElementById('stock-display').textContent = 'Select a size to view stock availability.';
+            updateWishlistIcon();
         }
 
-        updateWishlistIcon(); // Update the wishlist icon based on the selected variant
-    }
-}
+        // Select size and display stock info
+        function selectSize(color, size) {
+            selectedSize = size;
+            let selectedVariant = @json($variants);
+            variant = selectedVariant.find(v => v.color === color && v.size === size);
 
-// Function to toggle wishlist icon
-function toggleWishlist(button, productId, productTitle) {
-    if (!variant) {
-        alert("Please select a color and size first.");
-        return;
-    }
+            if (variant) {
+                document.getElementById('selectedVariantId').value = variant.id;
+                console.log(variant.id, variant.stock, variant.size, variant.color);
 
-    let icon = document.getElementById(`wishlist-icon-${productId}`);
+                let stockDisplay = document.getElementById('stock-display');
+                let stocksMax = document.getElementById('quantity');
+                // let wishlistButton = document.getElementById('wishlistButton');
+                let addToCartButton = document.getElementById('addToCartButton');
 
-    if (icon.classList.contains("text-dark")) {
-        icon.classList.remove("text-dark");
-        icon.classList.add("text-danger");
-        addToWishList(productId, productTitle, variant.id);
-    } else {
-        icon.classList.remove("text-danger");
-        icon.classList.add("text-dark");
-        // removeFromWishList(productId, productTitle, variant.id);
-    }
-}
+                if (variant.stock > 0) {
+                    stockDisplay.innerHTML = `${variant.stock} stocks available`;
+                    stocksMax.value = 1;
+                    stocksMax.max = variant.stock;
+                    stockDisplay.classList.add('text-success');
+                    stockDisplay.classList.remove('text-danger');
+                    // wishlistButton.style.display = 'none';
+                    addToCartButton.style.display = 'block';
+                } else {
+                    stockDisplay.innerHTML = 'Out of stock';
+                    stockDisplay.classList.add('text-danger');
+                    stockDisplay.classList.remove('text-success');
+                    // wishlistButton.style.display = 'block';
+                    addToCartButton.style.display = 'none';
+                }
 
-// Add to wishlist AJAX
-function addToWishList(product_id, title, variant_id) {
-    $.ajax({
-        type: "POST",
-        url: "{{ route('add.wishlist') }}",
-        data: { product_id, variant_id, _token: "{{ csrf_token() }}" },
-        success: function(response) {
-            if (response.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: `${title} added to wishlist`,
-                    toast: true, position: 'center-end',
-                    showConfirmButton: false, timer: 3000, timerProgressBar: true
-                });
-            } else {
-                Swal.fire({
-                    icon: 'warning',
-                    title: response.message,
-                    toast: true, position: 'center-end',
-                    showConfirmButton: false, timer: 3000, timerProgressBar: true
-                });
+                updateWishlistIcon(); // Update the wishlist icon based on the selected variant
             }
-        },
-        error: function(xhr) {
-            Swal.fire({
-                icon: 'error',
-                title: xhr.responseJSON.message || 'An error occurred',
-                toast: true, position: 'center-end',
-                showConfirmButton: false, timer: 3000, timerProgressBar: true
+        }
+
+        // Function to toggle wishlist icon
+        function toggleWishlist(button, productId, productTitle) {
+            if (!variant) {
+                alert("Please select a color and size first.");
+                return;
+            }
+
+            let icon = document.getElementById(`wishlist-icon-${productId}`);
+
+            if (icon.classList.contains("text-dark")) {
+                // icon.classList.remove("text-dark");
+                // icon.classList.add("text-danger");
+                addToWishList(productId, productTitle, variant.id);
+            } else {
+                // icon.classList.remove("text-danger");
+                // icon.classList.add("text-dark");
+                removeFromWishList(productId, productTitle, variant.id);
+            }
+        }
+
+        // Add to wishlist AJAX
+        function addToWishList(product_id, title, variant_id) {
+            let icon = document.getElementById(`wishlist-icon-${product_id}`);
+            $.ajax({
+                type: "POST",
+                url: "{{ route('add.wishlist') }}",
+                data: { product_id, variant_id, _token: "{{ csrf_token() }}" },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: `${title} added to wishlist`,
+                            toast: true, position: 'center-end',
+                            showConfirmButton: false, timer: 3000, timerProgressBar: true
+                        });
+                        icon.classList.remove("text-dark");
+                        icon.classList.add("text-danger");
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: response.message,
+                            toast: true, position: 'center-end',
+                            showConfirmButton: false, timer: 3000, timerProgressBar: true
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: xhr.responseJSON.message || 'An error occurred',
+                        toast: true, position: 'center-end',
+                        showConfirmButton: false, timer: 3000, timerProgressBar: true
+                    });
+                }
             });
         }
-    });
-}
 
 
+        function removeFromWishList(product_id, title, variant_id){
+            let icon = document.getElementById(`wishlist-icon-${product_id}`);
+            $.ajax({
+                type: "DELETE",
+                url: "{{ route('delete.user.wishlist') }}",
+                data: { product_id, variant_id, _token: "{{ csrf_token() }}" },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: `${title} removed from wishlist`,
+                            toast: true, position: 'center-end',
+                            showConfirmButton: false, timer: 3000, timerProgressBar: true
+                        });
+                        icon.classList.remove("text-danger");
+                        icon.classList.add("text-dark");
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: response.message,
+                            toast: true, position: 'center-end',
+                            showConfirmButton: false, timer: 3000, timerProgressBar: true
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: xhr.responseJSON.message || 'An error occurred',
+                        toast: true, position: 'center-end',
+                        showConfirmButton: false, timer: 3000, timerProgressBar: true
+                    });
+                }
+            });
+        }
 
-// Update wishlist icon when a variant is selected
-function updateWishlistIcon() {
-    if (!variant) {
-        return; // If no variant is selected, do nothing
-    }
-    console.log('asd ' + variant.id);
-    let icon = document.getElementById(`wishlist-icon-{{ $products->id }}`);
-    let wishlistItems = @json($wishlistItems); // Wishlist from controller
-    console.log(wishlistItems[0]);
-    // Check if the selected variant is in the wishlist
-    if (wishlistItems[0] === variant.id) {
-        icon.classList.remove("text-dark");
-        icon.classList.add("text-danger"); // Show red icon
-    } else {
-        icon.classList.remove("text-danger");
-        icon.classList.add("text-dark"); // Show black icon
-    }
-}
+        // Update wishlist icon when a variant is selected
+        function updateWishlistIcon() {
+            if (!variant) {
+                return; // If no variant is selected, do nothing
+            }
+            console.log('asd ' + variant.id);
+            let icon = document.getElementById(`wishlist-icon-{{ $products->id }}`);
+            let wishlistItems = @json($wishlistItems); // Wishlist from controller
+            // console.log(wishlistItems[0]);
+            // Check if the selected variant is in the wishlist
+            if (wishlistItems[0] === variant.id) {
+                icon.classList.remove("text-dark");
+                icon.classList.add("text-danger"); // Show red icon
+            } else {
+                icon.classList.remove("text-danger");
+                icon.classList.add("text-dark"); // Show black icon
+            }
+        }
 
-// On page load, call the updateWishlistIcon to set the correct state
-document.addEventListener("DOMContentLoaded", function() {
-    updateWishlistIcon();
-});
+        // On page load, call the updateWishlistIcon to set the correct state
+        document.addEventListener("DOMContentLoaded", function() {
+            updateWishlistIcon();
+        });
 
 
     </script>

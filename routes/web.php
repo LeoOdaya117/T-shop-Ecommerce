@@ -98,6 +98,8 @@ use Illuminate\Support\Facades\Route;
         ->name('user.update.password');
         Route::post('/create/address', [AddressManager::class, 'store'])
         ->name('user.create.address');
+        Route::delete('delete/user/wishlist', [WishlistManager::class, 'userRemoveWishlist'])
+        ->name('delete.user.wishlist');
 
         Route::get('change-password', function(){
             return view('user.account.change-password');
