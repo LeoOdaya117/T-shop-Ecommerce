@@ -18,18 +18,56 @@ use Illuminate\Support\Facades\Auth;
 class ProductsManager extends Controller
 {
     
-    function showProducts(Request $request){
-        
 
-        $products = Products::with('reviews')->where('status', 'active')
-        ->paginate(12);
+    function showProducts(Request $request) {
+        $query = Products::with('reviews')->where('status', 'active');
+    
+        // Handle search
+        if ($request->has('search') && $request->search) {
+            $searchTerm = $request->search;
+            $query->where(function($query) use ($searchTerm) {
+                $query->where('title', 'like', "%{$searchTerm}%")
+                    ->orWhere('description', 'like', "%{$searchTerm}%");
+            });
+        }
+        // Apply category filter
+        if ($request->has('category')) {
+            $query->whereIn('category', $request->category);
+        }
+    
+        // Apply brand filter
+        if ($request->has('brand')) {
+            $query->whereIn('brand', $request->brand);
+        }
+    
+        // // Apply size filter through variants
+        // if ($request->has('size')) {
+        //     $query->whereHas('variants', function ($q) use ($request) {
+        //         $q->whereIn('size', $request->size);
+        //     });
+        // }
+    
+        // Apply price range filter
+        if ($request->has('price_range')) {
+            foreach ($request->price_range as $range) {
+                [$min, $max] = explode('-', $range);
+                $query->whereBetween('price', [(int) $min, (int) $max]);
+            }
+        }
+    
+        // Paginate the results
+        $products = $query->paginate(12);
+    
+        // Fetch categories and brands
         $categoryManager = new CategoryManager();
         $categories = $categoryManager->getCategory();
         $brandManager = new BrandController();
         $brands = $brandManager->getBrands();
-
-        return view('products', compact('products','categories','brands'));
+    
+        // Return the view
+        return view('products', compact('products', 'categories', 'brands'));
     }
+    
     function showProductsByCategory( $categoryId){
         $categoryId =(int) $categoryId;
         $products = Products::with('reviews')->where('category', $categoryId)

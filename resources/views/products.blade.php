@@ -2,32 +2,213 @@
 @section("title", "T-Shop - Home")
 @section('style')
     <style>
-
-        .card:hover {
-            transform: scale(1.05); 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
-            background-color: #f8f9fa; 
-            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        body {
+            font-family: 'Roboto', sans-serif;
         }
 
-        .card img {
-            object-fit: contain; /* Ensures the image fits within the specified height and width */
-            max-height: 200px;
+        .breadcrumb-item {
+            cursor: pointer;
+            transition: color 0.3s;
         }
 
-        .card-body {
+        .breadcrumb-item:hover {
+            color: #007bff;
+        }
+
+        .filter-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transition: max-height 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .filter-container h5 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .filter-container .form-check {
+            margin-bottom: 15px;
+        }
+
+        .form-check-input:checked {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .form-check-input {
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .form-check-label {
+            font-size: 1rem;
+            color: #333;
+            padding-left: 10px;
+            cursor: pointer;
+        }
+
+        .filter-toggle-btn {
+            display: none;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .filter-toggle-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .product-card {
+            transition: transform 0.3s, box-shadow 0.3s;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Space out title, price, and other details */
+            justify-content: space-between;
+            height: 100%;
+            border-radius: 10px;
         }
-        
 
+        .product-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card img {
+            object-fit: cover;
+            height: 250px;
+            border-radius: 10px;
+        }
+
+        .price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #000000;
+        }
+
+        .old-price {
+            font-size: 1rem;
+            text-decoration: line-through;
+            color: #999;
+            margin-left: 10px;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            border-radius: 50px;
+        }
+
+        .badge.bg-primary {
+            background-color: #007bff;
+        }
+
+        .badge.bg-danger {
+            background-color: #e74c3c;
+        }
+
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .star-rating i {
+            margin: 0 2px;
+        }
+
+        .filter-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .filter-container h5 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .accordion-button {
+            font-weight: bold;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .accordion-button:focus {
+            box-shadow: none;
+        }
+
+        .form-check-input:checked {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .filter-toggle-btn {
+            display: none;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .filter-toggle-btn:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 767px) {
+            .filter-container {
+                display: none;
+            }
+
+            .filter-toggle-btn {
+                display: inline-block;
+            }
+
+            .product-list .col-12 {
+                width: 50%;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .product-list .row-cols-md-2 {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .product-list .row-cols-md-3 {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+        }
     </style>
 @endsection()
-@section("content")
 
+@section("content")
     <div class="bg-dark text-light">
-        <div class=" container ">
+        <div class="container">
             <nav aria-label="breadcrumb" class="pt-5 mt-4">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item" onclick="route('{{ route('home') }}')">Home</li>
@@ -39,251 +220,304 @@
                     @endif
                 </ol>
             </nav>
-            
         </div>
     </div>
 
     <main class="container w-100 mb-3">
-        
-        
-        <div class="row justify-content-center align-items-center g-2">
+        <div class="row justify-content-center align-items-center g-2 mb-2">
             <div class="col-12">
-                
-                <div class="align-items-center d-flex justify-content-end text-center m-2">
-                    {{-- <div class="d-flex">
-                        <form action="" class="d-flex">
-                            <input type="text" class="form-control">
-                            <button class="btn b">Search</button>
-                        </form>
-                    </div> --}}
-                    <p class="text-center  mb-0 me-2" style="font-size: 12px">Sort by: </p>
-                    <select name="sort" id="sort" class="form-select align-items-end " style="width: 150px; border-radius:10px" onchange="route('{{ route('shop') }}?sort=' + this.value)">
-                        <option value="default">Best Match</option>
-                        <option value="price">Price low to high</option>
-                        <option value="name">Price high to low</option>
-                    </select>
+                <div class="d-flex justify-content-end text-center m-2">
+                    <form action="{{ route('search.product') }}" method="GET" class="d-flex align-items-end">
+                        <input type="text" name="search" id="search" class="form-control" placeholder="Search products..." style="width: 200px; border-radius:10px">
+                        <button type="submit" class="btn btn-outline-dark ms-2" style="border-radius:10px">Search</button>
+                    </form>
                 </div>
                 <hr style="border: 0px solid #e4e1e1; margin: 0 auto;">
             </div>
-            <div class="col">
-                
-            </div>
-          
         </div>
 
-        <div class="row  g-3 ">
-            <div class="container col-xl-3 col-lg-4 col-md-4 col-sm-12 col-12 bg-white">
-                <div class="container text-center mt-3 mb-3">
-                    <h5>Filter Products</h5>
-                </div>
-                <hr>
-                <!-- Category Filter with Checkboxes -->
-                <div class="container mt-3 mb-3">
-                    <h5>Category</h5>
-                    @foreach ($categories as $category)
-                        <div class="form-check">
-
-                                <input class="form-check-input" type="checkbox" value="{{ $category->id }}" id="{{ $category->id }}">
-                                <label class="form-check-label" for="{{ $category->name }}">
-                                    {{ $category->name }}
-                                </label>
-                            
-                            
+        <div class="row g-3">
+              <!-- Filters Column -->
+              <div class="col-xl-3 col-lg-4 col-md-4 col-sm-12 col-12 filter-container">
+                <h5>Filters</h5>
+                <div class="accordion" id="filterAccordion">
+                    <!-- Category Filter -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingCategory">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategory" aria-expanded="true" aria-controls="collapseCategory">
+                                Category
+                            </button>
+                        </h2>
+                        <div id="collapseCategory" class="accordion-collapse collapse show" aria-labelledby="headingCategory" data-bs-parent="#filterAccordion">
+                            <div class="accordion-body">
+                                @foreach ($categories as $category)
+                                    <div class="form-check">
+                                        <input class="form-check-input filter" type="checkbox" value="{{ $category->id }}" id="category_{{ $category->id }}" name="category[]">
+                                        <label class="form-check-label" for="category_{{ $category->id }}">
+                                            {{ $category->name }}
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
-                    @endforeach
-                </div>
-                <hr>
-                <!-- Brand Filter with Checkboxes -->
-                <div class="container mt-3 mb-3">
-                    <h5>Brand</h5>
-                    @foreach ($brands as $brand)
-                        <div class="form-check">
-
-                                <input class="form-check-input" type="checkbox" value="{{ $brand->id }}" id="{{ $brand->id }}">
-                                <label class="form-check-label" for="{{ $brand->name }}">
-                                    {{ $brand->name }}
-                                </label>
-                            
-                            
+                    </div>
+                    <!-- Brand Filter -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingBrand">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBrand" aria-expanded="false" aria-controls="collapseBrand">
+                                Brand
+                            </button>
+                        </h2>
+                        <div id="collapseBrand" class="accordion-collapse collapse" aria-labelledby="headingBrand" data-bs-parent="#filterAccordion">
+                            <div class="accordion-body">
+                                @foreach ($brands as $brand)
+                                    <div class="form-check">
+                                        <input class="form-check-input filter" type="checkbox" value="{{ $brand->id }}" id="brand_{{ $brand->id }}" name="brand[]">
+                                        <label class="form-check-label" for="brand_{{ $brand->id }}">
+                                            {{ $brand->name }}
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
-                    @endforeach
-                </div>
-                <hr>
-                <!-- Size Filter with Checkboxes -->
-                <div class="container mt-3 mb-3">
-                    <h5>Size</h5>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="small" id="sizeSmall">
-                        <label class="form-check-label" for="sizeSmall">
-                            Small (S)
-                        </label>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="medium" id="sizeMedium">
-                        <label class="form-check-label" for="sizeMedium">
-                            Medium (M)
-                        </label>
+            
+                    <!-- Size Filter -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingSize">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSize" aria-expanded="false" aria-controls="collapseSize">
+                                Size
+                            </button>
+                        </h2>
+                        <div id="collapseSize" class="accordion-collapse collapse" aria-labelledby="headingSize" data-bs-parent="#filterAccordion">
+                            <div class="accordion-body">
+                                <div class="form-check">
+                                    <input class="form-check-input filter" type="checkbox" value="Small" id="size_Small" name="size[]">
+                                    <label class="form-check-label" for="size_small">Small</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input filter" type="checkbox" value="Medium" id="size_Medium" name="size[]">
+                                    <label class="form-check-label" for="size_medium">Medium</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input filter" type="checkbox" value="Large" id="size_Large" name="size[]">
+                                    <label class="form-check-label" for="size_small">Large</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input filter" type="checkbox" value="XL" id="size_XL" name="size[]">
+                                    <label class="form-check-label" for="size_small">XL</label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="large" id="sizeLarge">
-                        <label class="form-check-label" for="sizeLarge">
-                            Large (L)
-                        </label>
+            
+                    <!-- Price Range Filter -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingPrice">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrice" aria-expanded="false" aria-controls="collapsePrice">
+                                Price Range
+                            </button>
+                        </h2>
+                        <div id="collapsePrice" class="accordion-collapse collapse" aria-labelledby="headingPrice" data-bs-parent="#filterAccordion">
+                            <div class="accordion-body">
+                                <div class="form-check">
+                                    <input class="form-check-input filter" type="checkbox" value="0-50" id="price_range_1" name="price_range[]">
+                                    <label class="form-check-label" for="price_range_1">$0 - $50</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input filter" type="checkbox" value="51-100" id="price_range_2" name="price_range[]">
+                                    <label class="form-check-label" for="price_range_2">$51 - $100</label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="xlarge" id="sizeXLarge">
-                        <label class="form-check-label" for="sizeXLarge">
-                            Extra Large (XL)
-                        </label>
-                    </div>
-                </div>
-                <hr>
-                <!-- Price Filter with Price Range Checkboxes -->
-                <div class="container mt-3 mb-3">
-                    <h5>Filter by Price</h5>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="0-50" id="price0to50">
-                        <label class="form-check-label" for="price0to50">
-                            $0 - $50
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="51-100" id="price51to100">
-                        <label class="form-check-label" for="price51to100">
-                            $51 - $100
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="101-200" id="price101to200">
-                        <label class="form-check-label" for="price101to200">
-                            $101 - $200
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="201-500" id="price201to500">
-                        <label class="form-check-label" for="price201to500">
-                            $201 - $500
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="500" id="priceAbove500">
-                        <label class="form-check-label" for="priceAbove500">
-                            $500+
-                        </label>
-                    </div>
+                    <button id="apply-filters-btn" class="btn btn-primary">Apply Filters</button>
                 </div>
             </div>
             
+
             
-            
+
+            <!-- Product List Column -->
             <div class="col-xl-9 col-lg-8 col-md-8 col-sm-12 col-12">
-               
-            
-                    <div  data-aos="fade-up" class="row gx-4 gx-lg-5 p-2 row-cols-2 row-cols-md-3 row-cols-xl-4 "> <!-- Flexbox for equal height -->
+                <button class="filter-toggle-btn" onclick="toggleFilters()">Filter</button>
 
-                        @if ($products->isEmpty())
-                            <div class="col-12 col-md-6 col-lg-2 mb-4 w-100">
-                                <div class="alert  text-center a align-content-center">
-                                    No products found.
-                                </div>
-                            </div>
-                            
-                        @else
-                            @foreach ($products as $product)
-                            <div class="col-12 col-md-6 col-lg-2 mb-4 gap-1">
-                                <div class="card position-relative"  onclick="route('{{ route('showDetails', $product->slug) }}')">
-                                    <!-- Label Indicator -->
-                                    @if($product->created_at->between(Carbon\Carbon::now()->startOfWeek(), Carbon\Carbon::now()->endOfWeek()))
-                                        <div class="position-absolute top-0 start-0 bg-success text-white p-1 px-2 rounded-end" 
-                                            style="font-size: 0.75rem; z-index: 20;">
-                                            New
-                                        </div>  
-                                    @elseif($product->discount != 0.00)
-                                        <div class="position-absolute top-0 start-0 bg-danger text-white p-1 px-2 rounded-end" 
-                                            style="font-size: 0.75rem; z-index: 20;">
-                                            Sale
+                <div class="row g-3 product-list" id="product-list">
+                    @if ($products->isEmpty())
+                        <div class="col-12 col-md-6 col-lg-2 mb-4 w-100">
+                            <div class="alert text-center">No products found.</div>
+                        </div>
+                    @else
+                        @foreach ($products as $product)
+                            <div class="col-12 col-md-6 col-lg-3 mb-2" onclick="route('{{ route('showDetails', $product->slug) }}')">
+                                <div class="product-card card">
+                                    <div class="position-relative">
+                                        @if(\Carbon\Carbon::parse($product->created_at)->isToday())
+                                            <span class="badge bg-primary position-absolute top-0 start-0 m-2">New</span>
+                                        @endif
+
+                                        @if($product->discount > 0)
+                                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">Sale</span>
+                                        @endif
+
+                                        <img src="{{ $product->image }}" alt="Product Image" class="card-img-top">
+                                    </div>
+
+                                    <div class="card-body text-center">
+                                        <h6 class="text-truncate">{{ $product->title }}</h6>
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <span class="price">₱ {{ number_format($product->price - $product->discount, 2) }}</span>
+                                            @if($product->discount > 0)
+                                                <span class="old-price">₱ {{ number_format($product->price, 2) }}</span>
+                                            @endif
                                         </div>
-                                    @endif
-                                   
-                                    <!-- Product Image -->
-                                    <img class="card-img-center p-2 mt-3" src="{{ $product->image }}" alt="Product Image" />
-                                    <!-- Product Details -->
-                                    <div class="card-body p-3">
-                                        <div class="text-start">
-                                            <!-- Product Name -->
-                                            <h6 class="fw-bolder text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                                {{ $product->title }}
-                                            </h6>
-                                            <!-- Product Price -->
-                                            <div class="d-flex gap-1">
-                                                ₱ {{ number_format($product->price - $product->discount,2)}}
-                                                @if($product->discount > 0.00)
-                                                    <div class="text-muted text-decoration-line-through align-content-center" style="font-size: 12px">₱ {{ number_format($product->price ,2)}}</div>
-
-                                                @endif
-                                            </div>
-                                            {{-- Star Rating Section --}}
+                                        <div class="star-rating">
                                             @php
-                                                $averageRating = $product->reviews->avg('rating') ?? 0;
+                                                $rating = $product->reviews->avg('rating') ?? 0;
+                                                $fullStars = floor($rating);
+                                                $halfStars = ceil($rating - $fullStars);
                                             @endphp
-                                            
-                                            <div class="d-flex align-items-center mb-2">
-                                                @for ($i = 1; $i <= floor($averageRating); $i++)
+                                            @if($rating == 0)
+                                                <i class="fa fa-star text-muted"></i>
+                                                <i class="fa fa-star text-muted"></i>
+                                                <i class="fa fa-star text-muted"></i>
+                                                <i class="fa fa-star text-muted"></i>
+                                                <i class="fa fa-star text-muted"></i>
+                                            @else
+                                                @for ($i = 0; $i < $fullStars; $i++)
                                                     <i class="fa fa-star text-warning"></i>
                                                 @endfor
-
-                                                @if (($averageRating - floor($averageRating)) >= 0.5)
+                                                @for ($i = 0; $i < $halfStars; $i++)
                                                     <i class="fa fa-star-half-alt text-warning"></i>
-                                                @endif
-
-                                                @for ($i = ceil($averageRating); $i < 5; $i++)
-                                                    <i class="fa fa-star text-muted"></i>
                                                 @endfor
-
-                                                <span class="ms-1 text-muted">({{ $product->reviews->count() }})</span>
-                                            </div>
-
+                                                @for ($i = $fullStars + $halfStars; $i < 5; $i++)
+                                                    <i class="fa fa-star-o text-light"></i>
+                                                @endfor
+                                            @endif
+                                            ({{ $product->reviews->count() }})
                                         </div>
                                     </div>
-                                    {{-- <!-- Product Actions -->
-                                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $product->slug) }}')">
-                                        <div class="text-center">
-                                            <a class="btn btn-outline-dark mt-auto w-100">Details</a>
-                                        </div>
-                                    </div> --}}
                                 </div>
                             </div>
-                            @endforeach
-                        
-                        
-                            
-                        @endif
-        
-                        
-                        
-                    </div>
-                    <div class="">
-                        {{ $products->links('pagination::bootstrap-5') }}
-                    </div>
-                    
-                
+                        @endforeach
+                    @endif
+                </div>
+                <div>
+                    {{ $products->links('pagination::bootstrap-5') }}
+                </div>
             </div>
-           
         </div>
-        
-        
-
-       
-
-       
     </main>
 @endsection()
 
 @section("script")
-    <script>
-        function route(routeUrl) {
-            window.location.href = routeUrl;
+<script>
+    function route(routeUrl) {
+        window.location.href = routeUrl;
+    }
+
+    function toggleFilters() {
+        const filterContainer = document.querySelector('.filter-container');
+        filterContainer.style.display = filterContainer.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Function to gather selected filters and reload the page with updated query parameters
+    function applyFilters() {
+        let categories = document.querySelectorAll('input[name="category[]"]:checked');
+        let brands = document.querySelectorAll('input[name="brand[]"]:checked');
+        let sizes = document.querySelectorAll('input[name="size[]"]:checked');
+        let priceRange = document.querySelectorAll('input[name="price_range[]"]:checked');
+        let search = 
+
+        let queryString = '';
+
+            // Prepare query parameters for category filter
+     if (categories.length > 0) {
+         categories.forEach(category => {
+             queryString += `category[]=${category.value}&`;
+         });
+     }
+
+     // Prepare query parameters for brand filter
+     if (brands.length > 0) {
+         brands.forEach(brand => {
+             queryString += `brand[]=${brand.value}&`;
+         });
+     }
+
+     // Prepare query parameters for size filter
+     if (sizes.length > 0) {
+         sizes.forEach(size => {
+             queryString += `size[]=${size.value}&`;
+         });
+     }
+
+     // Prepare query parameters for price range filter
+     if (priceRange.length > 0) {
+         priceRange.forEach(price => {
+             queryString += `price_range[]=${price.value}&`;
+         });
+     }
+
+        // Remove trailing '&' if exists
+        queryString = queryString.endsWith('&') ? queryString.slice(0, -1) : queryString;
+
+        // Reload the page with the updated query string
+        window.location.href = '{{ route('shop') }}?' + queryString;
+    }
+
+    // Listen for the apply filter button click
+    document.getElementById('apply-filters-btn').addEventListener('click', applyFilters);
+
+    // Function to pre-select filters based on the URL query parameters
+    function setSelectedFilters() {
+        // Get the current URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // For search term
+        const searchTerm = urlParams.get('search');
+        if (searchTerm) {
+            document.getElementById('search').value = searchTerm;
         }
-        
-    </script>
+
+        // For category filter
+        const selectedCategories = urlParams.getAll('category[]');
+        selectedCategories.forEach(categoryId => {
+            document.querySelectorAll(`input[name="category[]"][value="${categoryId}"]`).forEach(input => {
+                input.checked = true;
+            });
+        });
+
+        // For brand filter
+        const selectedBrands = urlParams.getAll('brand[]');
+        selectedBrands.forEach(brandId => {
+            document.querySelectorAll(`input[name="brand[]"][value="${brandId}"]`).forEach(input => {
+                input.checked = true;
+            });
+        });
+
+        // For size filter (if any)
+        const selectedSizes = urlParams.getAll('size[]');
+        selectedSizes.forEach(sizeId => {
+            document.querySelectorAll(`input[name="size[]"][value="${sizeId}"]`).forEach(input => {
+                input.checked = true;
+            });
+        });
+
+        // For price range filter (if any)
+        const selectedPriceRanges = urlParams.getAll('price_range[]');
+        selectedPriceRanges.forEach(priceRange => {
+            document.querySelectorAll(`input[name="price_range[]"][value="${priceRange}"]`).forEach(input => {
+                input.checked = true;
+            });
+        });
+    }
+
+
+    window.onload = setSelectedFilters;
+
+
+
+</script>
+
 @endsection()
