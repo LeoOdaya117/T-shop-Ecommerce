@@ -248,7 +248,7 @@
             fetchData();
 
             // Fetch data every 5 seconds (5000 milliseconds)
-            setInterval(fetchData, 5000);
+            // setInterval(fetchData, 5000);
         });
 
         function fetchData(){

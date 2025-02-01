@@ -50,12 +50,12 @@
             <div class="col-12">
                 
                 <div class="align-items-center d-flex justify-content-end text-center m-2">
-                    <div class="d-flex">
+                    {{-- <div class="d-flex">
                         <form action="" class="d-flex">
                             <input type="text" class="form-control">
                             <button class="btn b">Search</button>
                         </form>
-                    </div>
+                    </div> --}}
                     <p class="text-center  mb-0 me-2" style="font-size: 12px">Sort by: </p>
                     <select name="sort" id="sort" class="form-select align-items-end " style="width: 150px; border-radius:10px" onchange="route('{{ route('shop') }}?sort=' + this.value)">
                         <option value="default">Best Match</option>
@@ -190,21 +190,20 @@
                             
                         @else
                             @foreach ($products as $product)
-                            <div class="col-12 col-md-6 col-lg-2 mb-4">
-                                <div class="card position-relative">
+                            <div class="col-12 col-md-6 col-lg-2 mb-4 gap-1">
+                                <div class="card position-relative"  onclick="route('{{ route('showDetails', $product->slug) }}')">
                                     <!-- Label Indicator -->
-                                    @if($product->discount == 0.00)
+                                    @if($product->created_at->between(Carbon\Carbon::now()->startOfWeek(), Carbon\Carbon::now()->endOfWeek()))
                                         <div class="position-absolute top-0 start-0 bg-success text-white p-1 px-2 rounded-end" 
                                             style="font-size: 0.75rem; z-index: 20;">
                                             New
                                         </div>  
-                                    @else
+                                    @elseif($product->discount != 0.00)
                                         <div class="position-absolute top-0 start-0 bg-danger text-white p-1 px-2 rounded-end" 
                                             style="font-size: 0.75rem; z-index: 20;">
                                             Sale
                                         </div>
                                     @endif
-
                                    
                                     <!-- Product Image -->
                                     <img class="card-img-center p-2 mt-3" src="{{ $product->image }}" alt="Product Image" />
@@ -217,20 +216,41 @@
                                             </h6>
                                             <!-- Product Price -->
                                             <div class="d-flex gap-1">
-                                                ₱ {{ $product->price - $product->discount}}
+                                                ₱ {{ number_format($product->price - $product->discount,2)}}
                                                 @if($product->discount > 0.00)
-                                                    <div class="text-muted text-decoration-line-through align-content-center" style="font-size: 12px">₱ {{ $product->price }}</div>
+                                                    <div class="text-muted text-decoration-line-through align-content-center" style="font-size: 12px">₱ {{ number_format($product->price ,2)}}</div>
 
                                                 @endif
                                             </div>
+                                            {{-- Star Rating Section --}}
+                                            @php
+                                                $averageRating = $product->reviews->avg('rating') ?? 0;
+                                            @endphp
+                                            
+                                            <div class="d-flex align-items-center mb-2">
+                                                @for ($i = 1; $i <= floor($averageRating); $i++)
+                                                    <i class="fa fa-star text-warning"></i>
+                                                @endfor
+
+                                                @if (($averageRating - floor($averageRating)) >= 0.5)
+                                                    <i class="fa fa-star-half-alt text-warning"></i>
+                                                @endif
+
+                                                @for ($i = ceil($averageRating); $i < 5; $i++)
+                                                    <i class="fa fa-star text-muted"></i>
+                                                @endfor
+
+                                                <span class="ms-1 text-muted">({{ $product->reviews->count() }})</span>
+                                            </div>
+
                                         </div>
                                     </div>
-                                    <!-- Product Actions -->
+                                    {{-- <!-- Product Actions -->
                                     <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $product->slug) }}')">
                                         <div class="text-center">
                                             <a class="btn btn-outline-dark mt-auto w-100">Details</a>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                             @endforeach

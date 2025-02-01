@@ -60,19 +60,20 @@
             <div class="row gx-3 gx-lg-5 p-0 row-cols-2 row-cols-md-4 row-cols-xl-4 ">
                 
                 @foreach ($popularProducts as $featuredProduct)
-                    <div class="col-12 col-md-6 col-lg-2 mb-4" data-aos="fade-up">
+                    <div class="col-12 col-md-6 col-lg-2 mb-4" data-aos="fade-up" onclick="route('{{ route('showDetails', $featuredProduct->slug) }}')">
                         <div class="card position-relative">
-                            @if($featuredProduct->discount == 0.00)
+                            @if($featuredProduct->created_at->between(Carbon\Carbon::now()->startOfWeek(), Carbon\Carbon::now()->endOfWeek()))
                                 <div class="position-absolute top-0 start-0 bg-success text-white p-1 px-2 rounded-end" 
                                     style="font-size: 0.75rem; z-index: 20;">
                                     New
                                 </div>  
-                            @else
+                            @elseif($featuredProduct->discount != 0.00)
                                 <div class="position-absolute top-0 start-0 bg-danger text-white p-1 px-2 rounded-end" 
                                     style="font-size: 0.75rem; z-index: 20;">
                                     Sale
                                 </div>
                             @endif
+
                             <!-- Product Image -->
                             <img class="card-img-center p-2 mt-3" src="{{ $featuredProduct->image }}" alt="Product Image" />
                             <!-- Product Details -->
@@ -90,15 +91,40 @@
 
                                         @endif
                                    </div>
-                                    
+
+                                   {{-- Star Rating Section --}}
+                                   <div class="d-flex justify-content-between align-items-center">
+                        
+                                        
+                                        @php
+                                            $averageRating = $featuredProduct->reviews->avg('rating') ?? 0;
+                                        @endphp
+                                        
+                                        <div class="d-flex align-items-center mb-2">
+                                            @for ($i = 1; $i <= floor($averageRating); $i++)
+                                                <i class="fa fa-star text-warning"></i>
+                                            @endfor
+
+                                            @if (($averageRating - floor($averageRating)) >= 0.5)
+                                                <i class="fa fa-star-half-alt text-warning"></i>
+                                            @endif
+
+                                            @for ($i = ceil($averageRating); $i < 5; $i++)
+                                                <i class="fa fa-star text-muted"></i>
+                                            @endfor
+
+                                            <span class="ms-1 text-muted">({{ $featuredProduct->reviews->count() }})</span>
+                                        </div>
+                                       
+                                    </div>
                                 </div>
                             </div>
-                            <!-- Product Actions -->
+                            {{-- <!-- Product Actions -->
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $featuredProduct->slug) }}')">
                                 <div class="text-center">
                                     <a class="btn btn-outline-dark mt-auto w-100">Details</a>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 @endforeach
@@ -126,12 +152,16 @@
         </section>
 
         <!-- New Arrival -->
-        <section class="featured-products mb-3" data-aos="fade-up">
-            <h4 class="text-start mb-4 font-weight-lighter">New Arrival</h4>
+        <section class="featured-products mb-3" data-aos="fade-up" 
+            @if ($new_arrival->count() < 1)
+                hidden
+            @endif  
+        >
+            <h4 class="text-start mb-4 font-weight-lighter">This Month New Arrival</h4>
             <div class="row gx-3 gx-lg-5 p-0 row-cols-2 row-cols-md-4 row-cols-xl-4 ">
                 
                 @foreach ($new_arrival as $product)
-                    <div class="col-12 col-md-6 col-lg-2 mb-4">
+                    <div class="col-12 col-md-6 col-lg-2 mb-4" onclick="route('{{ route('showDetails', $product->slug) }}')">
                         <div class="card position-relative rounded" data-aos="fade-up">
                             @if($product->discount == 0.00)
                                 <div class="position-absolute top-0 start-0 bg-success text-white p-1 px-2 rounded-end" 
@@ -161,15 +191,38 @@
 
                                         @endif
                                    </div>
+                                    {{-- Star Rating Section --}}
+                                   <div class="d-flex justify-content-between align-items-center">
+                        
+                                        @php
+                                            $averageRating = $product->reviews->avg('rating') ?? 0;
+                                        @endphp
+                                        
+                                        <div class="d-flex align-items-center mb-2">
+                                            @for ($i = 1; $i <= floor($averageRating); $i++)
+                                                <i class="fa fa-star text-warning"></i>
+                                            @endfor
+
+                                            @if (($averageRating - floor($averageRating)) >= 0.5)
+                                                <i class="fa fa-star-half-alt text-warning"></i>
+                                            @endif
+
+                                            @for ($i = ceil($averageRating); $i < 5; $i++)
+                                                <i class="fa fa-star text-muted"></i>
+                                            @endfor
+
+                                            <span class="ms-1 text-muted">({{ $product->reviews->count() }})</span>
+                                        </div>
                                     
+                                    </div>
                                 </div>
                             </div>
-                            <!-- Product Actions -->
+                            {{-- <!-- Product Actions -->
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $product->slug) }}')">
                                 <div class="text-center">
                                     <a class="btn btn-outline-dark mt-auto w-100">Details</a>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 @endforeach
@@ -184,14 +237,14 @@
             <div id="product-container" class="row gx-4 gx-lg-5  row-cols-2 row-cols-md-3 row-cols-xl-4 "> <!-- Flexbox for equal height -->
                 
                 @foreach ($products as $product)
-                    <div class="col-12 col-md-6 col-lg-2 mb-4">
+                    <div class="col-12 col-md-6 col-lg-2 mb-4" onclick="route('{{ route('showDetails', $product->slug) }}')">
                         <div class="card position-relative" data-aos="fade-up">
-                            @if($product->discount == 0.00)
+                            @if($product->created_at->between(Carbon\Carbon::now()->startOfWeek(), Carbon\Carbon::now()->endOfWeek()))
                                 <div class="position-absolute top-0 start-0 bg-success text-white p-1 px-2 rounded-end" 
                                     style="font-size: 0.75rem; z-index: 20;">
                                     New
                                 </div>  
-                            @else
+                            @elseif($product->discount != 0.00)
                                 <div class="position-absolute top-0 start-0 bg-danger text-white p-1 px-2 rounded-end" 
                                     style="font-size: 0.75rem; z-index: 20;">
                                     Sale
@@ -214,15 +267,40 @@
     
                                         @endif
                                     </div>
-                                   
+                                    {{-- Star Rating Section --}}
+                                    <div class="d-flex justify-content-between align-items-center">
+                        
+                                        @php
+                                            $averageRating = $product->reviews->avg('rating') ?? 0;
+                                        @endphp
+                                        
+                                        <div class="d-flex align-items-center mb-2">
+                                            @for ($i = 1; $i <= floor($averageRating); $i++)
+                                                <i class="fa fa-star text-warning"></i>
+                                            @endfor
+
+                                            @if (($averageRating - floor($averageRating)) >= 0.5)
+                                                <i class="fa fa-star-half-alt text-warning"></i>
+                                            @endif
+
+                                            @for ($i = ceil($averageRating); $i < 5; $i++)
+                                                <i class="fa fa-star text-muted"></i>
+                                            @endfor
+
+                                            <span class="ms-1 text-muted">({{ $product->reviews->count() }})</span>
+                                        </div>
+                                    
+                                    
+                                    </div>
+                                    
                                 </div>
                             </div>
-                            <!-- Product Actions -->
+                            {{-- <!-- Product Actions -->
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $product->slug) }}')">
                                 <div class="text-center">
                                     <a class="btn btn-outline-dark mt-auto w-100">Details</a>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 @endforeach

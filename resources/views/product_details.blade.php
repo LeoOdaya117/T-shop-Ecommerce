@@ -54,19 +54,30 @@
                             
                             
                         </div>
+                        {{-- Products ratings & wishlist button --}}
                         <div class="d-flex justify-content-between align-items-center">
                     
                             {{-- Star Rating Section --}}
                             @php
-                                 $averageRating = $products->reviews->avg('rating') ?? 0;
-                                 $roundedRating = round($averageRating);
+                                $averageRating = $products->reviews->avg('rating') ?? 0;
                             @endphp
+
                             <div class="d-flex align-items-center mb-2">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    <i class="fa-star {{ $i <= $roundedRating ? 'fa-solid text-warning' : 'fa-regular text-muted' }}"></i>
+                                @for ($i = 1; $i <= floor($averageRating); $i++)
+                                    <i class="fa fa-star text-warning"></i>
                                 @endfor
-                                <span class="ms-2 text-muted">({{ $products->reviews->count()  }} reviews)</span>
+
+                                @if (($averageRating - floor($averageRating)) >= 0.5)
+                                    <i class="fa fa-star-half-alt text-warning"></i>
+                                @endif
+
+                                @for ($i = ceil($averageRating); $i < 5; $i++)
+                                    <i class="fa fa-star text-muted"></i>
+                                @endfor
+
+                                <span class="ms-2 text-muted">({{ $products->reviews->count() }} reviews)</span>
                             </div>
+
                             {{-- Wishlist Heart Icon --}}
                             <button class="btn btn-light border-0" onclick="toggleWishlist(this, {{ $products->id }}, '{{ $products->title }}')">
                                 <i class="fa-solid fa-heart 
@@ -187,21 +198,29 @@
 
                                 <div class="container-fluid mb-2">
                                     <div class="row align-items-center">
-                                        <h3 class="fw-bold mb-3">Customer Reviews</h3>
+                                        <h3 class="fw-bold mb-3 w-100 text-center">Customer Reviews</h3>
                                 
                                         <!-- Left Section: Overall Rating & Review Count -->
                                         <div class="col-md-2 d-flex flex-column align-items-center text-center">
                                             <h1 class="font-weight-bold mb-1">{{ number_format($reviewSummary['average_rating'], 1) }}</h1>
                                             <div class="d-flex justify-content-center mb-2">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    <i class="fa fa-star {{ $i <= round($reviewSummary['average_rating']) ? 'text-warning' : 'text-secondary' }}"></i>
+                                                @for ($i = 1; $i <= floor($reviewSummary['average_rating']); $i++)
+                                                    <i class="fa fa-star text-warning"></i>
+                                                @endfor
+                                                
+                                                @if (($reviewSummary['average_rating'] - floor($reviewSummary['average_rating'])) >= 0.5)
+                                                    <i class="fa fa-star-half-alt text-warning"></i>
+                                                @endif
+                                                
+                                                @for ($i = ceil($reviewSummary['average_rating']); $i < 5; $i++)
+                                                    <i class="fa fa-star text-secondary"></i>
                                                 @endfor
                                             </div>
                                             <p class="text-muted">{{ $reviewSummary['total_reviews'] }} Reviews</p>
                                         </div>
                                 
                                         <!-- Right Section: Star Breakdown -->
-                                        <div class="col-md-9">
+                                        <div class="col-md-10">
                                             @foreach ($reviewSummary['ratings'] as $stars => $data)
                                                 <div class="d-flex align-items-center mb-2">
                                                     <span class="mr-2">{{ $stars }} <i class="fa fa-star text-warning"></i></span>
@@ -220,49 +239,52 @@
                                 
                                 
                                 
+                                
                                 <div class="container">
                                     <h4 class="fw-bold mb-3">Reviews</h4>
 
-                                    @foreach ($reviews as $review)
+                                    @forelse ($reviews as $review)
     
-                                    <div class="mb-1">
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <!-- User Image -->
-                                                <div class="col-auto">
-                                                    <img class="rounded-circle" src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" alt="User Avatar" width="50px" height="50px">
-                                                </div>
-                                            
-                                                <!-- User Name and Rating -->
-                                                <div class="col d-flex flex-column">
-                                                    <h5 class="mb-1">{{ $review->user->firstname }} {{ $review->user->lastname }}</h5>
-                                                    
-                                                    <div class="d-flex align-items-center">
-                                                        <div>
-                                                            @for ($i = 1; $i <= $review->rating; $i++)
-                                                                <i class="fa fa-star text-warning"></i>
-                                                            @endfor
+                                        <div class="mb-1">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <!-- User Image -->
+                                                    <div class="col-auto">
+                                                        <img class="rounded-circle" src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" alt="User Avatar" width="50px" height="50px">
+                                                    </div>
+                                                
+                                                    <!-- User Name and Rating -->
+                                                    <div class="col d-flex flex-column">
+                                                        <h5 class="mb-1">{{ $review->user->firstname }} {{ $review->user->lastname }}</h5>
+                                                        
+                                                        <div class="d-flex align-items-center">
+                                                            <div>
+                                                                @for ($i = 1; $i <= $review->rating; $i++)
+                                                                    <i class="fa fa-star text-warning"></i>
+                                                                @endfor
+                                                            </div>
+                                                            <p class="text-muted mb-0 ms-3">{{ $review->created_at->diffForHumans() }}</p>
                                                         </div>
-                                                        <p class="text-muted mb-0 ms-3">{{ $review->created_at->diffForHumans() }}</p>
-                                                    </div>
-                                            
-                                                    <div class="mt-3">
-                                                        <p class="fw-bold">{{ $review->title }}</p>
-                                                        <p>{{ $review->comment }}</p>
+                                                
+                                                        <div class="mt-3">
+                                                            <p class="fw-bold">{{ $review->title }}</p>
+                                                            <p>{{ $review->comment }}</p>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            
-                                    
+                                                
+                                        
 
+                                            </div>
                                         </div>
-                                    </div>
-                                    <hr>
+                                        <hr>
+                                        
+                                    @empty
+
+                                    <p>No reviews found.</p>
                                     
                                     
-                                    
-                                    
-                                    @endforeach
+                                    @endforelse
                                 </div>
                             </div>
                         </div>
@@ -286,7 +308,7 @@
                 @else
                     
                     @foreach ($relatedProducts as $recommendedProduct)
-                        <div class="col-12 col-md-6 col-lg-2 mb-4">
+                        <div class="col-12 col-md-6 col-lg-2 mb-4" onclick="route('{{ route('showDetails', $recommendedProduct->slug) }}')">
                             <div class="card position-relative">
                                 <!-- Label Indicator -->
                                 {{-- @if($product->is_new)
@@ -313,13 +335,38 @@
                                         <!-- Product Price -->
                                         ₱ {{ $recommendedProduct->price }}
                                     </div>
+                                     {{-- Star Rating Section --}}
+                                     <div class="d-flex justify-content-between align-items-center">
+                                    
+                                        @php
+                                            $averageRating = $recommendedProduct->reviews->avg('rating') ?? 0;
+                                        @endphp
+                                        
+                                        <div class="d-flex align-items-center mb-2">
+                                            @for ($i = 1; $i <= floor($averageRating); $i++)
+                                                <i class="fa fa-star text-warning"></i>
+                                            @endfor
+
+                                            @if (($averageRating - floor($averageRating)) >= 0.5)
+                                                <i class="fa fa-star-half-alt text-warning"></i>
+                                            @endif
+
+                                            @for ($i = ceil($averageRating); $i < 5; $i++)
+                                                <i class="fa fa-star text-muted"></i>
+                                            @endfor
+
+                                            <span class="ms-1 text-muted">({{ $recommendedProduct->reviews->count() }})</span>
+                                        </div>
+                                    
+                                    
+                                    </div>
                                 </div>
-                                <!-- Product Actions -->
+                                {{-- <!-- Product Actions -->
                                 <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $recommendedProduct->slug) }}')">
                                     <div class="text-center">
                                         <a class="btn btn-outline-dark mt-auto w-100">Details</a>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     @endforeach

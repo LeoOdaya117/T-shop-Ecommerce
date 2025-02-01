@@ -11,7 +11,7 @@ use App\Models\Wishlist;
 use Illuminate\Support\Facades\DB;
 use Session;
 use Illuminate\Http\Request;
-
+use Carbon\Carbon;
 use DataTable;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,7 +21,7 @@ class ProductsManager extends Controller
     function showProducts(Request $request){
         
 
-        $products = Products::where('status', 'active')
+        $products = Products::with('reviews')->where('status', 'active')
         ->paginate(12);
         $categoryManager = new CategoryManager();
         $categories = $categoryManager->getCategory();
@@ -32,7 +32,7 @@ class ProductsManager extends Controller
     }
     function showProductsByCategory( $categoryId){
         $categoryId =(int) $categoryId;
-        $products = Products::where('category', $categoryId)
+        $products = Products::with('reviews')->where('category', $categoryId)
         ->where('status', 'active')
         ->paginate(12); 
         $categories = Category::select('name')->where('id', $categoryId)->get();
@@ -43,7 +43,7 @@ class ProductsManager extends Controller
     
     function showDetails($slug){
         $products = Products::with(['variants','brands'])->where('slug', $slug)->first();
-        $relatedProducts = Products::where('brand', $products->brand)
+        $relatedProducts = Products::with('reviews')->where('brand', $products->brand)
             ->where('id', '!=', $products->id)
             ->where('status', 'active')
             ->paginate(10);
@@ -82,7 +82,7 @@ class ProductsManager extends Controller
         $brandManager = new BrandController();
         $brands = $brandManager->getBrands();
 
-        $products = Products::where('title', 'like', '%'.$search.'%')
+        $products = Products::with('reviews')->where('title', 'like', '%'.$search.'%')
         ->where('status', 'active')
         ->paginate(20);
         return view('products', compact('products', 'categories','brands'));
@@ -91,7 +91,7 @@ class ProductsManager extends Controller
     public function index()
     {
         
-        $products = Products::where('status', 'active')
+        $products = Products::with('reviews')->where('status', 'active')
         ->paginate(8);
         $popularProducts = collect(); // Initialize as an empty collection
 
@@ -104,6 +104,7 @@ class ProductsManager extends Controller
         $cartItemCount = 0;
         $popularProducts = $this->getPopularProducts();
         $new_arrival = $this->getNewArrival();
+       
         if (auth()->check()) {
             $cartController = new CartManager();
             $cartController->updateCartTotal();
@@ -145,25 +146,28 @@ class ProductsManager extends Controller
         $topProductIds = array_slice(array_keys($productQuantities), 0, 12);
 
         // Fetch the products based on the top product IDs
-        $popularProducts = Products::where('status', 'active')
+        $popularProducts = Products::with('reviews')->where('status', 'active')
         ->whereIn('id', $topProductIds)->get();
 
         return $popularProducts;
     }
 
     private function getNewArrival(){
-        $new_arrival = Products::where('status', 'active')
-        ->orderBy('created_at', 'DESC')->limit(5)->get();
+        $new_arrival = Products::with('reviews')
+        ->where('status', 'active')
+        ->where('created_at', '>=', Carbon::now()->startOfWeek()) // Start of the week
+        ->orderBy('created_at', 'DESC')
+        ->limit(5)
+        ->get();
 
-       
-        return $new_arrival;
+    return $new_arrival;
     }
     
     public function loadMoreProducts(Request $request)
     {
         $skip = (int) $request->skip;
         $take = 8; // Number of products to load per request
-        $products = Products::where('status', 'active')->skip($skip)->take($take)->get();
+        $products = Products::with('reviews')->where('status', 'active')->skip($skip)->take($take)->get();
         $totalProducts = Products::count();
 
         $hasMore = ($skip + $take) < $totalProducts;
