@@ -8,7 +8,7 @@
             url: '{{ route("cart.item.number") }}',
             type: 'GET',
             success: function(response) {
-                console.log(response);
+                // console.log(response);
                 cartItemNumber.textContent  = response;
             },
             error: function(xhr, status, error) {
@@ -20,4 +20,18 @@
     document.addEventListener('DOMContentLoaded', function() {
         updateCartItemNumber();
     });
+
+    if (window.location.pathname == "/shop") {
+      
+        document.getElementById('nav_search').classList.add('d-none');
+        
+    } else {
+        document.getElementById('nav_search').classList.remove('d-none');
+
+       
+    }
+
+    
+
+
 </script>

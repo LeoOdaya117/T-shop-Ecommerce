@@ -27,7 +27,7 @@ class ProductsManager extends Controller
             $searchTerm = $request->search;
             $query->where(function($query) use ($searchTerm) {
                 $query->where('title', 'like', "%{$searchTerm}%")
-                    ->orWhere('description', 'like', "%{$searchTerm}%");
+                    ->orWhere('descrption', 'like', "%{$searchTerm}%");
             });
         }
         // Apply category filter

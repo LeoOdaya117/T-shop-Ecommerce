@@ -79,13 +79,13 @@
                                     <div class="form-check">
                                         <input class="form-check-input" id="paymentMethodCOD" name="payment_method" value="COD" type="radio">
                                         <label class="form-check-label" for="paymentMethodCOD">
-                                            Cash on hand
+                                            Cash on hand <i class="fa-solid fa-money-bill"></i>
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" id="paymentMethodCard" name="payment_method" value="Card" type="radio">
                                         <label class="form-check-label" for="paymentMethodCard">
-                                            Card
+                                            Card <i class="fa-brands fa-cc-stripe"></i>
                                         </label>
                                     </div>
                                 </div>

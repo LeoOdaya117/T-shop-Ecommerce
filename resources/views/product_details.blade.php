@@ -4,7 +4,7 @@
 @section("style")
     <style>
         
-        img{
+        .product-image{
             object-fit: contain; /* Ensures the image fits within the specified height and width */
             max-height: 75%;
         }
@@ -14,6 +14,7 @@
         transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
     }
     </style>
+    <link rel="stylesheet" href="{{ asset('assets/css/product.css') }}">
 @endsection()
 
 @section("content")
@@ -42,7 +43,7 @@
             <div class="container px-4 px-lg-5">
                 <div class="row gx-4 gx-lg-5 align-items-center">
                     <div class="col-md-6">
-                        <img class="card-img-top mb-2 mb-md-0 mt-md-0" src="{{ $products->image }}" alt="Product Image" />
+                        <img class="card-img-top mb-2 mb-md-0 mt-md-0 product-image" src="{{ $products->image }}" alt="Product Image" />
                     </div>
                     <div class="col-md-6">
                         {{-- Brand Name --}}
@@ -308,65 +309,54 @@
                 @else
                     
                     @foreach ($relatedProducts as $recommendedProduct)
-                        <div class="col-12 col-md-6 col-lg-2 mb-4" onclick="route('{{ route('showDetails', $recommendedProduct->slug) }}')">
-                            <div class="card position-relative">
-                                <!-- Label Indicator -->
-                                {{-- @if($product->is_new)
-                                <div class="position-absolute top-0 start-0 bg-success text-white p-1 px-2 rounded-end" style="font-size: 0.75rem; z-index: 20;">
-                                    New
+                        <div class="col-12 col-md-6 col-lg-3 mb-2" onclick="route('{{ route('showDetails', $recommendedProduct->slug) }}')">
+                            <div class="product-card card">
+                                <div class="position-relative">
+                                    @if(\Carbon\Carbon::parse($recommendedProduct->created_at)->isToday())
+                                        <span class="badge bg-primary position-absolute top-0 start-0 m-2">New</span>
+                                    @endif
+
+                                    @if($recommendedProduct->discount > 0)
+                                        <span class="badge bg-danger position-absolute top-0 end-0 m-2">Sale</span>
+                                    @endif
+
+                                    <img src="{{ $recommendedProduct->image }}" alt="Product Image" class="card-img-top">
                                 </div>
-                                @elseif($product->on_sale)
-                                <div class="position-absolute top-0 start-0 bg-danger text-white p-1 px-2 rounded-end" style="font-size: 0.75rem; z-index: 2;">
-                                    Sale
-                                </div>
-                                @endif --}}
-                                <div class="position-absolute top-0 start-0 bg-success text-white p-1 px-2 rounded-end" style="font-size: 0.75rem; z-index: 20;">
-                                    New
-                                </div>
-                                <!-- Product Image -->
-                                <img class="card-img-center p-2 mt-3" src="{{ $recommendedProduct->image }}" alt="Product Image" />
-                                <!-- Product Details -->
-                                <div class="card-body p-3">
-                                    <div class="text-start">
-                                        <!-- Product Name -->
-                                        <h6 class="fw-bolder text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                            {{ $recommendedProduct->title }}
-                                        </h6>
-                                        <!-- Product Price -->
-                                        ₱ {{ $recommendedProduct->price }}
+
+                                <div class="card-body text-center">
+                                    <h6 class="text-truncate">{{ $recommendedProduct->title }}</h6>
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <span class="price">₱ {{ number_format($recommendedProduct->price - $recommendedProduct->discount, 2) }}</span>
+                                        @if($recommendedProduct->discount > 0)
+                                            <span class="old-price">₱ {{ number_format($recommendedProduct->price, 2) }}</span>
+                                        @endif
                                     </div>
-                                     {{-- Star Rating Section --}}
-                                     <div class="d-flex justify-content-between align-items-center">
-                                    
+                                    <div class="star-rating">
                                         @php
-                                            $averageRating = $recommendedProduct->reviews->avg('rating') ?? 0;
+                                            $rating = $recommendedProduct->reviews->avg('rating') ?? 0;
+                                            $fullStars = floor($rating);
+                                            $halfStars = ceil($rating - $fullStars);
                                         @endphp
-                                        
-                                        <div class="d-flex align-items-center mb-2">
-                                            @for ($i = 1; $i <= floor($averageRating); $i++)
+                                        @if($rating == 0)
+                                            <i class="fa fa-star text-muted"></i>
+                                            <i class="fa fa-star text-muted"></i>
+                                            <i class="fa fa-star text-muted"></i>
+                                            <i class="fa fa-star text-muted"></i>
+                                            <i class="fa fa-star text-muted"></i>
+                                        @else
+                                            @for ($i = 0; $i < $fullStars; $i++)
                                                 <i class="fa fa-star text-warning"></i>
                                             @endfor
-
-                                            @if (($averageRating - floor($averageRating)) >= 0.5)
+                                            @for ($i = 0; $i < $halfStars; $i++)
                                                 <i class="fa fa-star-half-alt text-warning"></i>
-                                            @endif
-
-                                            @for ($i = ceil($averageRating); $i < 5; $i++)
-                                                <i class="fa fa-star text-muted"></i>
                                             @endfor
-
-                                            <span class="ms-1 text-muted">({{ $recommendedProduct->reviews->count() }})</span>
-                                        </div>
-                                    
-                                    
+                                            @for ($i = $fullStars + $halfStars; $i < 5; $i++)
+                                                <i class="fa fa-star-o text-light"></i>
+                                            @endfor
+                                        @endif
+                                        ({{ $recommendedProduct->reviews->count() }})
                                     </div>
                                 </div>
-                                {{-- <!-- Product Actions -->
-                                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $recommendedProduct->slug) }}')">
-                                    <div class="text-center">
-                                        <a class="btn btn-outline-dark mt-auto w-100">Details</a>
-                                    </div>
-                                </div> --}}
                             </div>
                         </div>
                     @endforeach

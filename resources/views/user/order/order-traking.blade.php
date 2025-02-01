@@ -297,7 +297,7 @@
                                         <tr class="text-center">
                                             <td colspan="2"></td>
                                             <td class="text-start fw-bold">Subtotal:</td>
-                                            <td class="">₱ {{ number_format($order->total_price - $order->shipping_fee, 2) }}</td>
+                                            <td class="">₱ {{ number_format($order->total_price, 2) }}</td>
                                         </tr>
                                         <tr  class="text-center">
                                             <td colspan="2"></td>
@@ -307,7 +307,7 @@
                                         <tr  class="text-center">
                                             <td colspan="2"></td>
                                             <td class="text-start "><h5>Grand Total:</h5></td>
-                                            <td><h5>₱ {{ number_format($order->total_price, 2) }}</h5></td>
+                                            <td><h5>₱ {{ number_format($order->total_price + $order->shipping_fee, 2) }}</h5></td>
                                         </tr>
                                     </tbody>
                                 </table>

@@ -29,8 +29,8 @@
       <div class="collapse navbar-collapse" id="navbarText">
           <!-- Center Search Bar -->
         <!-- filepath: /c:/Users/Leo/Desktop/Laragon/Laragon/www/Ecommerce-app/resources/views/includes/header.blade.php -->
-        <div class="d-flex ms-auto" style="width: 50%;">
-            <form action="{{ route('search.product') }}" method="GET" class="d-flex w-100">
+        <div class="d-flex ms-auto nav_search" id="nav_search" style="width: 50%;" >
+            <form  action="{{ route('search.product') }}" method="GET" class="d-flex w-100">
                 <input class="form-control me-2" type="search" name="search" placeholder="Search products..." aria-label="Search">
                 <button class="btn btn-outline-dark" type="submit">
                     Search

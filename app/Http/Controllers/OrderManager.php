@@ -92,6 +92,8 @@ class OrderManager extends Controller
         $totalPrice = 0;
         $lineItems = [];
 
+        
+
         foreach ($cartItems as $cartItem) {
             $productIds[] = $cartItem->product_id;
             $variantsIds[] = $cartItem->variant_id;
@@ -111,6 +113,19 @@ class OrderManager extends Controller
             ];
         }
 
+        $shippingFee = 75;
+        $lineItems[] = [
+            'price_data' => [
+                'currency' => 'php',
+                'product_data' => [
+                    'name' => 'Shipping Fee',
+                    'description' => 'Standard shipping',
+                ],
+                'unit_amount' => $shippingFee *100,
+            ],
+            'quantity' => 1, // Only 1 shipping charge per order
+        ];
+
         $trackingId = strtoupper(Str::random(10)); // e.g., "X7T9GQ2HFA"
 
 
@@ -121,7 +136,7 @@ class OrderManager extends Controller
         $order->variant_id = json_encode($variantsIds);
         $order->quantity = json_encode($quantities);
         $order->total_price = $totalPrice;
-        $order->shipping_fee = 70.0;
+        $order->shipping_fee =$shippingFee;
         $order->shipping_id = $request->shipping_id;
         $order->fname = $request->firstname;
         $order->lname = $request->lastname;

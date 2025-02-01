@@ -1,70 +1,52 @@
-<!-- filepath: /resources/views/partials/product-cards.blade.php -->
 @foreach ($products as $product)
-    <div class="col-12 col-md-6 col-lg-2 mb-4" onclick="route('{{ route('showDetails', $product->slug) }}')">
-        <div class="card position-relative" data-aos="fade-up">
-            @if($product->created_at->between(Carbon\Carbon::now()->startOfWeek(), Carbon\Carbon::now()->endOfWeek()))
-                <div class="position-absolute top-0 start-0 bg-success text-white p-1 px-2 rounded-end" 
-                    style="font-size: 0.75rem; z-index: 20;">
-                    New
-                </div>  
-            @elseif($product->discount != 0.00)
-                <div class="position-absolute top-0 start-0 bg-danger text-white p-1 px-2 rounded-end" 
-                    style="font-size: 0.75rem; z-index: 20;">
-                    Sale
-                </div>
+<div data-aos="fade-up" class="col-12 col-md-6 col-lg-3 mb-2" onclick="route('{{ route('showDetails', $product->slug) }}')">
+    <div class="product-card card">
+        <div class="position-relative">
+            @if(\Carbon\Carbon::parse($product->created_at)->greaterThanOrEqualTo(\Carbon\Carbon::now()->startOfWeek()))
+                <span class="badge bg-primary position-absolute top-0 start-0 m-2">New</span>
             @endif
-            <!-- Product Image -->
-            <img class="card-img-center p-2 mt-3" src="{{ $product->image }}" alt="Product Image" />
-            <!-- Product Details -->
-            <div class="card-body p-3">
-                <div class="text-start">
-                    <!-- Product Name -->
-                    <h6 class="fw-bolder text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        {{ $product->title }}
-                    </h6>
-                    <!-- Product Price -->
-                    <div class="d-flex gap-1">
-                        ₱ {{ number_format($product->price - $product->discount,2)}}
-                        @if($product->discount > 0.00)
-                            <div class="text-muted text-decoration-line-through align-content-center" style="font-size: 12px">₱ {{ number_format($product->price ,2)}}</div>
 
-                        @endif
-                    </div>
-                    {{-- Star Rating Section --}}
-                    <div class="d-flex justify-content-between align-items-center">
-                        
-                        @php
-                            $averageRating = $product->reviews->avg('rating') ?? 0;
-                        @endphp
-                        
-                        <div class="d-flex align-items-center mb-2">
-                            @for ($i = 1; $i <= floor($averageRating); $i++)
-                                <i class="fa fa-star text-warning"></i>
-                            @endfor
+            @if($product->discount > 0)
+                <span class="badge bg-danger position-absolute top-0 end-0 m-2">Sale</span>
+            @endif
 
-                            @if (($averageRating - floor($averageRating)) >= 0.5)
-                                <i class="fa fa-star-half-alt text-warning"></i>
-                            @endif
+            <img src="{{ $product->image }}" alt="Product Image" class="card-img-top">
+        </div>
 
-                            @for ($i = ceil($averageRating); $i < 5; $i++)
-                                <i class="fa fa-star text-muted"></i>
-                            @endfor
-
-                            <span class="ms-1 text-muted">({{ $product->reviews->count() }})</span>
-                        </div>
-                                    
-                       
-                    </div>
-                
-                </div>
+        <div class="card-body text-center">
+            <h6 class="text-truncate">{{ $product->title }}</h6>
+            <div class="d-flex justify-content-center align-items-center">
+                <span class="price">₱ {{ number_format($product->price - $product->discount, 2) }}</span>
+                @if($product->discount > 0)
+                    <span class="old-price">₱ {{ number_format($product->price, 2) }}</span>
+                @endif
             </div>
-            {{-- <!-- Product Actions -->
-            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent" onclick="route('{{ route('showDetails', $product->slug) }}')">
-                <div class="text-center">
-                    <a class="btn btn-outline-dark mt-auto w-100">Details</a>
-                </div>
-            </div> --}}
-                </div>
+            <div class="star-rating">
+                @php
+                    $rating = $product->reviews->avg('rating') ?? 0;
+                    $fullStars = floor($rating);
+                    $halfStars = ceil($rating - $fullStars);
+                @endphp
+                @if($rating == 0)
+                    <i class="fa fa-star text-muted"></i>
+                    <i class="fa fa-star text-muted"></i>
+                    <i class="fa fa-star text-muted"></i>
+                    <i class="fa fa-star text-muted"></i>
+                    <i class="fa fa-star text-muted"></i>
+                @else
+                    @for ($i = 0; $i < $fullStars; $i++)
+                        <i class="fa fa-star text-warning"></i>
+                    @endfor
+                    @for ($i = 0; $i < $halfStars; $i++)
+                        <i class="fa fa-star-half-alt text-warning"></i>
+                    @endfor
+                    @for ($i = $fullStars + $halfStars; $i < 5; $i++)
+                        <i class="fa fa-star-o text-light"></i>
+                    @endfor
+                @endif
+                ({{ $product->reviews->count() }})
             </div>
+        </div>
+    </div>
+</div>
 @endforeach
-
