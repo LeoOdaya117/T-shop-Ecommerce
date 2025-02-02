@@ -23,21 +23,26 @@
 
     <main class="container w-100 mb-3">
         <div class="row justify-content-center align-items-center g-2 mb-2">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center m-2">
-                    <!-- Filter Button -->
-                    <button class="filter-toggle-btn" onclick="toggleFilters()">Filter</button>
-        
-                    <!-- Search Form -->
-                    <form id="search-form" action="{{ route('shop') }}" method="GET" class="d-flex align-items-center">
+            <div class="col-1">
+                <div class="m-2"  >
+                    <button class="mt-3 filter-toggle-btn"  onclick="toggleFilters()">
+                        <i class="fa fa-filter"></i>
+                    </button>
+                </div>
+                
+
+            </div>
+            <div class="col-11">
+                <div class="d-flex justify-content-end text-center m-2">
+                    <form id="search-form" action="{{ route('shop') }}" method="GET" class="d-flex align-items-end">
                         <input type="text" name="search" id="search" class="form-control" placeholder="Search products..." style="width: 200px; border-radius:10px">
                         <button type="submit" class="btn btn-outline-dark ms-2" style="border-radius:10px">Search</button>
                     </form>
                 </div>
-                <hr style="border: 0px solid #e4e1e1; margin: 0 auto;">
+               
             </div>
+            <hr style="border: 0px solid #e4e1e1; margin: 0 auto;">
         </div>
-        
 
         <div class="row g-3">
             <!-- Filters Column -->
@@ -146,7 +151,7 @@
 
             <!-- Product List Column -->
             <div class="col-xl-9 col-lg-8 col-md-8 col-sm-12 col-12">
-                
+                {{-- <button class="filter-toggle-btn" onclick="toggleFilters()">Filter</button> --}}
 
                 <div class="row g-3 product-list" id="product-list">
                     @if ($products->isEmpty())

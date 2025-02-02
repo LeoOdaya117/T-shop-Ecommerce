@@ -298,7 +298,7 @@
         {{-- REALATED PRODUCTS --}}
         <section class="mt-5">
             <h4 class="mb-4">Related Products</h4>
-            <div class="row">
+            <div class="row g-3 product-list">
                 @if (count($relatedProducts) == 0)
                     <div class="col-12">
                         <div class="alert text-center">
