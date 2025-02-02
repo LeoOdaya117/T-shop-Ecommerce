@@ -11,8 +11,8 @@
     <main class="container w-100 mb-5">
         
         <!-- Hero Section -->
-        <section class="hero-section pt-5 mb-5 text-center align-content-center w-100" style="background-image: url('https://i.pinimg.com/736x/6a/2e/a0/6a2ea0edd5e1a2256652b2e48f22615c.jpg'); background-size: cover; background-position: center; height: 400px; color: white;">
-            <div class="hero-content h-100 align-content-center" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
+        <section class="hero-section  mb-5 text-center align-content-center w-100" style="background-image: url('https://i.pinimg.com/736x/6a/2e/a0/6a2ea0edd5e1a2256652b2e48f22615c.jpg'); background-size: cover; background-position: center; height: 400px; color: white;">
+            <div class="hero-content pt-5 h-100 align-content-center" style="background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px;">
                 <h1 class="display-4">Welcome to T-Shop</h1>
                 <p class="lead">Discover the best t-shirts for every occasion</p>
                 <a href="{{ route('shop') }}" class="btn bg-transparent border-light btn-lg text-light">Shop Now</a>
@@ -38,7 +38,7 @@
         <!-- Popular Products -->
         <section class="featured-products mt-3 mb-3" data-aos="fade-up">
             <h4 class="text-start mb-4 font-weight-lighter">Popular Products</h4>
-            <div class="row gx-3 gx-lg-5 p-0 row-cols-2 row-cols-md-4 row-cols-xl-4 ">
+            <div class="row g-3 product-list">
                 
                 @foreach ($popularProducts as $featuredProduct)
                     <div data-aos="fade-up" class="col-12 col-md-6 col-lg-3 mb-2" onclick="route('{{ route('showDetails', $featuredProduct->slug) }}')">
@@ -122,7 +122,7 @@
             @endif  
         >
             <h4 class="text-start mb-4 font-weight-lighter">This Month New Arrival</h4>
-            <div class="row gx-3 gx-lg-5 p-0 row-cols-2 row-cols-md-4 row-cols-xl-4 ">
+            <div class="row g-3 product-list">
                 
                 @foreach ($new_arrival as $product)
                     <div data-aos="fade-up" class="col-12 col-md-6 col-lg-3 mb-2" onclick="route('{{ route('showDetails', $product->slug) }}')">
@@ -183,7 +183,7 @@
         <section class=" justforyou-products mb-3" data-aos="fade-up">
             <h4 class="text-start mb-4 font-weight-lighter">Just For You</h4>
 
-            <div id="product-container" class="row gx-4 gx-lg-5  row-cols-2 row-cols-md-3 row-cols-xl-4 "> <!-- Flexbox for equal height -->
+            <div id="product-container" class="row g-3 product-list"> <!-- Flexbox for equal height -->
                 
                 @foreach ($products as $product)
                     <div data-aos="fade-up" class="col-12 col-md-6 col-lg-3 mb-2" onclick="route('{{ route('showDetails', $product->slug) }}')">
@@ -238,7 +238,7 @@
                     </div>
                 @endforeach
             </div>
-            <div class="text-center mt-4 w-100">
+            <div class="text-center mt-4 w-100" data-aos="fade-up">
                 <button id="load-more" class="btn btn-outline-dark w-50">Load More</button>
             </div>
         </section>
