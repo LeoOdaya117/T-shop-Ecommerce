@@ -24,16 +24,20 @@
     <main class="container w-100 mb-3">
         <div class="row justify-content-center align-items-center g-2 mb-2">
             <div class="col-12">
-                <div class="d-flex justify-content-end text-center m-2">
-                    <form id="search-form" action="{{ route('shop') }}" method="GET" class="d-flex align-items-end">
+                <div class="d-flex justify-content-between align-items-center m-2">
+                    <!-- Filter Button -->
+                    <button class="filter-toggle-btn" onclick="toggleFilters()">Filter</button>
+        
+                    <!-- Search Form -->
+                    <form id="search-form" action="{{ route('shop') }}" method="GET" class="d-flex align-items-center">
                         <input type="text" name="search" id="search" class="form-control" placeholder="Search products..." style="width: 200px; border-radius:10px">
                         <button type="submit" class="btn btn-outline-dark ms-2" style="border-radius:10px">Search</button>
                     </form>
-                    
                 </div>
                 <hr style="border: 0px solid #e4e1e1; margin: 0 auto;">
             </div>
         </div>
+        
 
         <div class="row g-3">
             <!-- Filters Column -->
@@ -43,11 +47,11 @@
                     <!-- Category Filter -->
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingCategory">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategory" aria-expanded="true" aria-controls="collapseCategory">
+                            <button class="accordion-button" type="button" data-target="#collapseCategory">
                                 Category
                             </button>
                         </h2>
-                        <div id="collapseCategory" class="accordion-collapse collapse show" aria-labelledby="headingCategory" data-bs-parent="#filterAccordion">
+                        <div id="collapseCategory" class="accordion-collapse collapse">
                             <div class="accordion-body">
                                 @foreach ($categories as $category)
                                     <div class="form-check">
@@ -64,11 +68,11 @@
                     <!-- Brand Filter -->
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingBrand">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBrand" aria-expanded="false" aria-controls="collapseBrand">
+                            <button class="accordion-button" type="button" data-target="#collapseBrand">
                                 Brand
                             </button>
                         </h2>
-                        <div id="collapseBrand" class="accordion-collapse collapse" aria-labelledby="headingBrand" data-bs-parent="#filterAccordion">
+                        <div id="collapseBrand" class="accordion-collapse collapse">
                             <div class="accordion-body">
                                 @foreach ($brands as $brand)
                                     <div class="form-check">
@@ -85,11 +89,11 @@
                     <!-- Size Filter -->
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingSize">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSize" aria-expanded="false" aria-controls="collapseSize">
+                            <button class="accordion-button" type="button" data-target="#collapseSize">
                                 Size
                             </button>
                         </h2>
-                        <div id="collapseSize" class="accordion-collapse collapse" aria-labelledby="headingSize" data-bs-parent="#filterAccordion">
+                        <div id="collapseSize" class="accordion-collapse collapse">
                             <div class="accordion-body">
                                 <div class="form-check">
                                     <input class="form-check-input filter" type="checkbox" value="Small" id="size_Small" name="size[]">
@@ -114,11 +118,11 @@
                     <!-- Price Range Filter -->
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingPrice">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrice" aria-expanded="false" aria-controls="collapsePrice">
+                            <button class="accordion-button" type="button" data-target="#collapsePrice">
                                 Price Range
                             </button>
                         </h2>
-                        <div id="collapsePrice" class="accordion-collapse collapse" aria-labelledby="headingPrice" data-bs-parent="#filterAccordion">
+                        <div id="collapsePrice" class="accordion-collapse collapse">
                             <div class="accordion-body">
                                 <div class="form-check">
                                     <input class="form-check-input filter" type="checkbox" value="0-50" id="price_range_1" name="price_range[]">
@@ -140,13 +144,9 @@
                 </div>
             </div>
 
-            
-
-            
-
             <!-- Product List Column -->
             <div class="col-xl-9 col-lg-8 col-md-8 col-sm-12 col-12">
-                <button class="filter-toggle-btn" onclick="toggleFilters()">Filter</button>
+                
 
                 <div class="row g-3 product-list" id="product-list">
                     @if ($products->isEmpty())
@@ -214,6 +214,26 @@
             </div>
         </div>
     </main>
-    <script src="{{ asset('assets/js/products-filter.js') }}"></script>
-@endsection()
 
+    <script src="{{ asset('assets/js/products-filter.js') }}"></script>
+
+    <!-- Add Custom JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const accordionButtons = document.querySelectorAll('.accordion-button');
+
+            accordionButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const targetId = this.getAttribute('data-target');
+                    const targetCollapse = document.querySelector(targetId);
+
+                    if (targetCollapse.classList.contains('show')) {
+                        targetCollapse.classList.remove('show');
+                    } else {
+                        targetCollapse.classList.add('show');
+                    }
+                });
+            });
+        });
+    </script>
+@endsection
