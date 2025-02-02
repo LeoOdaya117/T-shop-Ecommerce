@@ -188,9 +188,9 @@
                                             
 
                                             <tr class="text-center
-                                            @if ($product->stock <= 0)
+                                            @if ($product->lowest_stock <= 0)
                                                 bg-danger text-white
-                                            @elseif ($product->stock <= 10)
+                                            @elseif ($product->lowest_stock <= 10)
                                                 bg-warning text-dark
                                             @else
                                                 
@@ -218,13 +218,13 @@
                                                             <i class="dropdown-button fas fa-ellipsis-h"></i>
                                                         </div>
                                                         <div class="dropdown-content">
-                                                            <a href="{{ route('admin.edit.product', $product->id) }}" class="btn btn-warning rounded">
+                                                            <a href="{{ route('admin.edit.product', $product->id) }}" class="btn btn-light rounded">
                                                                 <i class="fas fa-edit text-dark"></i> Edit
                                                             </a>
                                                             {{-- <a href="#" class="btn btn-info rounded adjust-btn" data-id="{{ $product->id }}">
                                                                 <i class="fas fa-cogs"></i> Adjust Stock
                                                             </a> --}}
-                                                            <a href="#" class="btn btn-danger rounded delete-btn" data-id="{{ $product->id }}">
+                                                            <a href="#" class="btn rounded btn-light delete-btn" data-id="{{ $product->id }}">
                                                                 <i class="fas fa-trash"></i> Delete
                                                             </a>
                                                         </div>

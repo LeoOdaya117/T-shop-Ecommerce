@@ -334,6 +334,7 @@ class OrderManager extends Controller
 
     
         $revenueByYear = DB::table('orders')
+        ->where('payment_status', 'Complete')
         ->select(DB::raw('YEAR(created_at) as year'), DB::raw('SUM(total_price) as total_revenue'))
         ->groupBy(DB::raw('YEAR(created_at)'))
         ->orderBy('year', 'desc') // Orders the results by year in descending order

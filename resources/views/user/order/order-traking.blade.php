@@ -365,6 +365,7 @@
                 // Define button classes based on status
                 const buttonClass = {
                     'Delivered': 'btn-outline-success',
+                    'Out for Delivery': 'btn-outline-primary',
                     'Shipped': 'btn-outline-info',
                     'Processing': 'btn-outline-warning',
                     'Cancelled': 'btn-outline-danger',

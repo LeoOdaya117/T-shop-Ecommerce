@@ -225,65 +225,63 @@ class ProductsManager extends Controller
     }
 
 
-public function getProducts(Request $request)
-{
-    $categoryManager = new CategoryManager();
-    $categories = $categoryManager->getCategory();
-    $brandManager = new BrandController();
-    $brands = $brandManager->getBrands();
-    // Retrieve filter inputs
-    $search = $request->input('search');
-    $category = $request->input('category');
-    $minPrice = $request->input('min_price');
-    $maxPrice = $request->input('max_price');
-    $status = $request->input('status') ?? 'active';
-
-    // Build the raw SQL query
-    $query = DB::table('products')
-        ->leftJoin('category', 'products.category', '=', 'category.id')
-        ->leftJoin('brand', 'products.brand', '=', 'brand.id')
-        ->leftJoin('product_variants', 'product_variants.product_id', '=', 'products.id')
-        ->select(
-            'products.*',
-            'category.name as category_name',
-            'brand.name as brand_name',
-            'product_variants.stock as stock',
-            
-            
-        );
-
-    // Apply filters
-    if ($search) {
-        $query->where(function ($query) use ($search) {
-            $query->where('products.title', 'like', '%' . $search . '%')
-                 ;
-        });
+    public function getProducts(Request $request)
+    {
+        $categoryManager = new CategoryManager();
+        $categories = $categoryManager->getCategory();
+        $brandManager = new BrandController();
+        $brands = $brandManager->getBrands();
+        
+        // Retrieve filter inputs
+        $search = $request->input('search');
+        $category = $request->input('category');
+        $minPrice = $request->input('min_price');
+        $maxPrice = $request->input('max_price');
+        $status = $request->input('status') ?? 'active';
+    
+        // Build the query
+        $query = DB::table('products')
+            ->leftJoin('category', 'products.category', '=', 'category.id')
+            ->leftJoin('brand', 'products.brand', '=', 'brand.id')
+            ->leftJoin('product_variants', 'product_variants.product_id', '=', 'products.id')
+            ->select(
+                'products.id',
+                'products.title',
+                'products.descrption', // Using the actual database column name
+                'products.status',
+                'category.name as category_name',
+                'brand.name as brand_name',
+                'products.price', // Price is in products table
+                DB::raw('SUM(product_variants.stock) as total_stock'), // Aggregating stock
+                DB::raw('MIN(product_variants.stock) as lowest_stock') // Getting the lowest stock in variants
+            )
+            ->groupBy(
+                'products.id', 'products.title', 'products.descrption', 'products.status', 'category.name', 'brand.name', 'products.price'
+            );
+    
+        // Apply filters
+        if ($search) {
+            $query->where('products.title', 'like', '%' . $search . '%');
+        }
+        if ($category) {
+            $query->where('products.category', $category);
+        }
+        if ($minPrice || $maxPrice) {
+            $query->havingBetween('products.price', [
+                $minPrice ?? 0,
+                $maxPrice ?? PHP_INT_MAX
+            ]);
+        }
+        if ($status) {
+            $query->where('products.status', '=', $status);
+        }
+    
+        // Apply sorting and paginate
+        $products = $query->orderBy(DB::raw('MIN(product_variants.stock)'), 'ASC')->paginate(10); // Sorting by lowest stock
+        
+        return view('admin.products.manage-products', compact('products', 'categories', 'brands'));
     }
-
-    // Apply category filter
-    if ($category) {
-        $query->where('products.category', $category);
-    }
-
-    // Apply price range filter
-    if ($minPrice || $maxPrice) {
-        $query->whereBetween('product_variants.price', [
-            $minPrice ?? 0,
-            $maxPrice ?? PHP_INT_MAX
-        ]);
-    }
-
-    // Apply status filter
-    if ($status) {
-        $query->where('products.status', '=', $status);
-    }
-
-    // Apply sorting and paginate
-    $products = $query->orderBy('stock', 'ASC')->paginate(10);
-    // dd($products)->toArray();
-    return view('admin.products.manage-products', compact('products', 'categories','brands'));
-}
-
+    
     
     
 

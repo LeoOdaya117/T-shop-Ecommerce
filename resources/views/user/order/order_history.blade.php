@@ -151,7 +151,7 @@
                                     </div>
                                     <div class="col text-center">
                                         <a href="{{ route('user.order.tracking', $order->id) }}" class="btn btn-light text-dark btn-outline-dark fw-bold">View Order</a>
-                                        @if (!$order->is_reviewed)
+                                        @if (!$order->is_reviewed && $order->order_status === "Delivered")
                                             <button type="button" class="btn text-info writeReviewBtn"  data-order="{{ $order }}">Write a review</button>
 
                                         @endif
@@ -258,7 +258,7 @@
                                 ${response.message}
                             </div>
                         `);
-                       
+                       location.reload();
                         // $(`tr[data-variant-id="${variantId}"] td:nth-child(2)`).text(color);
                         // $(`tr[data-variant-id="${variantId}"] td:nth-child(3)`).text(size);
 
@@ -322,57 +322,57 @@
             });
 
             $('#productReviewForm').submit(function(e) {
-    e.preventDefault();
+                e.preventDefault();
 
-    var formData = new FormData(this);  // 'this' refers to the form element
+                var formData = new FormData(this);  // 'this' refers to the form element
 
-    // Create a new array to hold the product IDs
-    var productArray = [];
-    
-    // Check if orderData.product_id is already an array, if not, make it an array
-    if (Array.isArray(orderData.product_id)) {
-        productArray = orderData.product_id;
-    } else {
-        // If it's a string, parse it into an array
-        productArray = JSON.parse(orderData.product_id);
-    }
+                // Create a new array to hold the product IDs
+                var productArray = [];
+                
+                // Check if orderData.product_id is already an array, if not, make it an array
+                if (Array.isArray(orderData.product_id)) {
+                    productArray = orderData.product_id;
+                } else {
+                    // If it's a string, parse it into an array
+                    productArray = JSON.parse(orderData.product_id);
+                }
 
-    // Append each product ID individually to the new array
-    productArray.forEach(function(product) {
-        formData.append('products[]', product); // Appends each product ID as an individual item
-    });
+                // Append each product ID individually to the new array
+                productArray.forEach(function(product) {
+                    formData.append('products[]', product); // Appends each product ID as an individual item
+                });
 
-    formData.append('order_id', orderData.id);
+                formData.append('order_id', orderData.id);
 
-    var url = "{{ route('store.product.review') }}";
-    $.ajax({
-        type: "POST",
-        url: url,
-        data: formData,
-        processData: false,  // Prevent jQuery from automatically transforming the data into a query string
-        contentType: false,  // Don't set a content-type header; let the browser set it correctly for FormData
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
-        },
-        success: function(response) {
-            if(response.success == true) {
-                location.reload();
-                Swal.fire("Saved!", response.message, "success");
-            } else {
-                Swal.fire("Error!", response.message, "error");
-            }
-        },
-        error: function(xhr, status, error) {
-            const errors = xhr.responseJSON.errors;
-            let errorHtml = '';
-            for (let field in errors) {
-                errorHtml += `${errors[field][0]}<br>`;  // Added <br> for better error formatting
-            }
+                var url = "{{ route('store.product.review') }}";
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: formData,
+                    processData: false,  // Prevent jQuery from automatically transforming the data into a query string
+                    contentType: false,  // Don't set a content-type header; let the browser set it correctly for FormData
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
+                    },
+                    success: function(response) {
+                        if(response.success == true) {
+                            location.reload();
+                            Swal.fire("Saved!", response.message, "success");
+                        } else {
+                            Swal.fire("Error!", response.message, "error");
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        const errors = xhr.responseJSON.errors;
+                        let errorHtml = '';
+                        for (let field in errors) {
+                            errorHtml += `${errors[field][0]}<br>`;  // Added <br> for better error formatting
+                        }
 
-            Swal.fire("Error!", errorHtml, "error");  // Correct string interpolation here
-        }
-    });
-});
+                        Swal.fire("Error!", errorHtml, "error");  // Correct string interpolation here
+                    }
+                });
+            });
 
         });
     </script>
