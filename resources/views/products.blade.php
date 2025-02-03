@@ -1,5 +1,5 @@
 @extends("layouts.default")
-@section("title", "T-Shop - Home")
+@section("title", "T-Shop - Products")
 @section('style')
     <link rel="stylesheet" href="{{ asset('assets/css/product.css') }}">
 @endsection()
@@ -130,12 +130,20 @@
                         <div id="collapsePrice" class="accordion-collapse collapse">
                             <div class="accordion-body">
                                 <div class="form-check">
-                                    <input class="form-check-input filter" type="checkbox" value="0-50" id="price_range_1" name="price_range[]">
-                                    <label class="form-check-label" for="price_range_1">$0 - $50</label>
+                                    <input class="form-check-input filter" type="checkbox" value="0-150" id="price_range_1" name="price_range[]">
+                                    <label class="form-check-label" for="price_range_1">₱0 - ₱150</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input filter" type="checkbox" value="51-100" id="price_range_2" name="price_range[]">
-                                    <label class="form-check-label" for="price_range_2">$51 - $100</label>
+                                    <input class="form-check-input filter" type="checkbox" value="151-250" id="price_range_2" name="price_range[]">
+                                    <label class="form-check-label" for="price_range_2">₱151 - ₱250</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input filter" type="checkbox" value="251-350" id="price_range_2" name="price_range[]">
+                                    <label class="form-check-label" for="price_range_2">₱251 - ₱350</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input filter" type="checkbox" value="351-550" id="price_range_2" name="price_range[]">
+                                    <label class="form-check-label" for="price_range_2">₱351 - ₱550</label>
                                 </div>
                             </div>
                         </div>
@@ -222,23 +230,5 @@
 
     <script src="{{ asset('assets/js/products-filter.js') }}"></script>
 
-    <!-- Add Custom JavaScript -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const accordionButtons = document.querySelectorAll('.accordion-button');
-
-            accordionButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const targetId = this.getAttribute('data-target');
-                    const targetCollapse = document.querySelector(targetId);
-
-                    if (targetCollapse.classList.contains('show')) {
-                        targetCollapse.classList.remove('show');
-                    } else {
-                        targetCollapse.classList.add('show');
-                    }
-                });
-            });
-        });
-    </script>
+  
 @endsection

@@ -44,7 +44,6 @@ class AddressManager extends Controller
                 'status' => 500,
                 'success' => false,
                 'message' => $th->getMessage(),
-
             ]);
        }
 
@@ -52,8 +51,37 @@ class AddressManager extends Controller
             'status' => 200,
             'success' => true,
             'message' => 'Address Successfully saved.',
-
+            'address' => $address,  // Send the new address data
        ]);
 
     }
+
+    function destroy(Request $request){
+        $request->validate([
+            'address_id' => 'required|exists:addresses,id'
+        ]);
+
+       try {
+            $address = Address::findOrFail($request->address_id);
+            $address->delete();
+       } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => $th->getMessage(),
+
+            ]);
+       }
+
+        return response()->json([
+            'status' => 200,
+            'success' => true,
+            'message' => 'Deleted Successfully',
+        ]);
+    }
+
+    function update(Request $request){
+        
+    }
 }
+

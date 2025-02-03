@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 
 class WishlistManager extends Controller
 {
+    protected $cartManager;
+
+    public function __construct(CartManager $cartManager)
+    {
+        $this->cartManager = $cartManager;
+    }
     function show(){
 
         $wishlist = Wishlist::with(['product','variant'])->where('user_id', auth()->user()->id)
@@ -50,19 +56,19 @@ class WishlistManager extends Controller
 
     }
 
-    function destroy(Request $request) {
+    public function destroy(Request $request) {
         $request->validate([
             'wishlist_id' => 'required|exists:wishlist,id'
         ]);
-
+    
         try {
             $wishlist = Wishlist::findOrFail($request->wishlist_id);
             $wishlist->delete();
-
+    
             return response()->json([
                 'status' => 200,
                 'success' => true,
-                'wishlist_id' =>$request->wishlist_id,
+                'wishlist_id' => $request->wishlist_id,
                 'message' => 'Wishlist item deleted successfully.',
             ]);
         } catch (\Throwable $th) {
@@ -73,6 +79,8 @@ class WishlistManager extends Controller
             ]);
         }
     }
+    
+    
 
     function userRemoveWishlist(Request $request){
         $request->validate([
@@ -101,4 +109,36 @@ class WishlistManager extends Controller
             ]);
         }
     }
+
+    function moveToCart(Request $request) {
+        $request->validate([
+            'wishlist_id' => 'required|exists:wishlist,id',
+            'product_id' => 'required|exists:products,id',
+            'variant_id' => 'required|exists:product_variants,id',
+        ]);
+    
+        $this->cartManager->addToCart($request->product_id,  1,$request->variant_id);
+    
+        // Call the destroy function with the entire request, not just the wishlist_id
+        $destroyResponse = $this->destroy($request);
+        $destroyData = $destroyResponse->getData(true); // Convert JSON response to array
+        
+        if (!$destroyData['success']) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => 'Failed to remove item from wishlist.',
+            ], 500);
+        }
+    
+    
+        return response()->json([
+            'status' => 200,
+            'success' => true,
+            'message' => 'Product has been moved to cart.',
+            'wishlist_id' => $request->wishlist_id,
+        ]);
+    }
+    
+    
 }

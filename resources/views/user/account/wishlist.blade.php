@@ -15,9 +15,9 @@
                             <table class="table ">
                                 <thead class="text-center">
                                     <th></th>
-                                    <th>Product name</th>
-                                    <th>Unit Price</th>
-                                    <th>Stock status</th>
+                                    <th >Product</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
                                     <th></th>
                                 </thead>
                                 <tbody>
@@ -32,7 +32,10 @@
                                             <td>
                                                 <div class="d-flex gap-1 text-center justify-items-center align-items-center">
                                                     <img src="{{ $item->product->image }}" alt="" width="50px" height="50px">
-                                                    {{$item->product->title}}
+                                                    <div class="text-start justify-content-center">
+                                                        {{$item->product->title}}
+                                                        <p class="text-muted">{{ $item->variant->color }} {{ $item->variant->size }}</p>
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td>₱ {{$item->product->price}}</td>
@@ -44,7 +47,10 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <a href="" class="btn btn-success rounded">move to cart</a>
+                                                @if($item->variant->stock >0)   
+                                                    <button href="" class="btn btn-success rounded moveToCartBtn" data-wishlist-id="{{ $item->id }}" data-product-id="{{ $item->product->id }}" data-variant-id="{{ $item->variant->id }}">move to cart</button>
+                                               
+                                                @endif
                                             </td>
                                         </tr>
                                     @empty
@@ -70,56 +76,13 @@
 
 @section('script')
     <script>
-        $(document).on('click', '.removeWishlistBtn', function() {
-            const wishlistId = $(this).data('wishlist-id'); 
-            const url = "{{ route('delete.wishlist') }}";
-            $.ajax({
-                type: "DELETE",
-                url: url,
-                data: {
-                    wishlist_id: wishlistId,   
-                    
-                },
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
-                },
-                success: function(response) {
-                    const wishlist_id = response.wishlist_id;
-                    if(response.success) {
-                        $(`tr[data-wishlist-id="${wishlist_id}"]`).remove();
-                        Swal.fire({
-                            icon: 'success',
-                            title: response.message,  // Corrected typo in title
-                            toast: true,
-                            position: 'center-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            didOpen: (toast) => {
-                                toast.addEventListener('mouseenter', Swal.stopTimer);
-                                toast.addEventListener('mouseleave', Swal.resumeTimer);
-                            }
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: response.message,
-                            toast: true,
-                            position: 'center-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            didOpen: (toast) => {
-                                toast.addEventListener('mouseenter', Swal.stopTimer);
-                                toast.addEventListener('mouseleave', Swal.resumeTimer);
-                            }
-                        });
-                    }
-                }
-            });
-
-        });
-
+        window.routeUrls = {
+            moveToCart: "{{ route('wishlist.move.to.cart') }}",
+            removeToWishlist: "{{ route('delete.wishlist') }}",
+        };
+        
     </script>
+    <script src="{{ asset('assets/js/wishlist.js') }}"></script>
+
 @endsection
 

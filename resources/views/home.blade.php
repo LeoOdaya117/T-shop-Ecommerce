@@ -3,7 +3,6 @@
 @section('style')
 <style>
    
-        
 </style>
 <link rel="stylesheet" href="{{ asset('assets/css/product.css') }}">
 @endsection()
@@ -25,9 +24,10 @@
                 <div class="row gx-4 gx-lg-5 p-2 row-cols-2 row-cols-md-3 row-cols-xl-4             justify-content-center gap-2">
                     @foreach ($brands as $brand)
                         <div class="col-12 col-md-12 p-1 align-items-center text-center" style="height: auto; width:auto;" onclick="route('{{ route('shop', ['brand[]' => $brand->id]) }}')" >
-                            <div class="card p-3 align-items-center rounded-circle mb-1" style="background: url('{{ $brand->image }}'); background-size: contain; background-position: center; height: 75px; width:75px; ">
-
+                            <div class="card p-3 align-items-center rounded-circle mb-1" 
+                                style="background: url('{{ $brand->image }}'); background-size: cover; background-position: center; background-repeat: no-repeat; height: 75px; width: 75px;">
                             </div>
+
                             <p>{{ $brand->name }}</p>
                         </div>
                     @endforeach

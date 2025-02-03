@@ -54,10 +54,14 @@
             <div id="alert-container2"></div>
             @forelse($addresses as $address)
                 <div class="col-6 mb-2">
-                    <div class="card" >
-                            
+                    <div class="card position-relative">
+                        <!-- X Button -->
+                        <button class="btn rounded-circle fw-bold text-danger text-end m-2 p-0 delete-address-btn position-absolute top-0 end-0" style="z-index: 10;"
+                         data-address-id="{{ $address->id }}">
+                            <h5>x</h5>
+                        </button>
+                
                         <div class="card-body">
-                            <h4 class="fw-bold text-danger text-end m-0 p-0">x</h4>
                             <p class="m-0">{{ $address->address_line_1 }},</p>
                             @if (isset($address->address_line_2))
                                 <p class="m-0">{{ $address->address_line_2 }},</p>
@@ -160,124 +164,16 @@
 <!-- Ensure jQuery is loaded before your custom script -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+<script src="{{ asset('assets/js/profile.js') }}"></script>
 <script>
-    let user_id = null;
-    $('#addAddressBtn').on('click', function(){
-        user_id = $(this).data('user-id');
-        $('#createAddressModal').modal('show');
-
-    });
+    window.routeUrls = {
+        createAddress: "{{ route('user.create.address') }}",
+        deleteAddress: "{{ route('delete.address') }}",
+       
+    };
     
-    $("#UpdateProfileForm").submit(function(e) {
-        
-        e.preventDefault();
-        
-        var url = $(this).attr('action'); 
-        // Collect the form data
-        var formData = new FormData(this); // 'this' refers to the form element
-
-        // Add userId to the form data
-        formData.append('user_id', user_id);
     
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: formData,
-            processData: false, // Don't process the data
-            contentType: false, // Don't set content type
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
-            },
-            success: function(response) {
-                if(response.success == true) {
-                    $('#alert-container1').html(`
-                        <div class="alert alert-success">
-                            ${response.message}
-                        </div>
-                    `);
-                   
-                   
-                } else {
-                    $('#alert-container1').html(`
-                        <div class="alert alert-danger">
-                            Something went wrong. Please try again.
-                        </div>
-                    `);
-                   
-                }
-            },
-            error: function(xhr, status, error) {
-               
-                const errors = xhr.responseJSON.errors;
-                let errorHtml = '<ul>';
-                for (let field in errors) {
-                    errorHtml += `<li>${errors[field][0]}</li>`;
-                }
-                errorHtml += '</ul>';
-                $('#alert-container1').html(`
-                    <div class="alert alert-danger">
-                        ${errorHtml}
-                    </div>
-                `);
-            }
-        });
-    });
-    $("#createAddressForm").submit(function(e) {
-        
-        e.preventDefault();
-        var url = "{{ route('user.create.address') }}";
-
-        // Collect the form data
-        var formData = new FormData(this); // 'this' refers to the form element
-
-        // Add userId to the form data
-        formData.append('user_id', user_id);
-    
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: formData,
-            processData: false, // Don't process the data
-            contentType: false, // Don't set content type
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
-            },
-            success: function(response) {
-                if(response.success == true) {
-                    $('#alert-container2').html(`
-                        <div class="alert alert-success">
-                            ${response.message}
-                        </div>
-                    `);
-                   
-                    $('#createAddressModal').modal('hide');
-                } else {
-                    $('#alert-container2').html(`
-                        <div class="alert alert-danger">
-                            Something went wrong. Please try again.
-                        </div>
-                    `);
-                    $('#createAddressModal').modal('hide');
-                }
-            },
-            error: function(xhr, status, error) {
-                $('#createAddressModal').modal('hide');
-                const errors = xhr.responseJSON.errors;
-                let errorHtml = '<ul>';
-                for (let field in errors) {
-                    errorHtml += `<li>${errors[field][0]}</li>`;
-                }
-                errorHtml += '</ul>';
-                $('#alert-container1').html(`
-                    <div class="alert alert-danger">
-                        ${errorHtml}
-                    </div>
-                `);
-            }
-        });
-    });
-
 </script>
+
 
 @endsection

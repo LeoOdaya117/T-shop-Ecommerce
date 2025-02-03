@@ -64,6 +64,20 @@ body {
 .filter-toggle-btn:hover {
     background-color: #0056b3;
 }
+.card{
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    border-radius: 10px;
+}
+
+.card:hover{
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+    
 
 .product-card {
     transition: transform 0.3s, box-shadow 0.3s;

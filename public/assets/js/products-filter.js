@@ -128,4 +128,21 @@ document.getElementById('search-form').addEventListener('submit', function(event
     window.location.href = formAction + '?' + urlParams.toString();
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    const accordionButtons = document.querySelectorAll('.accordion-button');
+
+    accordionButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const targetId = this.getAttribute('data-target');
+            const targetCollapse = document.querySelector(targetId);
+
+            if (targetCollapse.classList.contains('show')) {
+                targetCollapse.classList.remove('show');
+            } else {
+                targetCollapse.classList.add('show');
+            }
+        });
+    });
+});
+
 

@@ -97,20 +97,31 @@ use Illuminate\Support\Facades\Route;
         ->name('profile.update');
         Route::put('/update/password', [UserManager::class, 'updatePassword'])
         ->name('user.update.password');
+
         Route::post('/create/address', [AddressManager::class, 'store'])
         ->name('user.create.address');
-        Route::delete('delete/user/wishlist', [WishlistManager::class, 'userRemoveWishlist'])
-        ->name('delete.user.wishlist');
+        Route::delete('delete/address', [AddressManager::class, 'destroy'])
+        ->name('delete.address');
+        Route::put('update/address', [AddressManager::class, 'update'])
+        ->name('update.address');
 
-        Route::get('change-password', function(){
-            return view('user.account.change-password');
-        })->name('user.change-password');
+        //Wishlist 
         Route::get('wishlist',[WishlistManager::class, 'show'])
         ->name('user.wishlist');
+        Route::delete('delete/user/wishlist', [WishlistManager::class, 'userRemoveWishlist'])
+        ->name('delete.user.wishlist');
+        Route::post('/move-to-cart', [WishlistManager::class, 'moveToCart'])
+        ->name('wishlist.move.to.cart');
         Route::post('add/wishlist', [WishlistManager::class, 'store'])
         ->name('add.wishlist');
         Route::delete('delete/wishlist', [WishlistManager::class, 'destroy'])
         ->name('delete.wishlist');
+
+
+        Route::get('change-password', function(){
+            return view('user.account.change-password');
+        })->name('user.change-password');
+
 
         Route::post('product-review/store',[ReviewsManager::class, 'store'])
         ->name('store.product.review');

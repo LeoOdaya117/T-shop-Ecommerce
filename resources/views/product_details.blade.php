@@ -79,6 +79,7 @@
                                 <span class="ms-2 text-muted">({{ $products->reviews->count() }} reviews)</span>
                             </div>
 
+                           
                             {{-- Wishlist Heart Icon --}}
                             <button class="btn btn-light border-0" onclick="toggleWishlist(this, {{ $products->id }}, '{{ $products->title }}')">
                                 <i class="fa-solid fa-heart 
@@ -95,6 +96,7 @@
                                 @endphp
                                 " id="wishlist-icon-{{ $products->id }}"></i>
                             </button>
+
                         </div>
                         <p class="text-muted">Brand: {{ $products->brands->name }}</p>
                         {{-- Price --}}
@@ -117,7 +119,7 @@
                             $groupedByColor = $variants->groupBy('color');
                         @endphp
 
-                        <div class="d-flex gap-2 align-content-center text-center align-items-center">
+                        {{-- <div class="d-flex gap-2 align-content-center text-center align-items-center">
                             <p class="text-muted">Color: </p>
                             <select name="" id="" class="form-select mb-3 w-50 ml-2" onchange="updateSizeOptions(this.value)">
                                 <option selected disabled>Select color</option>
@@ -125,24 +127,43 @@
                                     <option value="{{ $color }}">{{ $color }}</option>
                                 @endforeach
                             </select>
+                        </div> --}}
+
+                        <!-- Color Selection -->
+                        <div class="d-flex gap-2 align-items-center text-center mb-3">
+                            <p class="text-muted mb-0">Color: </p>
+                            <div class="d-flex gap-2" id="color-options">
+                                @foreach ($groupedByColor as $color => $group)
+                                    <div class="color-option rounded-circle border border-secondary"
+                                        style="width: 30px; height: 30px; background-color: {{ $color }}; cursor: pointer; transition: 0.3s ease-in-out; display: flex; justify-content: center; align-items: center;"
+                                        onclick="updateSizeOptions('{{ $color }}')"
+                                        data-color="{{ $color }}">
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
 
-                        <div class="d-flex gap-3 align-content-center text-center align-items-center mb-2">
-                            <p class="text-muted">Size: </p>
+                        <!-- Size Selection -->
+                        <div class="d-flex gap-3 align-items-center text-center mb-3">
+                            <p class="text-muted mb-0">Size: </p>
                             @foreach ($groupedByColor as $color => $group)
                                 <div id="sizes-for-{{ $color }}" class="sizes" style="display: none;">
-                                    <select class="form-select mb-2 ml-2" onchange="selectSize('{{ $color }}', this.value)">
-                                        <option value="" selected disabled>Select Size</option>
+                                    <div class="d-flex gap-2 justify-content-center">
                                         @foreach ($group as $variant)
-                                            <option value="{{ $variant->size }}">
-                                                {{ strtoupper(substr($variant->size, 0, 1)) }}
-                                            </option>
+                                            <div class="size-option border border-secondary rounded-3" 
+                                                style="width: 40px; height: 40px; cursor: pointer; display: flex; justify-content: center; align-items: center; background-color: white;"
+                                                onclick="selectSize('{{ $color }}', '{{ $variant->size }}')" 
+                                                data-color="{{ $color }}" 
+                                                data-size="{{ $variant->size }}">
+                                                <span>{{ strtoupper(substr($variant->size, 0, 1)) }}</span>
+                                            </div>
                                         @endforeach
-                                    </select>
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
 
+                        {{-- Hidden input for variant ID --}}
                         <input type="hidden" id="selectedVariantId" name="variant_id" value="">
 
                         <div class="d-flex mb-2 align-items-center m-0">
@@ -371,304 +392,16 @@
 
 @section("script")
     <script>
-        $(document).ready(function () {
-            $('#myTab7 a').on('click', function (e) {
-                e.preventDefault();
-                $(this).tab('show');
-            });
-        });
-
-       
-        function addToCart(productId) {
-            // Get the quantity selected by the user
-            updateCartItemNumber();
-            const quantity = document.getElementById('quantity').value;
-            const varaint_id = document.getElementById('selectedVariantId').value;
-            // Send AJAX request to add product to cart
-
-            if(!varaint_id){
-                // alert('No color and size selected!');
-                Swal.fire({
-                            icon: 'error',
-                            title: `No color and size selected!`,
-                            toast: true,
-                            position: 'center-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            didOpen: (toast) => {
-                                toast.addEventListener('mouseenter', Swal.stopTimer);
-                                toast.addEventListener('mouseleave', Swal.resumeTimer);
-                            }
-                        });
-                return;
-            }
+        window.routeUrls = {
+            addToWishlists: "{{ route('add.wishlist') }}",
+            removeToWishlist: "{{ route('delete.user.wishlist') }}",
             
-            $.ajax({
-                url: '/cart/' + productId + '/' + quantity + '/' + varaint_id,
-                type: 'GET',
-                success: function(response) {
-                    if (response.success) {
-                        
-                        Swal.fire({
-                            icon: 'success',
-                            title: response.success,
-                            toast: true,
-                            position: 'center-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            // html: '<a class="btn btn-outline-dark text-dark bg-transparent" type="submit" href="{{ route("cart.show") }}"><i class="fa-solid fa-cart-shopping"></i>Cart</a>',
-                            didOpen: (toast) => {
-                                // toast.addEventListener('mouseenter', Swal.stopTimer);
-                                // toast.addEventListener('mouseleave', Swal.resumeTimer);
-
-                                // Add event listener to the custom button
-                                document.getElementById('customButton').addEventListener('click', function() {
-                                    // Custom button click handler
-                                    console.log('Button clicked!');
-                                });
-                            }
-                        });
-                        
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: response.error,
-                            toast: true,
-                            position: 'center-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            didOpen: (toast) => {
-                                toast.addEventListener('mouseenter', Swal.stopTimer);
-                                toast.addEventListener('mouseleave', Swal.resumeTimer);
-                            }
-                        });
-                    }
-                },
-                error: function(xhr, status, error) {
-                    
-                    window.location.href = '{{ route('login') }}';
-
-                    console.log(error);
-                }
-            });
-            updateCartItemNumber();
-
-            
-        }
-
-
-        function incrementQuantity() {
-            let input = document.getElementById('quantity');
-            let currentValue = parseInt(input.value);
-            let maxValue = parseInt(input.max);
-
-            if (currentValue < maxValue) {
-                input.value = currentValue + 1;
-            }
-        }
-
-        function decrementQuantity() {
-            let input = document.getElementById('quantity');
-            let currentValue = parseInt(input.value);
-            let minValue = parseInt(input.min);
-
-            if (currentValue > minValue) {
-                input.value = currentValue - 1;
-            }
-        }
-
-
-        function route(routeUrl) {
-            window.location.href = routeUrl;
-        }
-
-        let selectedColor = '';
-        let selectedSize = '';
-        let variant = null;
-
-        // Update the size options based on the selected color
-        function updateSizeOptions(color) {
-            selectedColor = color;
-            document.querySelectorAll('.sizes').forEach(el => el.style.display = 'none');
-            document.getElementById(`sizes-for-${color}`).style.display = 'block';
-
-            // Reset size and stock display
-            selectedSize = '';
-            variant = null;
-            document.getElementById('stock-display').textContent = 'Select a size to view stock availability.';
-            updateWishlistIcon();
-        }
-
-        // Select size and display stock info
-        function selectSize(color, size) {
-            selectedSize = size;
-            let selectedVariant = @json($variants);
-            variant = selectedVariant.find(v => v.color === color && v.size === size);
-
-            if (variant) {
-                document.getElementById('selectedVariantId').value = variant.id;
-                console.log(variant.id, variant.stock, variant.size, variant.color);
-
-                let stockDisplay = document.getElementById('stock-display');
-                let stocksMax = document.getElementById('quantity');
-                // let wishlistButton = document.getElementById('wishlistButton');
-                let addToCartButton = document.getElementById('addToCartButton');
-
-                if (variant.stock > 0) {
-                    stockDisplay.innerHTML = `${variant.stock} stocks available`;
-                    stocksMax.value = 1;
-                    stocksMax.max = variant.stock;
-                    stockDisplay.classList.add('text-success');
-                    stockDisplay.classList.remove('text-danger');
-                    // wishlistButton.style.display = 'none';
-                    addToCartButton.style.display = 'block';
-                } else {
-                    stockDisplay.innerHTML = 'Out of stock';
-                    stockDisplay.classList.add('text-danger');
-                    stockDisplay.classList.remove('text-success');
-                    // wishlistButton.style.display = 'block';
-                    addToCartButton.style.display = 'none';
-                }
-
-                updateWishlistIcon(); // Update the wishlist icon based on the selected variant
-            }
-        }
-
-        // Function to toggle wishlist icon
-        function toggleWishlist(button, productId, productTitle) {
-            if (!variant) {
-                Swal.fire({
-                            icon: 'error',
-                            title: `No color and size selected!`,
-                            toast: true,
-                            position: 'center-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            didOpen: (toast) => {
-                                toast.addEventListener('mouseenter', Swal.stopTimer);
-                                toast.addEventListener('mouseleave', Swal.resumeTimer);
-                            }
-                        });
-                return;
-                return;
-            }
-
-            let icon = document.getElementById(`wishlist-icon-${productId}`);
-
-            if (icon.classList.contains("text-dark")) {
-                // icon.classList.remove("text-dark");
-                // icon.classList.add("text-danger");
-                addToWishList(productId, productTitle, variant.id);
-            } else {
-                // icon.classList.remove("text-danger");
-                // icon.classList.add("text-dark");
-                removeFromWishList(productId, productTitle, variant.id);
-            }
-        }
-
-        // Add to wishlist AJAX
-        function addToWishList(product_id, title, variant_id) {
-            let icon = document.getElementById(`wishlist-icon-${product_id}`);
-            $.ajax({
-                type: "POST",
-                url: "{{ route('add.wishlist') }}",
-                data: { product_id, variant_id, _token: "{{ csrf_token() }}" },
-                success: function(response) {
-                    if (response.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: `${title} added to wishlist`,
-                            toast: true, position: 'center-end',
-                            showConfirmButton: false, timer: 3000, timerProgressBar: true
-                        });
-                        icon.classList.remove("text-dark");
-                        icon.classList.add("text-danger");
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: response.message,
-                            toast: true, position: 'center-end',
-                            showConfirmButton: false, timer: 3000, timerProgressBar: true
-                        });
-                    }
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: xhr.responseJSON.message || 'An error occurred',
-                        toast: true, position: 'center-end',
-                        showConfirmButton: false, timer: 3000, timerProgressBar: true
-                    });
-                }
-            });
-        }
-
-
-        function removeFromWishList(product_id, title, variant_id){
-            let icon = document.getElementById(`wishlist-icon-${product_id}`);
-            $.ajax({
-                type: "DELETE",
-                url: "{{ route('delete.user.wishlist') }}",
-                data: { product_id, variant_id, _token: "{{ csrf_token() }}" },
-                success: function(response) {
-                    if (response.success) {
-                        Swal.fire({
-                            icon: 'info',
-                            title: `${title} removed from wishlist`,
-                            toast: true, position: 'center-end',
-                            showConfirmButton: false, timer: 3000, timerProgressBar: true
-                        });
-                        icon.classList.remove("text-danger");
-                        icon.classList.add("text-dark");
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: response.message,
-                            toast: true, position: 'center-end',
-                            showConfirmButton: false, timer: 3000, timerProgressBar: true
-                        });
-                    }
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: xhr.responseJSON.message || 'An error occurred',
-                        toast: true, position: 'center-end',
-                        showConfirmButton: false, timer: 3000, timerProgressBar: true
-                    });
-                }
-            });
-        }
-
-        // Update wishlist icon when a variant is selected
-        function updateWishlistIcon() {
-            if (!variant) {
-                return; // If no variant is selected, do nothing
-            }
-            console.log('asd ' + variant.id);
-            let icon = document.getElementById(`wishlist-icon-{{ $products->id }}`);
-            let wishlistItems = @json($wishlistItems); // Wishlist from controller
-            // console.log(wishlistItems[0]);
-            // Check if the selected variant is in the wishlist
-            if (wishlistItems[0] === variant.id) {
-                icon.classList.remove("text-dark");
-                icon.classList.add("text-danger"); // Show red icon
-            } else {
-                icon.classList.remove("text-danger");
-                icon.classList.add("text-dark"); // Show black icon
-            }
-        }
-
-        // On page load, call the updateWishlistIcon to set the correct state
-        document.addEventListener("DOMContentLoaded", function() {
-            updateWishlistIcon();
-        });
-
-
+            login: "{{ route('login') }}",
+        };
+        window.variantData = @json($variants ?? []);
+        window.wishlistItems = @json($wishlistItems ?? []);
+        
     </script>
+    <script src="{{ asset('assets/js/product_details.js') }}"></script>
     
 @endsection()
