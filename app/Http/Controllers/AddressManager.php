@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 class AddressManager extends Controller
 {
     public function show($userId){
-        $addresses = Address::where('user_id', $userId)->get();
+        $addresses = Address::where('user_id', $userId)
+            ->where('status', 'active')
+            ->get();
 
         return $addresses;
     }
@@ -63,7 +65,8 @@ class AddressManager extends Controller
 
        try {
             $address = Address::findOrFail($request->address_id);
-            $address->delete();
+            $address->status = "inactive";
+            $address->save();
        } catch (\Throwable $th) {
             return response()->json([
                 'status' => 500,

@@ -107,7 +107,7 @@ class UserManager extends Controller
     function profile(){
         $userInfo = User::find(auth()->user()->id);
         $addressManager = new AddressManager();
-        $addresses = Address::where('user_id', auth()->id())->get(); // Fetch addresses for the user
+        $addresses = $addressManager->show(auth()->user()->id); // Fetch addresses for the user
 
         return view('user.account.profile', compact('userInfo','addresses'));
     }
