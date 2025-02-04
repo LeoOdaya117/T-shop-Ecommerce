@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str; // Import Str
 use App\Events\OrderStatusUpdated;
+use App\Models\ShippingOptions;
 
 class OrderManager extends Controller
 {
@@ -27,6 +28,8 @@ class OrderManager extends Controller
         $authManager->sessionCheck();
         $addressManager = new AddressManager();
         $user_addresses = $addressManager->show(auth()->user()->id);
+
+        $shipping_options= ShippingOptions::where('status', 'active')->get();
         // Define the Philippines and its provinces
         $country = ['id' => 1, 'name' => 'Philippines'];
         $provinces = [
@@ -53,11 +56,12 @@ class OrderManager extends Controller
             ['id' => 21, 'name' => 'Rizal'],
             // Add more provinces as needed
         ];
+
         $cartItems = Cart::with(['variant','product'])
         ->where('user_id', auth()->user()->id)
         ->get();
         
-        return view('checkout', compact('cartItems','country', 'provinces', 'user_addresses'));
+        return view('checkout', compact('cartItems','country', 'provinces', 'user_addresses', 'shipping_options'));
     }
 
     public function checkoutPost(Request $request)
@@ -65,16 +69,19 @@ class OrderManager extends Controller
         $authManager = new AuthManager();
         $authManager->sessionCheck();
 
+        //VALIDATE THE REQUEST DATA
         $request->validate([
-            'email' => 'required',
-            'phone' => 'required',
             'firstname' => 'required',
             'lastname' => 'required',
-            'shipping_id' => 'required',
+            'email' => 'required',
+            'phone' => 'required',
+            'shipping_id' => 'required|exists:addresses,id',
+            'shipping_option_id' => 'required|exists:shipping_option,id',
             'payment_method' => 'required',
 
         ]);
 
+        //GET THE CART DATA
         $cartItems = DB::table("cart")
             ->leftJoin("products", 'cart.product_id', '=', 'products.id')
             ->leftJoin("product_variants", 'cart.variant_id', '=', 'product_variants.id')
@@ -86,6 +93,7 @@ class OrderManager extends Controller
             return redirect()->route('cart.show')->with('error', 'Cart is empty.');
         }
 
+        // INITIALIZE ARRAYS & VARIABLES
         $productIds = [];
         $variantsIds = [];
         $quantities = [];
@@ -113,13 +121,20 @@ class OrderManager extends Controller
             ];
         }
 
-        $shippingFee = 75;
+        // GET THE SHIPPING OPTION PRICE
+        $shippingOption = ShippingOptions::find($request->shipping_option_id);
+        if (!$shippingOption) {
+            return back()->with('error', 'Shipping option not found!');
+        }
+        $shippingFee = $shippingOption->cost;
+        $shippingOptionName = $shippingOption->name;
+        
         $lineItems[] = [
             'price_data' => [
                 'currency' => 'php',
                 'product_data' => [
                     'name' => 'Shipping Fee',
-                    'description' => 'Standard shipping',
+                    'description' => $shippingOptionName,
                 ],
                 'unit_amount' => $shippingFee *100,
             ],
@@ -136,6 +151,7 @@ class OrderManager extends Controller
         $order->variant_id = json_encode($variantsIds);
         $order->quantity = json_encode($quantities);
         $order->total_price = $totalPrice;
+        $order->shipping_option_id = $request->shipping_option_id;
         $order->shipping_fee =$shippingFee;
         $order->shipping_id = $request->shipping_id;
         $order->fname = $request->firstname;
@@ -192,7 +208,7 @@ class OrderManager extends Controller
                 return redirect($checkoutSession->url);
             } catch (\Throwable $th) {
                 $order->delete();
-                 return redirect()->route('cart.show')->with("error", $th->getMessage());
+                 return redirect()->route('checkout.show')->with("error", $th->getMessage());
 
                 // return response()->json([
                 //     'status' => 500,

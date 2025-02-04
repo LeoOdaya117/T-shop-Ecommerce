@@ -21,6 +21,17 @@
             <main class="container mt-3 mb-5">
                 <h2 class="text-start mb-4">Checkout</h2>
                 <div class="row">
+                    @if (session('success'))
+                    <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
                     <!-- Billing and Shipping Details -->
                     <div class="col-lg-7">
                         <div class="card p-4 mb-4 shadow-sm">
@@ -28,6 +39,7 @@
                             <div id="alert-container">
 
                             </div>
+             
                             <form  method="POST" id="checkoutForm" action="{{ route('checkout.post') }}">
                                 
                                 @csrf 
@@ -69,15 +81,17 @@
 
                                 <!-- Shipping OPTION Section -->
                                 <div class="mb-3">
-                                    <label for="delivery_method" class="form-label d-flex justify-content-between ">
+                                    <label for="shipping_option" class="form-label d-flex justify-content-between ">
                                         Delivery Method
                                     </label>
-                                    <select id="delivery_method" name="shipping_option" class="form-select" required>
+                                    <select id="shipping_option" name="shipping_option_id" class="form-select" required>
                                         <option value="" selected disabled>Select shipping option</option>
-                                        <!-- Loop through saved addresses -->
+                                        {{-- <!-- Loop through saved addresses -->
                                         <option value="0" >Standard Shipping (3-5 days)  Free</option>
-                                        <option value="75" >Priority (1-3 days) ₱75</option>
-                                        
+                                        <option value="75" >Priority (1-3 days) ₱75</option> --}}
+                                        @foreach($shipping_options as $shipping_option)
+                                            <option value="{{ $shipping_option->id }}" data-price="{{ $shipping_option->cost }}">{{ $shipping_option->name }} ({{ $shipping_option->min_days }}-{{ $shipping_option->max_days }} days) ₱ {{ $shipping_option->cost }}</option> 
+                                        @endforeach
                                     </select>
                                 </div>
             
@@ -101,7 +115,7 @@
                                     </div>
                                 </div>
                                 
-                                <button class="btn btn-primary  w-100" type="submit">Place Order</button>
+                                <button class="btn btn-success  w-100" type="submit">Place Order</button>
                             </form>
                         </div>
                     </div>
@@ -132,10 +146,19 @@
                                     <span name="shipping_fee" class="shipping_fee" id="shipping_fee">₱ 0.00</span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
+                                    <span>Discount</span>
+                                    <span name="discount" class="discount" id="discount">₱ 0.00</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
                                     <strong>Total</strong>
-                                    <strong>₱ {{ number_format($totalPrice + 75,2) }}</strong>
+                                    <strong class="total_price">₱ {{ number_format($totalPrice ,2) }}</strong>
                                 </li>
                             </ul>
+
+                            <div class="form-group d-flex">
+                                <input type="text" class="form-control" name="coupon" placeholder="Coupon">
+                                <button class="btn btn-success">Redeem</button>
+                            </div>
                             {{-- <button class="btn btn-primary w-100">Place Order</button> --}}
                         </div>
                     </div>
@@ -254,10 +277,17 @@
 
         });
 
-        $("#delivery_method").change(function() {
-            
-            var value = parseFloat($(this).val()) || 0;
-            $("#shipping_fee").text("₱ "  + value.toFixed(2));
+        $("#shipping_option").change(function() {
+            var shippingFee = parseFloat($(this).find(':selected').data('price')) || 0;
+            var baseTotal = parseFloat("{{ $totalPrice }}"); // Get the initial total price from Blade
+
+            var newTotal = baseTotal + shippingFee;
+
+            // Update the shipping fee display
+            $("#shipping_fee").text("₱ " + shippingFee.toFixed(2));
+
+            // Update the total price dynamically
+            $(".total_price").text("₱ " + newTotal.toFixed(2));
         });
 
     </script>

@@ -10,6 +10,15 @@ $(document).ready(function () {
         e.preventDefault();
         $(this).tab('show');
     });
+    // Get the first color option
+    let firstColorButton = document.querySelector(".color-option");
+    
+    if (firstColorButton) {
+        let firstColor = firstColorButton.getAttribute("data-color");
+        
+        // Call updateSizeOptions to select the first color
+        updateSizeOptions(firstColor);
+    }
 });
 
 function addToCart(productId) {
@@ -108,16 +117,24 @@ function updateSizeOptions(color) {
         selectedSize = '';
         variant = null;
 
-        // Remove active class from all color buttons
-        document.querySelectorAll('.color-option').forEach(btn => {
-            btn.classList.remove('border-warning', 'border-3'); // Remove highlight
+        // Remove the border highlight from all size buttons
+        document.querySelectorAll('.size-option').forEach(sizeButton => {
+            sizeButton.classList.remove('border-warning', 'border-3'); // Reset the border style
         });
 
-        // Highlight the selected color with a vibrant blue border
+       // Remove active class and reset size for all color buttons
+        document.querySelectorAll('.color-option').forEach(btn => {
+            btn.classList.remove('border-warning', 'border-3'); // Remove highlight
+            btn.style.transform = "scale(1)"; // Reset size
+        });
+
+        // Highlight the selected color with a vibrant blue border and resize it
         let selectedColorButton = document.querySelector(`[data-color="${color}"]`);
         if (selectedColorButton) {
             selectedColorButton.classList.add('border-warning', 'border-3'); // Add highlight
+            selectedColorButton.style.transform = "scale(1.3)"; // Increase size
         }
+
 
         // Hide all size selections
         document.querySelectorAll('.sizes').forEach(sizeDiv => {

@@ -156,4 +156,23 @@ class ShippingOptionController extends Controller
         ]);
     }
 
+    public function get($id) {
+        $shipping_option = ShippingOptions::find($id);
+    
+        if (!$shipping_option) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Shipping option not found!'
+            ], 404);
+        }
+    
+        return response()->json([
+            'success' => true,
+            'data' => $shipping_option
+        ], 200);
+    }
+
+    
+    
+
 }

@@ -147,7 +147,7 @@
                         <div class="d-flex gap-3 align-items-center text-center mb-3">
                             <p class="text-muted mb-0">Size: </p>
                             @foreach ($groupedByColor as $color => $group)
-                                <div id="sizes-for-{{ $color }}" class="sizes" style="display: none;">
+                                <div id="sizes-for-{{ $color }}" class="sizes" style="display: block;">
                                     <div class="d-flex gap-2 justify-content-center">
                                         @foreach ($group as $variant)
                                             <div class="size-option border border-secondary rounded-3" 
@@ -184,8 +184,11 @@
                             </p>
                         </div>
 
-                        <div class="d-flex">
-                            <button class="btn btn-outline-dark text-dark bg-transparent" onclick="addToCart({{ $products->id }})" id="addToCartButton">
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-large btn-outline-dark text-dark bg-warning shadow-lg" onclick="addToCart({{ $products->id }})" id="addToCartButton">
+                                Buy Now
+                            </button>
+                            <button class="btn btn-large btn-outline-dark text-dark bg-transparent shadow-lg" onclick="addToCart({{ $products->id }})" id="addToCartButton">
                                 Add to Cart
                             </button>
                         </div>
@@ -317,7 +320,7 @@
         
     
         {{-- REALATED PRODUCTS --}}
-        <section class="mt-5">
+        <section class="mt-5 mb-4">
             <h4 class="mb-4">Related Products</h4>
             <div class="row g-3 product-list">
                 @if (count($relatedProducts) == 0)
