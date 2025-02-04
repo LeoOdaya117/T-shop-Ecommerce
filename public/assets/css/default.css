@@ -1,0 +1,37 @@
+.card, .btn ,li, image {
+    cursor: pointer;
+}
+
+
+.breadcrumb{
+    color: #52a8ff;
+    align-items: center;
+
+}
+.breadcrumb-item + .breadcrumb-item::before {
+    content: '＞ ';
+
+
+}
+body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    background: whitesmoke;
+ 
+}
+.content {
+    flex: 1;
+}
+
+button {
+    position: relative; /* Ensures proper positioning for the badge */
+    transition: all 0.3s ease; /* Smooth transition */
+}
+
+/* Hover effect for nav link */
+button:hover {
+    
+    transform: scale(1.05); /* Slight zoom effect */
+}   

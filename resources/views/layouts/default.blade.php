@@ -14,35 +14,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/libs/css/style.css') }}">
-    <style>
-        .card, .btn ,li, image {
-            cursor: pointer;
-        }
-      
+    {{-- <link rel="stylesheet" href="{{ asset('assets/libs/css/style.css') }}"> --}}
+    <link rel="stylesheet" href="{{ asset('assets/css/default.css') }}">
 
-        .breadcrumb{
-            color: #52a8ff;
-            align-items: center;
-
-        }
-        .breadcrumb-item + .breadcrumb-item::before {
-            content: '＞ ';
- 
-   
-        }
-        body, html {
-            height: 100%;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            background: whitesmoke;
-         
-        }
-        .content {
-            flex: 1;
-        }
-    </style>
+    
     @yield("style")
 </head>
 <body>
