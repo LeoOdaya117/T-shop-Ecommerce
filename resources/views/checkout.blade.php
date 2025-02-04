@@ -1,11 +1,7 @@
 @extends("layouts.default")
 @section("title", "T-Shop - Home")
-@section('style')
-    <style>
-       
-    </style>
-@endsection
-@include("includes.scripts")
+
+
 @section("content")
     <div class="bg-dark text-light pt-2">
         <div class=" container ">
@@ -70,6 +66,21 @@
                                         @endforeach
                                     </select>
                                 </div>
+
+                                <!-- Shipping OPTION Section -->
+                                <div class="mb-3">
+                                    <label for="delivery_method" class="form-label d-flex justify-content-between ">
+                                        Delivery Method
+                                    </label>
+                                    <select id="delivery_method" name="shipping_option" class="form-select" required>
+                                        <option value="" selected disabled>Select shipping option</option>
+                                        <!-- Loop through saved addresses -->
+                                        <option value="0" >Standard Shipping (3-5 days)  Free</option>
+                                        <option value="75" >Priority (1-3 days) ₱75</option>
+                                        
+                                    </select>
+                                </div>
+            
             
 
                                 <h5 class="mb-3">Payments</h5>
@@ -118,7 +129,7 @@
                                
                                 <li class="list-group-item d-flex justify-content-between">
                                     <span>Shipping</span>
-                                    <span name="shipping_fee" class="shipping_fee">₱ 75.00</span>
+                                    <span name="shipping_fee" class="shipping_fee" id="shipping_fee">₱ 0.00</span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
                                     <strong>Total</strong>
@@ -130,60 +141,7 @@
                     </div>
                 </div>
             </main>
-            {{-- MODAL --}}
-
-            {{-- <!-- Add New Address Modal -->
-            <div class="modal fade" id="createAddressModal" tabindex="-1" aria-labelledby="createAddressModalLabel">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="createAddressModalLabel">Create New Address</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="createAddressForm" action="{{ route('user.create.address') }}" method="POST">
-                                @csrf
-                                @method('POST')
-                                <div class="mb-3" hidden>
-                                    <label for="new_street" class="form-label">User ID</label>
-                                    <input type="text" name="user_id" class="form-control" value="{{ auth()->user()->id }}">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="new_street" class="form-label">Address 1</label>
-                                    <input type="text" name="address1" class="form-control" placeholder="Enter your street address" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="new_street" class="form-label">Address 2 <span class="text-muted">(Optionanl)</span></label>
-                                    <input type="text" name="address2" class="form-control" placeholder="Enter your street address" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="new_city" class="form-label">City</label>
-                                    <input type="text" name="city" class="form-control" placeholder="Enter your city" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="new_state" class="form-label">Province</label>
-                                    <input type="text" name="province" class="form-control" placeholder="Enter your province" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="new_postal_code" class="form-label">Postal Code</label>
-                                    <input type="text" name="postal_code" class="form-control" placeholder="Enter your postal code" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="new_country" class="form-label">Country</label>
-                                    <select class="custom-select d-block w-100 form-control" name="country" id="country" required>
-                                        <option value="{{ $country['name'] }}">{{ $country['name'] }}</option>
-                                    </select>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary" id="saveAddressBtn">Save Address</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-                     --}}
+            
             
         </section>
     </main>
@@ -294,6 +252,12 @@
 
             });
 
+        });
+
+        $("#delivery_method").change(function() {
+            
+            var value = parseFloat($(this).val()) || 0;
+            $("#shipping_fee").text("₱ "  + value.toFixed(2));
         });
 
     </script>

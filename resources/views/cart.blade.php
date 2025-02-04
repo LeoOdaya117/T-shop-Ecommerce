@@ -79,7 +79,7 @@
                             </tr>
                             @php 
                                 $totalPrice = 0; 
-                                $shippingFee = 75;      
+                                $shippingFee = 0;      
                              @endphp  <!-- Initialize totalPrice variable -->
                             @foreach ($cartItems as $key => $items)
                                 <tr class="align-items-center justify-content-center text-center align-middle cart-item" data-id="{{ $items->id }}"> 

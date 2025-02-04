@@ -11,6 +11,7 @@ use App\Http\Controllers\OrderTrackingManager;
 use App\Http\Controllers\ProductsManager;
 use App\Http\Controllers\ProductVariantManager;
 use App\Http\Controllers\ReviewsManager;
+use App\Http\Controllers\ShippingOptionController;
 use App\Http\Controllers\UserManager;
 use App\Http\Controllers\WishlistManager;
 use App\Models\Products;
@@ -207,6 +208,22 @@ use Illuminate\Support\Facades\Route;
         ->name('admin.inventory.inventory_logs');
         Route::put('api/inventory/update', [InventoryLogManager::class, 'store'])
         ->name("admin.inventory.stock.update");
+
+
+        // SHIPPING ROUTE
+        Route::get('shipping', [ShippingOptionController::class, 'show'])
+        ->name('admin.shipping');
+
+        Route::get('shipping/edit/{id}', [ShippingOptionController::class, 'showEditPage'])
+        ->name('admin.shipping.edit');
+        Route::put('/shipping/update', [ShippingOptionController::class, 'update'])
+        ->name('admin.shipping.update');
+
+        Route::get('shipping/create', [ShippingOptionController::class, 'showCreatePage'])
+        ->name('admin.shipping.create');
+        Route::post('shipping/store',[ShippingOptionController::class, 'store'])->name('admin.shipping.store');
+        Route::put('shipping/delete', [ShippingOptionController::class, 'destroy'])
+        ->name('admin.shipping.delete');
 
 
         Route::get('bulk-upload', 

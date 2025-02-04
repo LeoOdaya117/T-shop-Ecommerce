@@ -89,11 +89,17 @@
                                         </ul>
                                     </div>
                                 </li>
+
+                                {{-- SHIPPING MENU --}}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('admin.shipping') }}" aria-expanded="false"  aria-controls="submenu-6"><i class="fas fa-fw fa-file"></i> Shipping </a>
+                                   
+                                </li>
                             </li>
 
 
-
-                            <li class="nav-item">
+                            {{-- REPORT MENU --}}
+                            {{-- <li class="nav-item">
                                 <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#reports-menu" aria-controls="submenu-6"><i class="fas fa-fw fa-file"></i> Reports </a>
                                 <div id="reports-menu" class="collapse submenu" style="">
                                     <ul class="nav flex-column">
@@ -109,7 +115,7 @@
                                         
                                     </ul>
                                 </div>
-                            </li>
+                            </li> --}}
                             
                             {{-- SETTINGS --}}
                             <li class="nav-divider">
