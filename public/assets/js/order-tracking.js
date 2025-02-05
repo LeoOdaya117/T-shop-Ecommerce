@@ -1,4 +1,4 @@
-Pusher.logToConsole = true;
+// Pusher.logToConsole = true;
 // Initialize Pusher
 const pusher = new Pusher('5e0f5df8b31983965bc4', {
     cluster: 'ap1'
