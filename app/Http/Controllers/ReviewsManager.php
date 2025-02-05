@@ -25,9 +25,10 @@ class ReviewsManager extends Controller
             'products' => 'required|array',
             'products.*' => 'required|exists:products,id',  // Ensure each product exists
             'rating' => 'required|integer|min:1|max:5',
-            'title' => 'required|string',
-            'comment' => 'required|string',
+            'title' => 'nullable|string',   // Allow null values
+            'comment' => 'nullable|string', // Allow null values
         ]);
+        
         
 
         try {
