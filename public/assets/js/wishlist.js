@@ -15,6 +15,7 @@ $(document).on('click', '.removeWishlistBtn', function() {
         success: function(response) {
             const wishlist_id = response.wishlist_id;
             if(response.success) {
+                updateCartWishlistItemNumber();
                 $(`tr[data-wishlist-id="${wishlist_id}"]`).remove();
                 Swal.fire({
                     icon: 'success',
@@ -75,8 +76,8 @@ $('.moveToCartBtn').on('click', function(){
         },
         success: function(response) {
             const wishlist_id = response.wishlist_id;
+            updateCartWishlistItemNumber();
             $(`tr[data-wishlist-id="${wishlist_id}"]`).remove();
-            updateCartItemNumber();
             Swal.fire({
                 icon: 'success',
                 title: response.message,  // Corrected typo in title

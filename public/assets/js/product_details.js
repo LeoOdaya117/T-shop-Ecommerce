@@ -22,7 +22,7 @@ $(document).ready(function () {
 });
 
 function addToCart(productId) {
-    updateCartItemNumber();
+    updateCartWishlistItemNumber();
     const quantity = document.getElementById('quantity').value;
     const variant_id = document.getElementById('selectedVariantId').value;
 
@@ -236,6 +236,7 @@ function addToWishList(product_id, title, variant_id) {
                 });
                 icon.classList.remove("text-dark");
                 icon.classList.add("text-danger");
+                updateCartWishlistItemNumber();
             } else {
                 Swal.fire({
                     icon: 'warning',
@@ -281,6 +282,7 @@ function removeFromWishList(product_id, title, variant_id) {
                 });
                 icon.classList.remove("text-danger");
                 icon.classList.add("text-dark");
+                updateCartWishlistItemNumber();
             } else {
                 Swal.fire({
                     icon: 'warning',

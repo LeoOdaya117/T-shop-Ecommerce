@@ -117,6 +117,7 @@ use Illuminate\Support\Facades\Route;
         ->name('add.wishlist');
         Route::delete('delete/wishlist', [WishlistManager::class, 'destroy'])
         ->name('delete.wishlist');
+        // Route::get('/wishlist/number', [WishlistManager::class, ''])->name('wishlist.item.number');
 
 
         Route::get('change-password', function(){

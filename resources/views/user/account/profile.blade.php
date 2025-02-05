@@ -10,7 +10,9 @@
             @method('PUT')
             <div class="row mt-4 mb-2">
                 
-                <div id="alert-container1"></div>
+                <div id="alert-container1">
+                    
+                </div>
              
                 <!-- Profile Section -->
                 <div class="col-6">

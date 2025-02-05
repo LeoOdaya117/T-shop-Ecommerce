@@ -23,7 +23,7 @@
 
     <main class="container w-100 mb-3">
         <div class="row justify-content-center align-items-center g-2 mb-2">
-            <div class="col-1">
+            <div class="col-1 d-flex align-items-center justify-content-center ml-2">
                 <div class="m-2"  >
                     <button class="mt-3 filter-toggle-btn"  onclick="toggleFilters()">
                         <i class="fa fa-filter"></i>
@@ -35,8 +35,11 @@
             <div class="col-11">
                 <div class="d-flex justify-content-end text-center m-2">
                     <form id="search-form" action="{{ route('shop') }}" method="GET" class="d-flex align-items-end">
-                        <input type="text" name="search" id="search" class="form-control" placeholder="Search products..." style="width: 200px; border-radius:10px">
-                        <button type="submit" class="btn btn-outline-dark ms-2" style="border-radius:10px">Search</button>
+                        <input type="text" name="search" id="search" class="form-control" placeholder="Search products..." style="width: 250px; border-radius:10px">
+                        {{-- <button type="submit" class="btn ms-2" style="border-radius:10px">Search</button> --}}
+                        <button class="btn rounded-circle"  type="submit" class="btn ms-2">
+                            <i class="fa-solid fa-search"></i>
+                        </button>
                     </form>
                 </div>
                

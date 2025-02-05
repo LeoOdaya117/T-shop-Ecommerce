@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Auth;
 use App\Models\Cart;
@@ -72,13 +73,16 @@ class CartManager extends Controller
     public function updateCartTotal()
     {
         // Calculate the total number of distinct items in the cart for the authenticated user
-        $cartTotal = DB::table('cart')
-            ->where('user_id', auth()->user()->id)
-            ->count(); // Count distinct cart items
-
-        // Store the cart total in the session
+        $userId = auth()->user()->id;
+        $cartTotal = Cart::where('user_id', $userId)->count();
+        $wishlistCount = Wishlist::where('user_id', $userId)->count();
+   
+        return response()->json([
+            'cartTotal' => $cartTotal,
+            'wishlistTotal' => $wishlistCount
+        ]);
         // Session::put('cartTotal', $cartTotal);
-        return $cartTotal;
+     
         
     }
 

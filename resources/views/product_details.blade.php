@@ -166,7 +166,7 @@
                         {{-- Hidden input for variant ID --}}
                         <input type="hidden" id="selectedVariantId" name="variant_id" value="">
 
-                        <div class="d-flex mb-2 align-items-center m-0">
+                        <div class="d-flex mb-3 align-items-center m-0">
                             <div class="input-group d-flex" style="max-width: 8rem;">
                                 <button type="button" class="btn btn-dark" onclick="decrementQuantity()">-</button>
                                 <input 
@@ -184,12 +184,13 @@
                             </p>
                         </div>
 
-                        <div class="d-flex gap-1">
-                            <button class="btn btn-large btn-outline-dark text-dark bg-warning shadow-lg" onclick="addToCart({{ $products->id }})" id="addToCartButton">
-                                Buy Now
-                            </button>
+                        <div class="d-flex gap-2">
+                            
                             <button class="btn btn-large btn-outline-dark text-dark bg-transparent shadow-lg" onclick="addToCart({{ $products->id }})" id="addToCartButton">
                                 Add to Cart
+                            </button>
+                            <button class="btn btn-large btn-outline-dark text-dark bg-warning shadow-lg" onclick="addToCart({{ $products->id }})" id="addToCartButton">
+                                Buy Now
                             </button>
                         </div>
                     </div>

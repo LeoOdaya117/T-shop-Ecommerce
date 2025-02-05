@@ -28,16 +28,18 @@ $("#UpdateProfileForm").submit(function(e) {
         success: function(response) {
             if(response.success == true) {
                 $('#alert-container1').html(`
-                    <div class="alert alert-success">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
                         ${response.message}
+                        <a  class="btn-close" data-bs-dismiss="alert" aria-label="Close"></a>
                     </div>
                 `);
-               
+                
                
             } else {
                 $('#alert-container1').html(`
-                    <div class="alert alert-danger">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         Something went wrong. Please try again.
+                        <a  class="btn-close" data-bs-dismiss="alert" aria-label="Close"></a>
                     </div>
                 `);
                
@@ -52,8 +54,9 @@ $("#UpdateProfileForm").submit(function(e) {
             }
             errorHtml += '</ul>';
             $('#alert-container1').html(`
-                <div class="alert alert-danger">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     ${errorHtml}
+                    <a  class="btn-close" data-bs-dismiss="alert" aria-label="Close"></a>
                 </div>
             `);
         }
@@ -82,8 +85,9 @@ $("#createAddressForm").submit(function(e) {
         success: function(response) {
             if(response.success == true) {
                 $('#alert-container2').html(`
-                    <div class="alert alert-success">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
                         ${response.message}
+                        <a  class="btn-close" data-bs-dismiss="alert" aria-label="Close"></a>
                     </div>
                 `);
                 console.log(response.address);
@@ -115,8 +119,9 @@ $("#createAddressForm").submit(function(e) {
                 $('#createAddressModal').modal('hide');
             } else {
                 $('#alert-container2').html(`
-                    <div class="alert alert-danger">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         Something went wrong. Please try again.
+                        <a  class="btn-close" data-bs-dismiss="alert" aria-label="Close"></a>
                     </div>
                 `);
                 $('#createAddressModal').modal('hide');
@@ -131,8 +136,9 @@ $("#createAddressForm").submit(function(e) {
             }
             errorHtml += '</ul>';
             $('#alert-container1').html(`
-                <div class="alert alert-danger">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     ${errorHtml}
+                    <a  class="btn-close" data-bs-dismiss="alert" aria-label="Close"></a>
                 </div>
             `);
         }
@@ -157,10 +163,11 @@ $('.delete-address-btn').on('click', function(){
                 $(`button[data-address-id="${address_id}"]`).closest('.col-6').remove();
 
                 // Optionally, show a success message
-                $('#alert-container2').html('<div class="alert alert-success">Address deleted successfully.</div>');
+                $('#alert-container2').html
+                ('<div class="alert alert-success alert-dismissible fade show" role="alert">Address deleted successfully. <a  class="btn-close" data-bs-dismiss="alert" aria-label="Close"></a></div>');
             } else {
                 // Optionally, show an error message
-                $('#alert-container2').html('<div class="alert alert-danger">Failed to delete the address.</div>');
+                $('#alert-container2').html('<div class="alert alert-danger alert-dismissible fade show" role="alert">Failed to delete the address. <a  class="btn-close" data-bs-dismiss="alert" aria-label="Close"></a></div>');
             }
         },
         error: function(xhr, status, error) {

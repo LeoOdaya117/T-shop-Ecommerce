@@ -139,6 +139,16 @@ class WishlistManager extends Controller
             'wishlist_id' => $request->wishlist_id,
         ]);
     }
+
+
+    // function getUserWishlistCount(){
+
+    //     $userId = auth()->user()->id;
+    //     $wishlistCount = Wishlist::where('user_id', $userId)->count();
+    //     return  response()->json([
+    //         'wishlistTotal' => $wishlistCount,
+    //     ]);
+    // }
     
     
 }

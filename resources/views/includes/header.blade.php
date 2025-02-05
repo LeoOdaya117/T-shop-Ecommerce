@@ -1,72 +1,4 @@
-@section('style')
-    <style>
-        .small-navbar {
-            padding: 0.5rem 1rem; /* Adjust the padding as needed */
-        }
-
-        .small-navbar .navbar-brand,
-        .small-navbar .navbar-nav .nav-link {
-            font-size: 0.875rem; /* Adjust the font size as needed */
-        }
-
-    </style>
-@endsection
-<style>
-    .small-navbar {
-            padding: 0.5rem 1rem; /* Adjust the padding as needed */
-        }
-
-        .small-navbar .navbar-brand,
-        .small-navbar .navbar-nav .nav-link {
-            font-size: 1rem; /* Adjust the font size as needed */
-        }
-
-    /* Default styles for <a> tag */
-    .nav-link {
-        position: relative; /* Ensures proper positioning for the badge */
-        transition: all 0.3s ease; /* Smooth transition */
-    }
-
-    /* Hover effect for nav link */
-    .nav-link:hover {
-        background-color: #c6cdff; /* Light background on hover */
-        color: #0d6efd; /* Change color to blue */
-        transform: scale(1.05); /* Slight zoom effect */
-    }
-
-    /* Active (clicked) state */
-    .nav-link:active {
-        background-color: #0d6efd; /* Blue background when clicked */
-        color: white; /* White text on active */
-        transform: scale(0.98); /* Slight shrink effect */
-    }
-
-    /* Badge inside the nav link */
-    .nav-link .badge {
-        position: absolute; /* Absolutely position the badge */
-        top: -5px; /* Adjust badge position */
-        right: -5px;
-        transform: scale(0.8); /* Initially smaller */
-        transition: transform 0.3s ease, background-color 0.3s ease;
-        z-index: 10;
-    }
-
-    /* Hover effect on badge */
-    .nav-link:hover .badge {
-        background-color: #0d6efd; /* Change badge background on hover */
-        transform: scale(1); /* Enlarge the badge slightly */
-    }
-
-    /* Ensuring the badge text is properly visible */
-    .nav-link .badge span {
-        font-size: 0.7rem; /* Adjust size of the badge number */
-    }
-
-    /* Active state for cart icon */
-    .nav-link .badge {
-        display: inline-block;
-    }
-</style>
+<link rel="stylesheet" href="{{ asset('assets/css/header.css') }}">
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top small-navbar">
 
   <div class="container">
@@ -122,14 +54,16 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link active mx-1 " href="{{ route('user.wishlist') }}" title="Wishlist">
-                    <i class="fa-solid fa-heart"></i>
+                    <i class="fa-solid fa-heart text-danger"></i>
+                    <span class="badge bg-danger text-white rounded-pill " id="wishlist-item-number">{{ Session::get('wishistItemCount', 0) }}</span>
+
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active  align-items-center" href="{{ route('cart.show') }}" title="Cart">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <!-- Cart Badge -->
-                    <span class="badge bg-dark text-white rounded-pill " id="cart-item-number">{{ Session::get('cartItemCount', 0) }}</span>
+                    <span class="badge bg-dark text-white fw-bolder rounded-circle" id="cart-item-number">{{ Session::get('cartItemCount', 0) }}</span>
                 </a>
             </li>
 

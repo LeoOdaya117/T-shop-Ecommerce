@@ -1,0 +1,54 @@
+.small-navbar {
+    padding: 0.5rem 1rem; /* Adjust the padding as needed */
+}
+
+.small-navbar .navbar-brand,
+.small-navbar .navbar-nav .nav-link {
+    font-size: 1rem; /* Adjust the font size as needed */
+}
+
+/* Default styles for <a> tag */
+.nav-link {
+position: relative; /* Ensures proper positioning for the badge */
+transition: all 0.3s ease; /* Smooth transition */
+}
+
+/* Hover effect for nav link */
+.nav-link:hover {
+background-color: #c6cdff; /* Light background on hover */
+color: #0d6efd; /* Change color to blue */
+transform: scale(1.05); /* Slight zoom effect */
+}
+
+/* Active (clicked) state */
+.nav-link:active {
+background-color: #0d6efd; /* Blue background when clicked */
+color: white; /* White text on active */
+transform: scale(0.98); /* Slight shrink effect */
+}
+
+/* Badge inside the nav link */
+.nav-link .badge {
+position: absolute; /* Absolutely position the badge */
+top: -5px; /* Adjust badge position */
+right: -5px;
+transform: scale(0.8); /* Initially smaller */
+transition: transform 0.3s ease, background-color 0.3s ease;
+z-index: 10;
+}
+
+/* Hover effect on badge */
+.nav-link:hover .badge {
+background-color: #0d6efd; /* Change badge background on hover */
+transform: scale(1); /* Enlarge the badge slightly */
+}
+
+/* Ensuring the badge text is properly visible */
+.nav-link .badge span {
+font-size: 0.7rem; /* Adjust size of the badge number */
+}
+
+/* Active state for cart icon */
+.nav-link .badge {
+display: inline-block;
+}
