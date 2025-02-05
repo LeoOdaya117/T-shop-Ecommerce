@@ -12,8 +12,8 @@ class OrderTrackingManager extends Controller
     public function orderTracking($orderId)
 {
     // Fetch the order with the shipping address and tracking relation
-    $orderInfo = Orders::with('shippingAddress')->find($orderId);
-
+    $orderInfo = Orders::with(['shippingAddress', 'shippingOption'])->find($orderId);
+    
     // Handle missing order
     if (!$orderInfo) {
         return redirect()->route('user.order.tracking')->with('error', 'Order not found.');

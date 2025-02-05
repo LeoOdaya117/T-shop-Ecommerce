@@ -113,10 +113,10 @@ $(document).ready(function() {
             type: "POST",
             url: url,
             data: formData,
-            processData: false,  // Prevent jQuery from automatically transforming the data into a query string
-            contentType: false,  // Don't set a content-type header; let the browser set it correctly for FormData
+            processData: false,  
+            contentType: false, 
             headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Dynamically fetch CSRF token
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(response) {
                 if(response.success == true) {
@@ -130,10 +130,10 @@ $(document).ready(function() {
                 const errors = xhr.responseJSON.errors;
                 let errorHtml = '';
                 for (let field in errors) {
-                    errorHtml += `${errors[field][0]}<br>`;  // Added <br> for better error formatting
+                    errorHtml += `${errors[field][0]}<br>`;  
                 }
 
-                Swal.fire("Error!", errorHtml, "error");  // Correct string interpolation here
+                Swal.fire("Error!", errorHtml, "error"); 
             }
         });
     });

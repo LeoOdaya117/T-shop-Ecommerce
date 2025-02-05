@@ -21,7 +21,7 @@ class Orders extends Model
     }
 
     public function shippingOption(){
-        // return $this->belongsTo(ShippingOptions::class, 'shippingOption');
+        return $this->belongsTo(ShippingOptions::class, 'shipping_option_id');
     }
 
 }

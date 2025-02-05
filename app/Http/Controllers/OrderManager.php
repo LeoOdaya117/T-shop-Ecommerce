@@ -510,8 +510,8 @@ class OrderManager extends Controller
 
     function showOrderDetails($id)
     {
-        $orderInfo = Orders::with(['tracking', 'shippingAddress'])->find($id);
-
+        $orderInfo = Orders::with(['tracking', 'shippingAddress', 'shippingOption'])->find($id);
+       
         // Handle missing order
         if (!$orderInfo) {
             return redirect()->route('admin.orders.index')->with('error', 'Order not found.');
@@ -575,7 +575,8 @@ class OrderManager extends Controller
             $tracking_notes = 'Order has been declined by the seller.';
         }
 
-        $order = Orders::find($request->order_id);
+        $order = Orders::with('shippingOption')->find($request->order_id);
+
 
         if(!$order){
             return response()->json([

@@ -1,3 +1,7 @@
+@php
+    use Carbon\Carbon;
+@endphp
+
 @extends('layouts.default')
 @section('title', 'Track Order')
 @section('style')
@@ -106,8 +110,42 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card">
+               
+                            @php
+                                // Get the latest tracking status
+                                $latestStatus = $order->tracking()->latest()->first();
+                                $orderDate = $latestStatus ? $latestStatus->created_at : $order->created_at;
+                                
+                                // Check if the latest status is "Out for Delivery"
+                                if ($latestStatus && $latestStatus->status == 'Out for Delivery') {
+                                    // If "Out for Delivery", set estimated delivery date as the same day (or next day)
+                                    $minDeliveryDate = $orderDate->copy()->format('d M, Y');
+                                    $maxDeliveryDate = $orderDate->copy()->addDay()->format('d M, Y'); // Next day
+                                } elseif ($latestStatus && $latestStatus->status == 'Delivered') {
+                                    // If "Delivered", set min and max dates to the delivery date
+                                    $minDeliveryDate = $orderDate->copy()->format('d M, Y');
+                                    $maxDeliveryDate = $orderDate->copy()->format('d M, Y');
+                                } else {
+                                    // Otherwise, calculate min and max delivery dates based on shipping option
+                                    $minDeliveryDate = $orderDate->copy()->addDays($order->shippingOption->min_days)->format('d M, Y');
+                                    $maxDeliveryDate = $orderDate->copy()->addDays($order->shippingOption->max_days)->format('d M, Y');
+                                }
+                            @endphp
+
+
+
+
+
+
                             <div class="card-header d-flex justify-content-between">
                                 <h5>Order Tracking #: <span id="tracking_number">{{ $order->tracking_id }}</span></h5>
+                                <p>Estimated Arrival: 
+                                    {{-- <span id="estimated-date">
+                                        {{ $minDeliveryDate }} - {{ $maxDeliveryDate }}
+                                    </span> --}}
+                                    <span id="min-delivery-date">{{ $minDeliveryDate }}</span> - <span id="max-delivery-date">{{ $maxDeliveryDate }}</span>
+
+                                </p>
                             </div>
                             <div class="card-body">
                                 
@@ -145,7 +183,7 @@
                                                     // Define button label based on status
                                                     $buttonLabel = $latestTrack->status;
                                                 @endphp
-                                    
+                                                
                                                 <button class="btn {{ $buttonClass }} btn-sm fw-bold" type="button">{{ $buttonLabel }}</button>
                                             </div>
                                         </div>

@@ -21,6 +21,10 @@
     width: 100%; /* Ensure select boxes take the full width */
 }
 
+button{
+    cursor: pointer;
+}
+
     </style>
     <!-- ============================================================== -->
     <!-- wrapper  -->
@@ -54,24 +58,29 @@
                     <div class="row">
                         @foreach ($groupOrders as $order)
                             <div class="col-lg-2 col-md-3 col-sm-4">
-                                <div class="card bg-{{ 
-                                    $order->order_status == 'Delivered' ? 'success' : 
-                                    ($order->order_status == 'Processing' ? 'warning' : 
-                                    ($order->order_status == 'Shipped' ? 'info' : 
-                                    ($order->order_status == 'Cancelled' ? 'danger' : 'secondary')))
-                                }} text-dark">
-                                    <div class="card-header text-center">
-                                        <strong>{{ $order->order_status }}</strong>
-                                    </div>
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title text-white">{{ $order->order_count }} Orders</h5>
-                                    </div>
-                                </div>
+                                <form method="GET" action="{{ route('admin.orders') }}">
+                                    <input type="hidden" name="order_status" value="{{ $order->order_status }}">
+                                    <button type="submit" class="border-0 bg-transparent p-0 w-100">
+                                        <div class="card bg-{{ 
+                                            $order->order_status == 'Delivered' ? 'success' : 
+                                            ($order->order_status == 'Processing' ? 'warning' : 
+                                            ($order->order_status == 'Shipped' ? 'info' : 
+                                            ($order->order_status == 'Cancelled' ? 'danger' : 'secondary')))
+                                        }} text-dark">
+                                            <div class="card-header text-center">
+                                                <strong>{{ $order->order_status }}</strong>
+                                            </div>
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title text-white">{{ $order->order_count }} Orders</h5>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </form>
                             </div>
                         @endforeach
                     </div>
-                    
                 </div>
+                
                 
                 <!-- ============================================================== -->
                 <!-- basic table  -->
@@ -99,18 +108,7 @@
                                         
                                         <form method="GET" action="{{ route('admin.orders') }}" class="d-flex flex-column">
                                             
-                                            {{-- <!-- Price Filter -->
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <!-- Min Price Input -->
-                                                <input type="number" name="min_price" value="{{ request('min_price') }}" class="form-control me-2" placeholder="Min Price" style="max-width: 150px;">
-                                                
-                                                <!-- 'To' Text -->
-                                                <span class="mx-2">to</span>
-                                                
-                                                <!-- Max Price Input -->
-                                                <input type="number" name="max_price" value="{{ request('max_price') }}" class="form-control me-2" placeholder="Max Price" style="max-width: 150px;">
-                                            </div> --}}
-                                                                               
+                                                        
                                             <!-- Status Filter -->
                                             <select name="order_status" class="form-control rounded-pill mb-2">
                                                 <option value="">Select Status</option>
@@ -237,7 +235,10 @@
         document.getElementById('filterDropdown').classList.add('d-none');
     });
 
+
     
-    
+    function route(routeUrl) {
+        window.location.href = routeUrl;
+    }   
 </script>
 @endsection

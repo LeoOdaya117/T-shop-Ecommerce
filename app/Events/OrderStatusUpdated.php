@@ -13,10 +13,17 @@ class OrderStatusUpdated implements ShouldBroadcast
     use Dispatchable, SerializesModels;
 
     public $order;
+    public $min_days;
+    public $max_days;
 
     public function __construct(Orders $order)
     {
-        $this->order = $order;
+        // Load the related shippingOption
+        $this->order = $order->load('shippingOption');  // Eager load shippingOption relationship
+
+        // Access min_days and max_days from the shippingOption relationship
+        $this->min_days = $this->order->shippingOption ? $this->order->shippingOption->min_days : null;
+        $this->max_days = $this->order->shippingOption ? $this->order->shippingOption->max_days : null;
     }
 
     public function broadcastOn()
@@ -30,7 +37,8 @@ class OrderStatusUpdated implements ShouldBroadcast
             'tracking_id' => $this->order->tracking_id,
             'status' => $this->order->order_status,
             'updated_at' => $this->order->updated_at->format('d M, Y'),
+            'min_days' => $this->min_days,  // Include min_days
+            'max_days' => $this->max_days,  // Include max_days
         ];
     }
 }
-

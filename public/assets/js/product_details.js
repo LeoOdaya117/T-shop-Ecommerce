@@ -71,7 +71,7 @@ function addToCart(productId) {
         }
     });
 
-    updateCartItemNumber();
+   
 }
 
 function incrementQuantity() {
