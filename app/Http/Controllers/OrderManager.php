@@ -85,7 +85,7 @@ class OrderManager extends Controller
         $cartItems = DB::table("cart")
             ->leftJoin("products", 'cart.product_id', '=', 'products.id')
             ->leftJoin("product_variants", 'cart.variant_id', '=', 'product_variants.id')
-            ->select("cart.product_id","cart.variant_id", "cart.quantity", 'products.price', 'products.title', 'product_variants.size', 'product_variants.color')
+            ->select("cart.product_id","cart.variant_id", "cart.quantity", 'products.price', 'products.title', 'products.discount', 'product_variants.size', 'product_variants.color')
             ->where("cart.user_id", auth()->user()->id)
             ->get();
         // dd($cartItems);
@@ -106,7 +106,7 @@ class OrderManager extends Controller
             $productIds[] = $cartItem->product_id;
             $variantsIds[] = $cartItem->variant_id;
             $quantities[] = $cartItem->quantity;
-            $totalPrice += $cartItem->price * $cartItem->quantity;
+            $totalPrice += ($cartItem->price - $cartItem->discount) * $cartItem->quantity;
             
             $lineItems[] = [
                 'price_data' => [
@@ -115,7 +115,7 @@ class OrderManager extends Controller
                         'name' => $cartItem->title,
                         'description' => 'Color: ' . ucfirst($cartItem->color) . ', Size: ' . strtoupper($cartItem->size),
                     ],
-                    'unit_amount' => $cartItem->price * 100,
+                    'unit_amount' => ($cartItem->price - $cartItem->discount) * 100,
                 ],
                 'quantity' => $cartItem->quantity,
             ];
@@ -297,7 +297,7 @@ class OrderManager extends Controller
             $product_ids = json_decode($order->product_id);
             $order->products = Products::whereIn('id', $product_ids)->get();
         }
-
+       
 
         // dd($active_orders,$past_orders);
 
@@ -510,34 +510,38 @@ class OrderManager extends Controller
 
     function showOrderDetails($id)
     {
-        $orderInfo = Orders::with(['tracking', 'shippingAddress']) // Define the `shippingAddress` relationship in the model
-        ->find($id);
+        $orderInfo = Orders::with(['tracking', 'shippingAddress'])->find($id);
+
         // Handle missing order
         if (!$orderInfo) {
             return redirect()->route('admin.orders.index')->with('error', 'Order not found.');
         }
-    
+
         $ordered_items = [];
-        $productIds = json_decode($orderInfo->product_id, true) ?? []; // Decode JSON or fallback to an empty array
-        $quantities = json_decode($orderInfo->quantity, true) ?? [];   // Decode JSON or fallback to an empty array
-        $variantIds = json_decode($orderInfo->variant_id, true) ?? []; // Decode variant_id if stored as JSON
-    
+        $productIds = json_decode($orderInfo->product_id, true) ?? [];
+        $quantities = json_decode($orderInfo->quantity, true) ?? [];
+        $variantIds = json_decode($orderInfo->variant_id, true) ?? [];
+
         // Ensure the data arrays are valid
         if (!is_array($productIds) || !is_array($quantities) || !is_array($variantIds)) {
             return redirect()->route('admin.orders.index')->with('error', 'Invalid order data.');
         }
-    
-        $products = Products::with('variants')->whereIn('id', $productIds)->get();
-        
-        foreach ($products as $index => $product) {
-            $quantity = $quantities[$index] ?? 1; // Fallback to 1 if quantity is missing
+
+        foreach ($productIds as $index => $productId) {
+            $product = Products::with('variants')->find($productId);
+
+            if (!$product) {
+                continue; // Skip if product is not found
+            }
+
+            $quantity = $quantities[$index] ?? 1;
             $price = $product->price - $product->discount;
             $subtotal = $price * $quantity;
-    
+
             // Find the variant by ID
-            $variantId = $variantIds[$index] ?? null; // Get variant ID or null
-            // $variant = $product->variants->firstWhere('id', $variantId);
-            $variant  = ProductVariant::find($variantId);
+            $variantId = $variantIds[$index] ?? null;
+            $variant = ProductVariant::find($variantId);
+
             $ordered_items[] = [
                 'product_name' => $product->title,
                 'price' => $price,
@@ -546,12 +550,13 @@ class OrderManager extends Controller
                 'variant' => $variant ? [
                     'color' => $variant->color,
                     'size' => $variant->size,
-                ] : null, // Include variant details or null if not found
+                ] : null,
             ];
         }
-        // dd( $variantIds ,$ordered_items);
+
         return view('admin.orders.order-details', compact('orderInfo', 'ordered_items'));
     }
+
     
 
     function statusUpdate(Request $request){

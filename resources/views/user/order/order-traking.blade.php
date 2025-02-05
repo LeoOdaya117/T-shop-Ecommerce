@@ -160,10 +160,10 @@
 
                                         $currentStepIndex = array_search($latestStatus, $steps);
 
-                                        // Include "Order Placed" in the progress calculation
                                         $progressPercentage = $currentStepIndex !== false
-                                            ? (($currentStepIndex + 1) / count($steps)) * 100
-                                            : 0;
+                                        ? ($currentStepIndex / (count($steps) - 1)) * 100
+                                        : 0;
+
 
                                         $dates = $order->tracking->pluck('updated_at', 'status')->toArray();
                                     @endphp
@@ -272,7 +272,7 @@
                                     <tbody>
                                         @foreach ($ordered_items as $item)
                                             <tr>
-                                                <td class="d-flex align-items-start gap-2">
+                                                <td class="d-flex align-items-start gap-2" onclick="route('{{ route('showDetails', $item['slug']) }}')">
                                                     <img
                                                         src="{{ $item['image'] }}"
                                                         class="img-fluid rounded"
@@ -328,6 +328,7 @@
 <script src="https://cdn.jsdelivr.net/npm/pusher-js@7.0.3/dist/web/pusher.min.js"></script>
 
 <script>
+    
     
      Pusher.logToConsole = true;
     // Initialize Pusher

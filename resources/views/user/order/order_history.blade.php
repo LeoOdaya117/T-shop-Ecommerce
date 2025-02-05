@@ -42,7 +42,7 @@
                                         <div class="product-images d-flex gap-2">
                                             @foreach($order->products as $product)
                                             <div>
-                                                <img src="{{ $product->image }}" alt="Product Image" style="width: 100px; height: auto;">
+                                                <img src="{{ $product->image }}" alt="Product Image" style="width: 100px; height: auto;" onclick="route('{{ route('showDetails', $product->slug) }}')">
                                             </div>
                                             @endforeach
                                         </div>
@@ -119,7 +119,7 @@
                                         <div class="product-images d-flex gap-2">
                                             @foreach($order->products as $product)
                                             <div>
-                                                <img src="{{ $product->image }}" alt="Product Image" style="width: 100px; height: auto;">
+                                                <img src="{{ $product->image }}" alt="Product Image" style="width: 100px; height: auto;" onclick="route('{{ route('showDetails', $product->slug) }}')">
                                             </div>
                                             @endforeach
                                         </div>
@@ -211,13 +211,13 @@
                     <!-- Title -->
                     <div class="mb-3">
                     <label for="reviewTitle" class="form-label">Review Title</label>
-                    <input type="text" class="form-control" id="reviewTitle" name="title" required>
+                    <input type="text" class="form-control" id="reviewTitle" name="title" >
                     </div>
 
                     <!-- Review Text -->
                     <div class="mb-3">
                     <label for="reviewText" class="form-label">Your Review</label>
-                    <textarea class="form-control" id="comment" name="comment" rows="4" required></textarea>
+                    <textarea class="form-control" id="comment" name="comment" rows="4" ></textarea>
                     </div>
 
                   
@@ -238,6 +238,9 @@
 
 @section('script')
     <script>
+        function route(routeUrl) {
+            window.location.href = routeUrl;
+        }
         $("#cancelOrderForm").submit(function(e) {
            
             var form = $(this);
