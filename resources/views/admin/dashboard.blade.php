@@ -237,167 +237,26 @@
     </main>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://js.pusher.com/7.0.3/pusher.min.js"></script>
 
     <script>
-        // Generate a random color for each category
-        function randomColor() {
-            return 'rgba(' + Math.floor(Math.random() * 156 + 100) + ',' + Math.floor(Math.random() * 156 + 100) + ',' + Math.floor(Math.random() * 156 + 100) + ', 1)';
-        }
-        $(document).ready(function() {
-            // Make the AJAX request
-            fetchData();
-
-            // Fetch data every 5 seconds (5000 milliseconds)
-            // setInterval(fetchData, 5000);
-        });
-
-        function fetchData(){
-            $.ajax({
-                url: "{{ route('admin.getSalesAndRevenue') }}", // Your route to the getSalesAndRevenue function
-                method: 'GET',
-                success: function(response) {
-                    // Update the DOM with the data received
-                    $('#customer-count').text(response.total_orders);
-                    $('#total-revenue').text('₱ ' + response.total_revenue.toFixed(2));
-                    $('#total-sales').text(response.total_sales);
-                    $('#total-customers').text(response.total_customer);
-                    
-                    let revenue_by_year = response.revenue_by_year;
-                    let categories = response.categories;
-                    let revenues = response.revenues;
-
-                    renderRevenueByCategory(categories,revenues);
-                    renderTotalSales(revenue_by_year);
-                    
-                },
-                error: function(xhr, status, error) {
-                    console.error("An error occurred while fetching data: ", error);
-                }
-            });
-        }
-        function renderRevenueByCategory(categories,revenues){
-            // Assign random colors for backgroundColor and borderColor
-            var backgroundColors = categories.map(() => randomColor());
-            var borderColors = categories.map(() => randomColor());
-            // Create the chart
-            var ctx = document.getElementById('revenueByCategoryChart').getContext('2d');
-            var revenueByCategoryChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: categories,
-                    datasets: [{
-                        label: 'Revenue by Category',
-                        data: revenues,
-                        backgroundColor: backgroundColors,  // Dynamic colors for background
-                        borderColor: borderColors,          // Dynamic colors for borders
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(tooltipItem) {
-                                    return tooltipItem.label + ': ₱' + tooltipItem.raw.toFixed(2);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function renderTotalSales(data){
-
-
-            var morrisData = data.map(item => {
-                return {
-                    x: item.year.toString(), // Use the year as 'x' value
-                    y: item.total_revenue.toFixed(2)     // Use the total revenue as 'y' value
-                };
-            });
-
-            // Initialize Morris Area Chart with the formatted data
-            Morris.Area({
-                element: 'morris_totalrevenue',
-                behaveLikeLine: true,
-                data: morrisData, // Use the formatted data here
-                xkey: 'x',
-                ykeys: ['y'],
-                labels: ['Revenue'],
-                lineColors: ['#5969ff'], // Line color
-                resize: true
-            });
-
-            // Get the current year data
-            const currentYear = new Date().getFullYear();
-            const currentYearData = data.find(item => item.year === currentYear);
-            const previousYearData = data.find(item => item.year === currentYear - 1);
-
-            // Display the current year's revenue
-            if (currentYearData) {
-                $('#thisYearRevenue').text("₱ " + currentYearData.total_revenue.toFixed(2));
-            } else {
-                $('#thisYearRevenue').text("Data not available");
-            }
-
-            // Calculate and display growth
-            if (currentYearData && previousYearData) {
-                const currentRevenue = currentYearData.total_revenue;
-                const previousRevenue = previousYearData.total_revenue;
-
-                // Calculate the growth percentage
-                const growth = ((currentRevenue - previousRevenue) / previousRevenue) * 100;
-                
-                // Display the growth as percentage
-                $('#revenueGrowth').text(growth >= 0 ? `+${growth.toFixed(2)}%` : `${growth.toFixed(2)}%`);
-            } else {
-                $('#revenueGrowth').text('Data not available');
-            }
-
-        }
-        
-        function orderStatus(orderId,status){
-            $.ajax({
-                url: "{{ route('admin.orders.orderStatus') }}",
-                method: 'PUT',
-                data: {
-                    order_id: orderId,
-                    order_status: status
-                },
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
-                },
-                success: function(response) {
-                    
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: "top-end",
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        didOpen: (toast) => {
-                            toast.onmouseenter = Swal.stopTimer;
-                            toast.onmouseleave = Swal.resumeTimer;
-                        }
-                        });
-                        Toast.fire({
-                        icon: "success",
-                        title: response.message,
-                    });
-                    $(`tr[data-order-id="${response.order_id}"]`).remove();
-                },
-                error: function(xhr, status, error) {
-                    console.error("An error occurred while accepting the order: ", error);
-                }
-            });
-        }
+        window.routeUrls = {
+            getSalesAndRevenue: "{{ route('admin.getSalesAndRevenue') }}",
+            orderStatus:  "{{ route('admin.orders.orderStatus') }}"
+           
+        };
+        window.pusherCredentials = {
+            appKey: "{{ env('PUSHER_APP_KEY') }}",
+            cluster: "{{ env('PUSHER_APP_CLUSTER') }}"
+        };
         
     </script>
+    <script src="{{ asset('assets/js/dashboard.js') }}">
+
+      
+        
+    </script>
+    
 
 @endsection()
                                 

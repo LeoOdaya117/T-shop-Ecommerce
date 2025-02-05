@@ -22,7 +22,7 @@ $(document).ready(function () {
 });
 
 function addToCart(productId) {
-    updateCartWishlistItemNumber();
+   
     const quantity = document.getElementById('quantity').value;
     const variant_id = document.getElementById('selectedVariantId').value;
 
@@ -44,6 +44,7 @@ function addToCart(productId) {
         type: 'GET',
         success: function(response) {
             if (response.success) {
+                updateCartWishlistItemNumber();
                 Swal.fire({
                     icon: 'success',
                     title: response.success,

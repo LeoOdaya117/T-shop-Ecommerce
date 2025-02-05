@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str; // Import Str
 use App\Events\OrderStatusUpdated;
 use App\Models\ShippingOptions;
+use App\Events\DashboardDataUpdated;
 
 class OrderManager extends Controller
 {
@@ -193,18 +194,22 @@ class OrderManager extends Controller
                     'updated_at' => now(),
                 ]);
 
-                // Update the stock of the products
-                foreach ($cartItems as $cartItem) {
-                    DB::table('product_variants')
-                        ->where('id', $cartItem->variant_id)
-                        ->where('product_id', $cartItem->product_id)
-                        ->decrement('stock', $cartItem->quantity);
-                }
 
-                DB::table('cart')
-                    ->where('user_id', auth()->user()->id)
-                    ->delete();
+                
+                // // Update the stock of the products
+                // foreach ($cartItems as $cartItem) {
+                //     DB::table('product_variants')
+                //         ->where('id', $cartItem->variant_id)
+                //         ->where('product_id', $cartItem->product_id)
+                //         ->decrement('stock', $cartItem->quantity);
+                // }
 
+                // DB::table('cart')
+                //     ->where('user_id', auth()->user()->id)
+                //     ->delete();
+
+                
+                
                 return redirect($checkoutSession->url);
             } catch (\Throwable $th) {
                 $order->delete();
@@ -229,9 +234,40 @@ class OrderManager extends Controller
 
     function paymentSuccess($order_id)
     {
+        $order = Orders::find($order_id);
+
+        if ($order && $order->payment_status === 'Complete') {
+            // Fetch updated dashboard data
+            $dashboardData = $this->getSalesAndRevenue();
+
+            // Dispatch the event to broadcast updated dashboard data
+            broadcast(new DashboardDataUpdated($dashboardData));
+
+            // Update stock for the ordered products
+            $cartItems = DB::table("cart")
+                ->leftJoin("products", 'cart.product_id', '=', 'products.id')
+                ->leftJoin("product_variants", 'cart.variant_id', '=', 'product_variants.id')
+                ->select("cart.product_id", "cart.variant_id", "cart.quantity", 'products.price', 'products.title', 'products.discount', 'product_variants.size', 'product_variants.color')
+                ->where("cart.user_id", $order->user_id)
+                ->get();
+
+            foreach ($cartItems as $cartItem) {
+                DB::table('product_variants')
+                    ->where('id', $cartItem->variant_id)
+                    ->where('product_id', $cartItem->product_id)
+                    ->decrement('stock', $cartItem->quantity);
+            }
+
+            // Clear the user's cart
+            DB::table('cart')
+                ->where('user_id', $order->user_id)
+                ->delete();
+        }
+
         session()->flash('success', 'Order Placed Successfully.');
         return view('payment.success', ['order_id' => $order_id]);
     }
+
 
     function paymentError()
     {
@@ -268,9 +304,11 @@ class OrderManager extends Controller
                 $order->payment_status = 'Complete';
                 $order->payment_date = now();
                 $order->save();
+
             }
         }
 
+        
         return response()->json(['status' => 'success']); 
     }  
 
@@ -321,65 +359,58 @@ class OrderManager extends Controller
     }
 
 
-    function getSalesAndRevenue()
+    public function getSalesAndRevenue()
     {
-        //Total number of Customer
+        // Total number of Customer
         $totalNumberOfCustomer = User::where('is_admin', false)->count();
         // Total orders
-        $totalOrders = Orders::where('order_status', 'Delivered')
-        ->count();
-    
+        $totalOrders = Orders::where('order_status', 'Delivered')->count();
+
         // Total revenue
         $totalRevenue = Orders::where('payment_status', 'Complete')->sum('total_price');
-    
+
         // Revenue by category
         $revenueByCategory = DB::table('products')
-        ->select('category.name as category_name', DB::raw('SUM(products.price * oq.quantity) as revenue'))
-        ->join('category', 'products.category', '=', 'category.id') // Join category table
-        ->join(DB::raw('(
-            SELECT 
-                o.id as order_id,
-                JSON_UNQUOTE(JSON_EXTRACT(o.product_id, CONCAT("$[", idx, "]"))) as product_id,
-                JSON_UNQUOTE(JSON_EXTRACT(o.quantity, CONCAT("$[", idx, "]"))) as quantity
-            FROM orders o
-            CROSS JOIN (SELECT 0 idx UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5) indices
-            WHERE JSON_LENGTH(o.product_id) > idx
-        ) as oq'), 'products.id', '=', 'oq.product_id')
-        ->groupBy('category.name') // Group by category name
-        ->get();
+            ->select('category.name as category_name', DB::raw('SUM(products.price * oq.quantity) as revenue'))
+            ->join('category', 'products.category', '=', 'category.id') // Join category table
+            ->join(DB::raw('(
+                SELECT 
+                    o.id as order_id,
+                    JSON_UNQUOTE(JSON_EXTRACT(o.product_id, CONCAT("$[", idx, "]"))) as product_id,
+                    JSON_UNQUOTE(JSON_EXTRACT(o.quantity, CONCAT("$[", idx, "]"))) as quantity
+                FROM orders o
+                CROSS JOIN (SELECT 0 idx UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5) indices
+                WHERE JSON_LENGTH(o.product_id) > idx
+            ) as oq'), 'products.id', '=', 'oq.product_id')
+            ->groupBy('category.name') // Group by category name
+            ->get();
 
-    
         $revenueByYear = DB::table('orders')
-        ->where('payment_status', 'Complete')
-        ->select(DB::raw('YEAR(created_at) as year'), DB::raw('SUM(total_price) as total_revenue'))
-        ->groupBy(DB::raw('YEAR(created_at)'))
-        ->orderBy('year', 'desc') // Orders the results by year in descending order
-        ->get();
+            ->where('payment_status', 'Complete')
+            ->select(DB::raw('YEAR(created_at) as year'), DB::raw('SUM(total_price) as total_revenue'))
+            ->groupBy(DB::raw('YEAR(created_at)'))
+            ->orderBy('year', 'desc') // Orders the results by year in descending order
+            ->get();
 
-             // Prepare data for chart.js
-        $year = $revenueByCategory->pluck('year');
-        $year_revenue = $revenueByCategory->pluck('total_revenue');
-        
+        // Prepare data for chart.js
         $categories = $revenueByCategory->pluck('category_name');
         $revenues = $revenueByCategory->pluck('revenue');
-    
+
         // Total sales (total items sold across all orders)
         $totalSales = Orders::selectRaw('SUM(JSON_LENGTH(product_id)) as total_sales')->value('total_sales');
-        $recentOrder = Orders::orderBy('created_at', 'desc')->take(10)->get();
-    
-            return response()->json([
-                'total_customer' => $totalNumberOfCustomer,
-                'total_orders' => $totalOrders,
-                'total_revenue' => $totalRevenue,
-                'revenue_by_category' => $revenueByCategory,
-                'total_sales' => $totalSales,
-                'categories' => $categories,
-                'revenues' => $revenues,
-                'revenue_by_year' =>  $revenueByYear, 
-                
-                    
-            ]);
+
+        return [
+            'total_customer' => $totalNumberOfCustomer,
+            'total_orders' => $totalOrders,
+            'total_revenue' => $totalRevenue,
+            'revenue_by_category' => $revenueByCategory,
+            'total_sales' => $totalSales,
+            'categories' => $categories,
+            'revenues' => $revenues,
+            'revenue_by_year' =>  $revenueByYear, 
+        ];
     }
+
 
     function getRecentOrders(){
         $recentOrders = Orders::where('order_status', 'Order Placed')
@@ -469,6 +500,12 @@ class OrderManager extends Controller
     
                 // Broadcast the event after saving the tracking record
                 broadcast(new OrderStatusUpdated($order));
+
+                // Fetch updated dashboard data
+                $dashboardData = $this->getSalesAndRevenue();
+
+                // Dispatch the event to broadcast updated dashboard data
+                broadcast(new DashboardDataUpdated($dashboardData));
             } catch (\Throwable $th) {
                 return redirect()->intended(route('admin.orders.details', $id))
                     ->with("error", $th->getMessage());
@@ -605,6 +642,11 @@ class OrderManager extends Controller
                
             ]);
             broadcast(new OrderStatusUpdated($order));
+            // Fetch updated dashboard data
+            $dashboardData = $this->getSalesAndRevenue();
+
+            // Dispatch the event to broadcast updated dashboard data
+            broadcast(new DashboardDataUpdated($dashboardData));
         } catch (\Throwable $th) {
             return response()->json([
                 'success' => false,
