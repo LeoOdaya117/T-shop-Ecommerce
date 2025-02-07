@@ -1,7 +1,8 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Rewrite to the public directory
-    RewriteRule ^$ public/ [L]
-    RewriteRule ^(.*)$ public/$1 [L]
+    # Redirect all traffic to the public directory
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ public/index.php [L]
 </IfModule>
