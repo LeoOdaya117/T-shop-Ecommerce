@@ -73,14 +73,23 @@ class CartManager extends Controller
     public function updateCartTotal()
     {
         // Calculate the total number of distinct items in the cart for the authenticated user
-        $userId = auth()->user()->id;
-        $cartTotal = Cart::where('user_id', $userId)->count();
-        $wishlistCount = Wishlist::where('user_id', $userId)->count();
-   
-        return response()->json([
-            'cartTotal' => $cartTotal,
-            'wishlistTotal' => $wishlistCount
-        ]);
+        if(Auth::check()){
+            $userId = auth()->user()->id;
+            $cartTotal = Cart::where('user_id', $userId)->count();
+            $wishlistCount = Wishlist::where('user_id', $userId)->count();
+       
+            return response()->json([
+                'cartTotal' => $cartTotal,
+                'wishlistTotal' => $wishlistCount
+            ]);
+            
+        }else{
+            return response()->json([
+                'cartTotal' => 0,
+                'wishlistTotal' => 0
+            ]);
+        }
+        
         // Session::put('cartTotal', $cartTotal);
      
         
