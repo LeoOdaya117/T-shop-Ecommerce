@@ -12,31 +12,45 @@ use Illuminate\Support\Facades\Session;
 class CartManager extends Controller
 {
     
-    public function addToCart($id, $quantity, $variant_id)
+    public function addToCart(Request $request)
     {
+        $request->validate([
+            'productId' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+            'variant_id' => 'required|exists:product_variants,id'
+        ]);
         // Check if the product already exists in the user's cart
         $cart = Cart::where('user_id', auth()->user()->id)
-                    ->where('product_id', $id)
-                    ->where('variant_id', $variant_id)
+                    ->where('product_id', $request->productId)
+                    ->where('variant_id', $request->variant_id)
                     ->first();
 
         if ($cart) {
             // If the product exists in the cart, update the quantity
-            $cart->quantity += $quantity; // Increase the quantity by the selected amount
+            $cart->quantity += $request->quantity; // Increase the quantity by the selected amount
             $cart->save();
             
 
-            return response()->json(['success' => 'Item updated in the cart.']);
+            return response()->json([
+                'status' => 200,
+                'success' => true,
+                'message' => 'Item updated in the cart.'
+            ]);
         } else {
             // If the product does not exist, add it to the cart
             $cart = new Cart();
             $cart->user_id = auth()->user()->id; // Getting the User ID in the AUTH
-            $cart->product_id = $id;
-            $cart->variant_id = $variant_id;
-            $cart->quantity = $quantity;
+            $cart->product_id = $request->productId;
+            $cart->variant_id = $request->variant_id;
+            $cart->quantity = $request->quantity;
 
             if ($cart->save()) {
-                return response()->json(['success' => 'Added to the cart.']);
+                return response()->json([
+                    'status' => 200,
+                    'success' => true,
+                    'message' => 'Added to the cart.'
+                ]);
+               
             }
         }
 
@@ -46,8 +60,15 @@ class CartManager extends Controller
     
             session(['cartItemCount' => $cartItemCount]); // Update session
         }
-
-        return response()->json(['error' => 'Something went wrong']);
+        if ($cart->save()) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => 'Something went wrong'
+            ]);
+           
+        }
+      
     }
 
     function showCart(){

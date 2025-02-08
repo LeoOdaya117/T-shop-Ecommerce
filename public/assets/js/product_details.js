@@ -40,14 +40,20 @@ function addToCart(productId) {
     }
 
     $.ajax({
-        url: '/cart/' + productId + '/' + quantity + '/' + variant_id,
-        type: 'GET',
+        url: window.routeUrls.addToCart,
+        type: 'POST',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            productId: productId,
+            quantity: quantity,
+            variant_id: variant_id,
+        },
         success: function(response) {
             if (response.success) {
                 updateCartWishlistItemNumber();
                 Swal.fire({
                     icon: 'success',
-                    title: response.success,
+                    title: response.message,
                     toast: true,
                     position: 'center-end',
                     showConfirmButton: false,
@@ -57,7 +63,7 @@ function addToCart(productId) {
             } else {
                 Swal.fire({
                     icon: 'error',
-                    title: response.error,
+                    title: response.message,
                     toast: true,
                     position: 'center-end',
                     showConfirmButton: false,
@@ -67,7 +73,7 @@ function addToCart(productId) {
             }
         },
         error: function(xhr, status, error) {
-            window.location.href = window.routeUrls.login;
+            // window.location.href = window.routeUrls.login;
             console.log(error);
         }
     });

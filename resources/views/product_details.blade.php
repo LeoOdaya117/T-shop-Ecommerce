@@ -397,9 +397,9 @@
 @section("script")
     <script>
         window.routeUrls = {
+            addToCart: "{{ route('cart.add') }}",
             addToWishlists: "{{ route('add.wishlist') }}",
             removeToWishlist: "{{ route('delete.user.wishlist') }}",
-            
             login: "{{ route('login') }}",
         };
         window.variantData = @json($variants ?? []);

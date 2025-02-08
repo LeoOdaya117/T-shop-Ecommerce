@@ -71,7 +71,7 @@ use Illuminate\Support\Facades\Route;
 
     Route::middleware("auth")->group(function(){
         //CART ROUTES
-        Route::get('/cart/{id}/{quantity}/{variant_id}', [CartManager::class, 'addToCart'])
+        Route::post('cart/', [CartManager::class, 'addToCart'])
         ->name('cart.add');
         Route::get('/remove_item/{id}', [CartManager::class, 'deleteFromCart'])
         ->name('cart.remove');
