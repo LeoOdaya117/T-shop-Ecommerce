@@ -58,7 +58,10 @@ use Illuminate\Support\Facades\Route;
             ->name("register.post");
         // LOGOUT ROUTE
         Route::get("forgot-password", [AuthManager::class, "forgotPassword"])->name("forgot.password");
-      
+        Route::get("forgot-password-otp", function(){
+            return view('auth.forgot-password-otp');
+        })->name("forgot.password.otp");
+
         
         Route::get('/terms-and-conditions', function () {
             return view('pages.terms-and-conditions');

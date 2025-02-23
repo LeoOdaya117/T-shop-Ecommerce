@@ -116,8 +116,14 @@ class WishlistManager extends Controller
             'product_id' => 'required|exists:products,id',
             'variant_id' => 'required|exists:product_variants,id',
         ]);
+
+        $cartRequest = new Request([
+            'productId' => $request->product_id,
+            'variant_id' => $request->variant_id,
+            'quantity' => 1,
+        ]);
     
-        $this->cartManager->addToCart($request->product_id,  1,$request->variant_id);
+        $this->cartManager->addToCart($cartRequest);
     
         // Call the destroy function with the entire request, not just the wishlist_id
         $destroyResponse = $this->destroy($request);

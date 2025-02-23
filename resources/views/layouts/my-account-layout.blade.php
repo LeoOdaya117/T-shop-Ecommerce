@@ -20,6 +20,7 @@
     }
     .btn-menu:hover {
         background-color: #e2e6ea; /* Slightly darker hover effect */
+        color: #000;
     }
     .btn-menu i {
         font-size: 18px; /* Icon size */

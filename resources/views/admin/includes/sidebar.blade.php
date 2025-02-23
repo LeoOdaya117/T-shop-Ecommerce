@@ -118,7 +118,7 @@
                             </li> --}}
                             
                             {{-- SETTINGS --}}
-                            <li class="nav-divider">
+                            {{-- <li class="nav-divider">
                                 Settings
                             </li>
                             <li class="nav-item">
@@ -131,7 +131,7 @@
                                         
                                     </ul>
                                 </div>
-                            </li>
+                            </li> --}}
 
                         </ul>
                     </div>

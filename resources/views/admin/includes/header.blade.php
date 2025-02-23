@@ -66,7 +66,6 @@
                                     
                                 </div>
                                 <a class="dropdown-item" href="#"><i class="fas fa-user mr-2"></i>Account</a>
-                                <a class="dropdown-item" href="#"><i class="fas fa-cog mr-2"></i>Setting</a>
                                 <a class="dropdown-item" href="{{ route("logout") }}"><i class="fas fa-power-off mr-2"></i>Logout</a>
                             </div>
                         </li>

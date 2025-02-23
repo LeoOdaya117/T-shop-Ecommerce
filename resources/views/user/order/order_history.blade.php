@@ -78,7 +78,7 @@
                                         </div>
                                     </div>
                                     <div class="col text-center" >
-                                        <a href="{{ route('user.order.tracking', $order->id) }}" class="btn btn-light text-dark btn-outline-dark fw-bold">Track Order</a>
+                                        <a href="{{ route('user.order.tracking', $order->id) }}" class="btn btn-light btn-outline-dark fw-bold">Track Order</a>
                                         @if ($order->order_status === "Processing" ||$order->order_status === "Order Placed" )
                                             <form id="cancelOrderForm" action="{{ route('admin.orders.orderStatus') }}" method="post">
                                                 @csrf
@@ -153,7 +153,7 @@
                                         </div>
                                     </div>
                                     <div class="col text-center">
-                                        <a href="{{ route('user.order.tracking', $order->id) }}" class="btn btn-light text-dark btn-outline-dark fw-bold">View Order</a>
+                                        <a href="{{ route('user.order.tracking', $order->id) }}" class="btn btn-light btn-outline-dark fw-bold">View Order</a>
                                         @if (!$order->is_reviewed && $order->order_status === "Delivered")
                                             <button type="button" class="btn text-info writeReviewBtn"  data-order="{{ $order }}">Write a review</button>
 

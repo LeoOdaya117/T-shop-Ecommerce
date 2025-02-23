@@ -53,14 +53,14 @@
                 </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link active mx-1 " href="{{ route('user.wishlist') }}" title="Wishlist">
+                <a class="nav-link active mx-1 rounded-circle" href="{{ route('user.wishlist') }}" title="Wishlist">
                     <i class="fa-solid fa-heart text-danger"></i>
                     <span class="badge bg-danger text-white rounded-pill " id="wishlist-item-number">{{ Session::get('wishistItemCount', 0) }}</span>
 
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active  align-items-center" href="{{ route('cart.show') }}" title="Cart">
+                <a class="nav-link active  align-items-center rounded-circle" href="{{ route('cart.show') }}" title="Cart">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <!-- Cart Badge -->
                     <span class="badge bg-dark text-white fw-bolder rounded-circle" id="cart-item-number">{{ Session::get('cartItemCount', 0) }}</span>
@@ -69,7 +69,7 @@
 
             @auth
             <li class="nav-item">
-                <a class="nav-link active " href="{{ route('user.profile') }}" title="Profile">
+                <a class="nav-link active rounded-circle" href="{{ route('user.profile') }}" title="Profile">
                     <i class="fa-solid fa-user"></i>
                 </a>
             </li>

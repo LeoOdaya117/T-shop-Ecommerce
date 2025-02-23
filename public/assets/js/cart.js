@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             // Remove the cart item from the DOM
             cartItem.remove();
-            updateCartItemNumber();
+            updateCartWishlistItemNumber();
             // Recalculate subtotal and total price after removing an item
             let subtotalPrice = 0;
             document.querySelectorAll('.item-total-price').forEach(item => {
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             });
 
-            updateCartItemNumber();
+            updateCartWishlistItemNumber();
         });
     });
 });

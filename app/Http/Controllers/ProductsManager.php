@@ -40,14 +40,14 @@ class ProductsManager extends Controller
             $query->whereIn('brand', $request->brand);
         }
     
-        // // Apply size filter through variants
-        // if ($request->has('size')) {
-        //     $query->whereHas('variants', function ($q) use ($request) {
-        //         $q->whereIn('size', $request->size);
-        //     });
-        // }
+        // Apply size filter through variants
+        if ($request->has('size')) {
+            $query->whereHas('variants', function ($q) use ($request) {
+                $q->whereIn('size', $request->size);
+            });
+        }
     
-        // Apply price range filter
+        // Apply price range filter 
         if ($request->has('price_range')) {
             foreach ($request->price_range as $range) {
                 [$min, $max] = explode('-', $range);
@@ -185,7 +185,7 @@ class ProductsManager extends Controller
 
         // Fetch the products based on the top product IDs
         $popularProducts = Products::with('reviews')->where('status', 'active')
-        ->whereIn('id', $topProductIds)->get();
+        ->whereIn('id', $topProductIds)->paginate(10);
 
         return $popularProducts;
     }

@@ -49,115 +49,118 @@
 
         <div class="row g-3">
             <!-- Filters Column -->
-            <div class="col-xl-3 col-lg-4 col-md-4 col-sm-12 col-12 filter-container p-3 border rounded">
-                <h5 class="mb-3">Filters</h5>
-                <div class="accordion" id="filterAccordion">
-                    <!-- Category Filter -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingCategory">
-                            <button class="accordion-button" type="button" data-target="#collapseCategory">
-                                Category
-                            </button>
-                        </h2>
-                        <div id="collapseCategory" class="accordion-collapse collapse">
-                            <div class="accordion-body">
-                                @foreach ($categories as $category)
+            <div class="col-xl-3 col-lg-4 col-md-4 col-sm-12 col-12 filter-container p-3 border rounded ">
+                <div class="sticky-top">
+                    <h5 class="mb-3">Filters</h5>
+                    <div class="accordion" id="filterAccordion">
+                        <!-- Category Filter -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingCategory">
+                                <button class="accordion-button" type="button" data-target="#collapseCategory">
+                                    Category
+                                </button>
+                            </h2>
+                            <div id="collapseCategory" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    @foreach ($categories as $category)
+                                        <div class="form-check">
+                                            <input class="form-check-input filter" type="checkbox" value="{{ $category->id }}" id="category_{{ $category->id }}" name="category[]">
+                                            <label class="form-check-label" for="category_{{ $category->id }}">
+                                                {{ $category->name }}
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+    
+                        <!-- Brand Filter -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingBrand">
+                                <button class="accordion-button" type="button" data-target="#collapseBrand">
+                                    Brand
+                                </button>
+                            </h2>
+                            <div id="collapseBrand" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    @foreach ($brands as $brand)
+                                        <div class="form-check">
+                                            <input class="form-check-input filter" type="checkbox" value="{{ $brand->id }}" id="brand_{{ $brand->id }}" name="brand[]">
+                                            <label class="form-check-label" for="brand_{{ $brand->id }}">
+                                                {{ $brand->name }}
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+    
+                        <!-- Size Filter -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingSize">
+                                <button class="accordion-button" type="button" data-target="#collapseSize">
+                                    Size
+                                </button>
+                            </h2>
+                            <div id="collapseSize" class="accordion-collapse collapse">
+                                <div class="accordion-body">
                                     <div class="form-check">
-                                        <input class="form-check-input filter" type="checkbox" value="{{ $category->id }}" id="category_{{ $category->id }}" name="category[]">
-                                        <label class="form-check-label" for="category_{{ $category->id }}">
-                                            {{ $category->name }}
-                                        </label>
+                                        <input class="form-check-input filter" type="checkbox" value="Small" id="size_Small" name="size[]">
+                                        <label class="form-check-label" for="size_Small">Small</label>
                                     </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Brand Filter -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingBrand">
-                            <button class="accordion-button" type="button" data-target="#collapseBrand">
-                                Brand
-                            </button>
-                        </h2>
-                        <div id="collapseBrand" class="accordion-collapse collapse">
-                            <div class="accordion-body">
-                                @foreach ($brands as $brand)
                                     <div class="form-check">
-                                        <input class="form-check-input filter" type="checkbox" value="{{ $brand->id }}" id="brand_{{ $brand->id }}" name="brand[]">
-                                        <label class="form-check-label" for="brand_{{ $brand->id }}">
-                                            {{ $brand->name }}
-                                        </label>
+                                        <input class="form-check-input filter" type="checkbox" value="Medium" id="size_Medium" name="size[]">
+                                        <label class="form-check-label" for="size_Medium">Medium</label>
                                     </div>
-                                @endforeach
+                                    <div class="form-check">
+                                        <input class="form-check-input filter" type="checkbox" value="Large" id="size_Large" name="size[]">
+                                        <label class="form-check-label" for="size_Large">Large</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input filter" type="checkbox" value="XL" id="size_XL" name="size[]">
+                                        <label class="form-check-label" for="size_XL">XL</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <!-- Price Range Filter -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingPrice">
+                                <button class="accordion-button" type="button" data-target="#collapsePrice">
+                                    Price Range
+                                </button>
+                            </h2>
+                            <div id="collapsePrice" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input filter" type="checkbox" value="0-150" id="price_range_1" name="price_range[]">
+                                        <label class="form-check-label" for="price_range_1">₱0 - ₱150</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input filter" type="checkbox" value="151-250" id="price_range_2" name="price_range[]">
+                                        <label class="form-check-label" for="price_range_2">₱151 - ₱250</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input filter" type="checkbox" value="251-350" id="price_range_2" name="price_range[]">
+                                        <label class="form-check-label" for="price_range_2">₱251 - ₱350</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input filter" type="checkbox" value="351-550" id="price_range_2" name="price_range[]">
+                                        <label class="form-check-label" for="price_range_2">₱351 - ₱550</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Size Filter -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingSize">
-                            <button class="accordion-button" type="button" data-target="#collapseSize">
-                                Size
-                            </button>
-                        </h2>
-                        <div id="collapseSize" class="accordion-collapse collapse">
-                            <div class="accordion-body">
-                                <div class="form-check">
-                                    <input class="form-check-input filter" type="checkbox" value="Small" id="size_Small" name="size[]">
-                                    <label class="form-check-label" for="size_Small">Small</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input filter" type="checkbox" value="Medium" id="size_Medium" name="size[]">
-                                    <label class="form-check-label" for="size_Medium">Medium</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input filter" type="checkbox" value="Large" id="size_Large" name="size[]">
-                                    <label class="form-check-label" for="size_Large">Large</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input filter" type="checkbox" value="XL" id="size_XL" name="size[]">
-                                    <label class="form-check-label" for="size_XL">XL</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Price Range Filter -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingPrice">
-                            <button class="accordion-button" type="button" data-target="#collapsePrice">
-                                Price Range
-                            </button>
-                        </h2>
-                        <div id="collapsePrice" class="accordion-collapse collapse">
-                            <div class="accordion-body">
-                                <div class="form-check">
-                                    <input class="form-check-input filter" type="checkbox" value="0-150" id="price_range_1" name="price_range[]">
-                                    <label class="form-check-label" for="price_range_1">₱0 - ₱150</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input filter" type="checkbox" value="151-250" id="price_range_2" name="price_range[]">
-                                    <label class="form-check-label" for="price_range_2">₱151 - ₱250</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input filter" type="checkbox" value="251-350" id="price_range_2" name="price_range[]">
-                                    <label class="form-check-label" for="price_range_2">₱251 - ₱350</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input filter" type="checkbox" value="351-550" id="price_range_2" name="price_range[]">
-                                    <label class="form-check-label" for="price_range_2">₱351 - ₱550</label>
-                                </div>
-                            </div>
-                        </div>
+    
+                    <!-- Buttons Section -->
+                    <div class="d-flex justify-content-between mt-3">
+                        <button id="apply-filters-btn" class="btn btn-primary w-48">Apply Filters</button>
+                        <button id="reset-filters-btn" class="btn btn-outline-secondary w-48">Reset</button>
                     </div>
                 </div>
-
-                <!-- Buttons Section -->
-                <div class="d-flex justify-content-between mt-3">
-                    <button id="apply-filters-btn" class="btn btn-primary w-48">Apply Filters</button>
-                    <button id="reset-filters-btn" class="btn btn-outline-secondary w-48">Reset</button>
-                </div>
+                
             </div>
 
             <!-- Product List Column -->
