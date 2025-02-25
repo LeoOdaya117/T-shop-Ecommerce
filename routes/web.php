@@ -14,7 +14,9 @@ use App\Http\Controllers\ReviewsManager;
 use App\Http\Controllers\ShippingOptionController;
 use App\Http\Controllers\UserManager;
 use App\Http\Controllers\WishlistManager;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Models\Products;
+
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Route;
 
@@ -61,6 +63,11 @@ use Illuminate\Support\Facades\Route;
         Route::get("forgot-password-otp", function(){
             return view('auth.forgot-password-otp');
         })->name("forgot.password.otp");
+       
+        Route::post('/forgot-password-send-otp', [ForgotPasswordController::class, 'sendOTP'])->name('forgot.password.send.otp');
+        Route::post('/verify-otp', [ForgotPasswordController::class, 'verifyOTP'])->name('forgot.password.verify');
+        Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('forgotpassword.post');
+
 
         
         Route::get('/terms-and-conditions', function () {

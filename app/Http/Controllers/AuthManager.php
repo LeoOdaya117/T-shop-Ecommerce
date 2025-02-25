@@ -41,6 +41,8 @@ class AuthManager extends Controller
         $this->sessionCheck();
         return view("auth.forgot-password");
     }
+
+    
     function admin_Index(){
         $OrderManager = new OrderManager();
         $recentOrders = $OrderManager->getRecentOrders();
@@ -112,6 +114,8 @@ class AuthManager extends Controller
         ]);
        
     }
+
+
 
     function logout(){
         Auth::logout();
