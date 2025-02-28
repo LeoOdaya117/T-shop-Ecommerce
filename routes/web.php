@@ -46,6 +46,7 @@ use Illuminate\Support\Facades\Route;
     Route::get('/products/category/{categoryId}', [ProductsManager::class,'showProductsByCategory'])
         ->name("search.category.product");
     
+    Route::get("/cart/number", [CartManager::class, "updateCartTotal"])->name("cart.item.number");
     Route::get("logout", [AuthManager::class, "logout"])->name("logout");
 
     Route::middleware("guest")->group(function(){
@@ -88,7 +89,8 @@ use Illuminate\Support\Facades\Route;
         Route::get('/add_quantity/{id}/{quantity}', [CartManager::class, 'updateQuantity'])
         ->name('add.quantity');
         Route::get("/cart", [CartManager::class, "showCart"])->name("cart.show");
-        Route::get("/cart/number", [CartManager::class, "updateCartTotal"])->name("cart.item.number");
+        Route::post('cart/buy', [CartManager::class, 'buyNow'])
+        ->name('cart.buyNow');
 
         //CHECKOUT ROUTES
         Route::get("/checkout", [OrderManager::class, "showCheckout"])

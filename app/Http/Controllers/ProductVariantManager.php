@@ -27,6 +27,20 @@ class ProductVariantManager extends Controller
         ]);
 
        try {
+
+            $existingVariant = ProductVariant::where('product_id', $request->product_Id)
+                ->where('color', $request->color)
+                ->where('size', $request->size)
+                ->first();
+            if($existingVariant){
+                return response()->json([
+                    'status' => 400,
+                    'success' => false,
+                    'message' => 'Product Variant already exists',
+                    
+                ]);
+            }
+
             $variant = new ProductVariant();
             $variant->product_id = $request->product_Id;
             $variant->color = $request->color;

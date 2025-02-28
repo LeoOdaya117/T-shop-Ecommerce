@@ -136,6 +136,7 @@
                                             {{ $item->quantity }}
                                         </span>
                                         <span>₱ {{ number_format(($item->product->price - $item->product->discount ) * $item->quantity,2) }}</span>
+                                        
                                     </li>
                                     @php $totalPrice += ($item->product->price - $item->product->discount ) * $item->quantity; @endphp  
 

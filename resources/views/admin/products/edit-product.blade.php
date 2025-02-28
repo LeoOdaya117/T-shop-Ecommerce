@@ -664,7 +664,7 @@
                 } else {
                     $('#alert-container2').html(`
                         <div class="alert alert-danger">
-                            Something went wrong. Please try again.
+                            ${response.message}
                         </div>
                     `);
                     $('#createVariantModal').modal('hide');

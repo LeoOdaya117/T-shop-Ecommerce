@@ -110,7 +110,8 @@ $("#createAddressForm").submit(function(e) {
                         </div>
                     `;
                     // Prepend the new address HTML before the "Add new Address" button
-                    $(".row.mt-2").prepend(newAddressHtml); 
+                    $(newAddressHtml).insertBefore($("#addAddressBtn").closest('.col-6'));
+
                 } else {
                     console.log("Address data is missing or malformed.");
                 }

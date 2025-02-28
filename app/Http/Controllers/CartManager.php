@@ -71,6 +71,7 @@ class CartManager extends Controller
       
     }
 
+
     function showCart(){
         $authManager = new AuthManager();
         $authManager->sessionCheck();
@@ -131,6 +132,9 @@ class CartManager extends Controller
     }
 
     function updateQuantity($id, $quantity){
+        if(!Auth::check()){
+            return response()->json(['error' => 'You need to be logged in to update the cart.'], 401);
+        }
         $cart = Cart::where('id', $id)
             ->where('user_id', auth()->user()->id)
             ->first();

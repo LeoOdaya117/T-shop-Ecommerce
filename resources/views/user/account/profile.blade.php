@@ -52,10 +52,11 @@
         <hr>
         <!-- Address Section -->
         <h6 class="mt-4">Address</h6>
+        <div id="alert-container2"></div>
         <div class="row mt-2 gap-0 ">
-            <div id="alert-container2"></div>
+            
             @forelse($addresses as $address)
-                <div class="col-6 mb-2">
+                <div class="col-6 mb-2" id="address-{{ $address->id }}">
                     <div class="card position-relative">
                         <!-- X Button -->
                         <button class="btn rounded-circle fw-bold text-danger text-end m-2 p-0 delete-address-btn position-absolute top-0 end-0" style="z-index: 10;"

@@ -73,7 +73,68 @@ function addToCart(productId) {
             }
         },
         error: function(xhr, status, error) {
-            // window.location.href = window.routeUrls.login;
+             window.location.href = window.routeUrls.login;
+            console.log(error);
+        }
+    });
+
+   
+}
+
+function buyNow(productId) {
+   
+    const quantity = document.getElementById('quantity').value;
+    const variant_id = document.getElementById('selectedVariantId').value;
+
+    if (!variant_id) {
+        Swal.fire({
+            icon: 'error',
+            title: `No color and size selected!`,
+            toast: true,
+            position: 'center-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        });
+        return;
+    }
+
+    $.ajax({
+        url: window.routeUrls.addToCart,
+        type: 'POST',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            productId: productId,
+            quantity: quantity,
+            variant_id: variant_id,
+        },
+        success: function(response) {
+            if (response.success) {
+                updateCartWishlistItemNumber();
+                // Swal.fire({
+                //     icon: 'success',
+                //     title: response.message,
+                //     toast: true,
+                //     position: 'center-end',
+                //     showConfirmButton: false,
+                //     timer: 3000,
+                //     timerProgressBar: true
+                // });
+                window.location.href = window.routeUrls.buyNow;
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: response.message,
+                    toast: true,
+                    position: 'center-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            }
+        },
+        error: function(xhr, status, error) {
+            window.location.href = window.routeUrls.login;
             console.log(error);
         }
     });
@@ -254,18 +315,21 @@ function addToWishList(product_id, title, variant_id) {
                     timer: 3000,
                     timerProgressBar: true
                 });
+
+                
             }
         },
         error: function(xhr) {
-            Swal.fire({
-                icon: 'error',
-                title: xhr.responseJSON.message || 'An error occurred',
-                toast: true,
-                position: 'center-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
-            });
+            // Swal.fire({
+            //     icon: 'error',
+            //     title: xhr.responseJSON.message || 'An error occurred',
+            //     toast: true,
+            //     position: 'center-end',
+            //     showConfirmButton: false,
+            //     timer: 3000,
+            //     timerProgressBar: true
+            // });
+            window.location.href = window.routeUrls.login;
         }
     });
 }

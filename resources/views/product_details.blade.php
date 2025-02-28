@@ -189,7 +189,7 @@
                             <button class="btn btn-large btn-outline-dark text-dark bg-transparent shadow-lg" onclick="addToCart({{ $products->id }})" id="addToCartButton">
                                 Add to Cart
                             </button>
-                            <button class="btn btn-large btn-outline-dark text-dark bg-warning shadow-lg" onclick="addToCart({{ $products->id }})" id="addToCartButton">
+                            <button class="btn btn-large btn-outline-dark text-dark bg-warning shadow-lg" onclick="buyNow({{ $products->id }})" id="addToCartButton">
                                 Buy Now
                             </button>
                         </div>
@@ -211,7 +211,7 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="profile-tab-justify" data-toggle="tab" href="#profile-justify" 
-                               role="tab" aria-controls="profile-justify" aria-selected="false"><strong>Review</strong></a>
+                               role="tab" aria-controls="profile-justify" aria-selected="false"><strong>Reviews</strong></a>
                         </li>
                     </ul>
                     <div class="container tab-content bg-white p-3" id="myTabContent7">
@@ -400,6 +400,7 @@
             addToCart: "{{ route('cart.add') }}",
             addToWishlists: "{{ route('add.wishlist') }}",
             removeToWishlist: "{{ route('delete.user.wishlist') }}",
+            buyNow: "{{ route('checkout.show') }}",
             login: "{{ route('login') }}",
         };
         window.variantData = @json($variants ?? []);
